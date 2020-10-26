@@ -1,0 +1,5 @@
+Cmnd_Alias WEBADMIN = /usr/local/share/router/webadmin/share/webadmin/lib/shell/superuser.sh
+
+Defaults!WEBADMIN !syslog
+
+yourusername	ALL=NOPASSWD: WEBADMIN

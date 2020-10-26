@@ -1,0 +1,25 @@
+#!/bin/sh
+echo
+echo ' SMB share mount'
+echo
+
+echo -n 'Address: '
+read address
+echo -n 'Share name: '
+read share
+echo -n 'User name: '
+read username
+echo -n 'Password: '
+read -s password
+
+if [ ! "${address}" = '' ] && [ ! "${share}" = '' ] && [ ! "${username}" = '' ] && [ ! "${password}" = '' ]; then
+	echo ''
+	echo 'Mounting...'
+	[ -e "/mnt/${share}" ] || mkdir "/mnt/${share}"
+	modprobe md4
+	modprobe arc4
+	modprobe cifs
+	mount -t cifs -o username=${username},password=${password},vers=1.0,noserverino //${address}/${share} /mnt/${share} && echo "Share mounted at /mnt/${share}"
+fi
+
+exit 0

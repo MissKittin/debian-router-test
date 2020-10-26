@@ -1,0 +1,33 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides: init-parallel
+# Required-Start:
+# Required-Stop:        rc.local rmnologin
+# Default-Start:        2 3 4 5
+# Default-Stop:
+# Short-Description:    Running startup scripts in parallel
+# Description: Running startup scripts in parallel
+### END INIT INFO
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+. /lib/lsb/init-functions
+
+case "$1" in
+	'start')
+		log_action_msg_pre; echo 'Starting init parallel'
+		/usr/local/sbin/init-parallel > /dev/null 2>&1 &
+	;;
+	'check') # To be executed at shutdown
+		# Check rcS.d
+		cd /etc/rcS.d
+		for i in *; do echo $i | grep '^S.*ainit-parallel' > /dev/null 2>&1 || last=${i}; done
+		queue=$(echo ${last} | tr -dc '0-9')
+		[ -e S*ainit-parallel ] && [ ! -e S${queue}ainit-parallel ] && mv $(ls S*ainit-parallel) S${queue}ainit-parallel
+
+		# Check rc2.d
+		cd /etc/rc2.d
+		[ -e S*ainit-parallel ] && [ ! -e S01ainit-parallel ] && mv $(ls S*ainit-parallel) S01ainit-parallel
+	;;
+esac
+exit 0

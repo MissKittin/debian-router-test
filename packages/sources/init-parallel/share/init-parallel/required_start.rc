@@ -1,0 +1,9 @@
+# Wait for other daemons
+required_start()
+{
+	for i in ${@}; do
+		while ! /etc/init.d/${i} status > /dev/null 2>&1; do
+			sleep 0.2
+		done
+	done
+}

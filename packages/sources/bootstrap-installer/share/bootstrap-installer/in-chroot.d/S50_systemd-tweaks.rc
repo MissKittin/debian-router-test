@@ -1,0 +1,21 @@
+# Remove systemd bloatware (16/21)
+if ${systemd_tweaks} && ! ${install_sysvinit}; then
+	print_message 'tweaking systemd' "${COLOR_INFO}"
+
+	# Remove timers
+	rm /etc/systemd/system/timers.target.wants/*
+	ln -s /dev/null /etc/systemd/system/systemd-tmpfiles-clean.timer
+
+	# Remove timesync
+	rm /etc/systemd/system/dbus-org.freedesktop.timesync1.service
+	rm /etc/systemd/system/sysinit.target.wants/systemd-timesyncd.service
+
+	# Disable journald
+	if ${systemd_tweaks_nojournal}; then
+		print_message 'disabling journal' "${COLOR_INFO}"
+		ln -s /etc/systemd/system/systemd-journald.service /dev/null
+		ln -s /etc/systemd/system/systemd-journald.socket /dev/null
+		ln -s /etc/systemd/system/systemd-journald-audit.socket /dev/null
+		ln -s /etc/systemd/system/systemd-journald-dev-log.socket /dev/null
+	fi
+fi

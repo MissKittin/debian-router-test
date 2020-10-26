@@ -1,0 +1,19 @@
+# Check default gateway
+# 18.02.2019
+event_name='Default gateway'
+
+check_default_gateway()
+{
+	if route | grep default > /dev/null 2>&1; then
+		log 'default_gateway: default gateway ok'
+		return 1
+	else
+		log 'default_gateway: no default gateway'
+		return 0
+	fi
+}
+send_notify_default_gateway()
+{
+	send_notify 'default_gateway' 'medium' "No default gateway at $(date '+%H:%M')"
+}
+checklist="$checklist default_gateway"

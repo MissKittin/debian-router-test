@@ -1,0 +1,44 @@
+# Check SMART status for /dev/sd*
+# 20.07.2020
+event_name='S.M.A.R.T.'
+smart__smartctl_command='smartctl --all'
+[ -e "${lib_dir}/libtimestamp.rc" ] && . ${lib_dir}/libtimestamp.rc
+
+check_smart()
+{
+	# Scan every 12 hours
+	if ! notify_daemon_timestamp 'smart' "${path_event_temp}/.notify-daemon_event__smart.timestamp" '43200'; then
+		log 'smart: no action taken'
+		return 1
+	fi
+
+	# Scan all disks
+	for i in /dev/sd[a-z]; do
+		local smartctl_output="$(${smart__smartctl_command} ${i} 2>&1 | grep 'SMART overall-health' | awk '{print $6}')"
+		if [ ! "${smartctl_output}" = 'PASSED' ]; then
+			if [ ! "${smartctl_output}" = '' ]; then # if is smart-capable device
+				log 'smart: at least one disk has bad condition'
+				return 0
+			fi
+		fi
+	done
+
+	log 'smart: all disks are in good condition'
+	return 1
+}
+send_notify_smart()
+{
+	# Detect failing disks
+	for i in /dev/sd[a-z]; do
+		local smartctl_output="$(${smart__smartctl_command} ${i} 2>&1)"
+		local smartctl_health="$(echo ${smartctl_output} | grep 'SMART overall-health' | awk '{print $6}')"
+		if [ ! "${smartctl_health}" = 'PASSED' ]; then
+			if [ ! "${smartctl_health}" = '' ]; then  # if is smart-capable device
+				local smartctl_disk_model="$(echo ${smartctl_output} | grep 'Device Model:' | sed 's/Device Model://g' | sed 's/^[ \t]*//g')"
+				log "smart: ${smartctl_disk_model} ${i} has bad condition"
+				send_notify 'smart' 'critical' "${smartctl_disk_model} ${i}: bad disk condition"
+			fi
+		fi
+	done
+}
+checklist="$checklist smart"

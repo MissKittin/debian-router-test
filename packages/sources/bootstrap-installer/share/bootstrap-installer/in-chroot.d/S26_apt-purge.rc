@@ -1,0 +1,12 @@
+# (9/21)
+# Configure language
+if ${locales}; then
+	print_message 'configuring locales' "${COLOR_INFO}"
+	dpkg-reconfigure locales
+fi
+
+# Configure timezone
+if ! ${remove_tzdata}; then
+	print_message 'configuring time zone' "${COLOR_INFO}"
+	dpkg-reconfigure tzdata
+fi

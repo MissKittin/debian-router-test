@@ -1,0 +1,16 @@
+# Configure systemd/sysvinit autologin (as non-privileged user) (14/21)
+if ${systemd_autologin} && ! ${install_sysvinit}; then
+	print_message 'configuring autologin for systemd' "${COLOR_INFO}"
+	mkdir -p '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d'
+	echo '[Service]' > '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d/autologin.conf'
+	echo 'ExecStart=' >> '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d/autologin.conf'
+	echo 'ExecStart=-/sbin/agetty --autologin '"${username}"' --noclear %I $TERM' >> '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d/autologin.conf'
+	ln -s '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d' '/etc/systemd/system/getty@tty1.service.d'
+fi
+if ${sysvinit_autologin} && ${install_sysvinit}; then
+	print_message 'configuring autologin for sysvinit' "${COLOR_INFO}"
+	cp -rfp /etc/inittab /etc/inittab.old
+	mv /etc/inittab /usr/local/etc/${installer_config_dir}inittab
+	sed -i 's\/sbin/getty 38400 tty1\/sbin/agetty --autologin '"${username}"' 38400 tty1\g' /usr/local/etc/${installer_config_dir}inittab
+	ln -s /usr/local/etc/${installer_config_dir}inittab /etc/inittab
+fi

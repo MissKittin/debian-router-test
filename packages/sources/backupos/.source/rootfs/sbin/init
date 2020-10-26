@@ -1,0 +1,4 @@
+#!/bin/sh
+for initmodule in /etc/init/*; do
+	. ${initmodule}
+done

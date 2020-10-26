@@ -1,0 +1,2 @@
+# Remove /root
+[ -e /root ] && rmdir /root

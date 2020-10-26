@@ -1,0 +1,6 @@
+RACOON__ENABLED=false
+if /etc/init.d/racoon status > /dev/null 2>&1; then
+	log 'stopping racoon'
+	/etc/init.d/racoon stop
+	RACOON__ENABLED=true
+fi

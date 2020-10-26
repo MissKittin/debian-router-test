@@ -1,0 +1,17 @@
+# Notify daemon's check-event_with_action part
+# do_critical_$action is in main
+# Don't touch this!
+
+# Initialize checklist
+dlog "critical-events: critical_checklist='${critical_checklist}' :: clean"
+critical_checklist=''
+dlog "critical-events: critical_checklist='${critical_checklist}'"
+
+# Import events
+dlog "critical-events: [ ls ${home_dir}/critical-events.rc.d/*.rc = '' ] || import"
+[ "`ls $home_dir/critical-events.rc.d/*.rc 2>/dev/null`" = '' ] && \
+	log 'critical-events: no events defined' || \
+	for i in $home_dir/critical-events.rc.d/*.rc; do
+		dlog "critical-events: import ${i}"
+		. $i
+	done

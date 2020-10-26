@@ -1,0 +1,27 @@
+# Initialize controlled TTY
+if test x"$HAS_CTTY" != x"Yes"; then
+	# Mount kernel fs
+	echo -ne " ${BLUE}[${SEABLUE}::${BLUE}] ${GREEN}Mounting${NOCOLOR} ${WHITE}dev${NOCOLOR}"
+	mount -t devtmpfs dev /dev
+
+	echo -ne " ${WHITE}pts${NOCOLOR}"
+	mkdir /dev/pts
+	mount -t devpts devpts /dev/pts
+
+	echo -ne " ${WHITE}proc${NOCOLOR}"
+	mount -t proc proc /proc
+
+	#echo -ne " ${WHITE}run${NOCOLOR}"
+	#mount -t tmpfs run /run
+
+	echo -e " ${WHITE}sys${NOCOLOR}"
+	mount -t sysfs sysfs /sys
+
+	# Initialise /dev
+	echo -e " ${BLUE}[${SEABLUE}::${BLUE}] ${GREEN}Initialising${NOCOLOR} ${WHITE}/dev${NOCOLOR}"
+	mdev -s
+
+	# Re-exec
+	echo -e " ${BLUE}[${SEABLUE}::${BLUE}] ${GREEN}Jumping to controlled console${NOCOLOR}"
+	exec env HAS_CTTY=Yes setsid cttyhack /bin/sh "$0"
+fi

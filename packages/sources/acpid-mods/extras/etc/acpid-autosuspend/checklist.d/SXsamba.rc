@@ -1,0 +1,5 @@
+# Samba
+if [ "$(ps -A | grep smbd | wc -l)" -gt '1' ]; then
+	BREAK='true'
+	[ "${REASON}" = '' ] && REASON='Samba clients connected'
+fi

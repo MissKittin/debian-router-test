@@ -1,0 +1,1 @@
+<?php /* 21.02.2019 */ header('Content-Type: text/plain'); echo $_SERVER['REMOTE_ADDR']; ?>

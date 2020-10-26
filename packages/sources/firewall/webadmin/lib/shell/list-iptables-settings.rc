@@ -1,0 +1,110 @@
+# iptables listing library
+# Command stack: firewall.sh
+
+case $1 in
+	'list-iptables-settings')
+		SETTINGS=`firewall.sh where-are-you`
+		. $SETTINGS/networks.rc
+
+#		parse_firewall_line()
+#		{
+#			[ "$1" = '' ] && return
+#			[ "$1" = '#' ] && return
+#			[ "${1%${1#?}}"x = '#x' ] && return
+#
+#			if [ "$2" = '-A' ]; then
+#				# Firewall
+#				if [ "$3" = 'INPUT' ]; then
+#					eval echo -n "'->' $5"
+#					if [ "$5" = 'state' ]; then
+#						echo " $7 $9"
+#					elif [ "$8" = '-j' ]; then
+#						echo " protocol ${7} ${9}"
+#					else
+#						echo " ${9}/${7} ${11}"
+#					fi
+#				fi
+#				if [ "$3" = 'OUTPUT' ]; then
+#					echo -n '<-'
+#					if [ "$6" = '-j' ]; then
+#						echo " protocol ${5} ${7}"
+#					else
+#						echo " ${5}/${7} ${9}"
+#					fi
+#				fi
+#				# Routing
+#				if [ "$3" = 'FORWARD' ]; then
+#					if [ "$9" = 'state' ]; then
+#						eval echo "${5} '-->' ${7} ${11} ${13}"
+#					else
+#						eval echo "${5} '-->' ${7} ${9}"
+#					fi
+#				fi
+#			fi
+#
+#			if [ "$2" = '-P' ]; then
+#				echo "Policy $3 $4"
+#			fi
+#
+#			# Routing
+#			if [ "$3" = 'nat' ]; then
+#				eval echo "NAT $7"
+#			fi
+#		}
+		parse_forwarding_line()
+		{
+			# Special function only for forwarding
+			[ "$1" = '' ] && return
+			[ "$1" = '#' ] && return
+			[ "${1%${1#?}}"x = '#x' ] && return
+
+			if [ "$2" = '-A' ]; then
+				if [ "$3" = 'FORWARD' ]; then
+					
+					if [ "$4" = '-i' ] && [ "$6" = '-o' ]; then
+						eval echo "${5} '-->' ${7} ${9}"
+					else
+						if [ "$9" = 'state' ]; then
+							eval echo "${5} '-->' ${7} ${11} ${13}"
+						else
+							eval echo "'-->' ${7} ${9}/${5}"
+						fi
+					fi
+				fi
+			fi
+
+			if [ "$2" = '-P' ]; then
+				echo "Policy $3 $4"
+			fi
+
+			if [ "$3" = 'nat' ]; then
+				eval echo -n "$7"
+				echo -n ' '
+			fi
+		}
+
+		case $2 in
+#			'firewall')
+#				echo 'Firewall settings:'
+#				cat $SETTINGS/firewall.rc | while read line; do
+#					parse_firewall_line $line
+#				done
+#			;;
+#			'routing')
+#				echo; echo 'Forwarding settings:'
+#				cat $SETTINGS/forwarding.rc | while read line; do
+#					parse_forwarding_line $line
+#				done
+#				echo; echo 'Routing settings:'
+#				cat $SETTINGS/routing.rc | while read line; do
+#					parse_firewall_line $line
+#				done
+#			;;
+			'forwarding')
+				cat $SETTINGS/forwarding.rc | while read line; do
+					parse_forwarding_line $line
+				done
+			;;
+		esac
+	;;
+esac

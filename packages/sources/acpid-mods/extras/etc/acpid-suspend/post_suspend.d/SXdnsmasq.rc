@@ -1,0 +1,4 @@
+if $DNSMASQ__ENABLED; then
+	log 'starting dnsmasq'
+	/etc/init.d/dnsmasq start
+fi

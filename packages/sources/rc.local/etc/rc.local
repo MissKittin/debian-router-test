@@ -1,0 +1,29 @@
+#!/bin/sh
+#####################################
+### Debian router                 ###
+### Initial release: stretch 9.x  ###
+### Bootstraped: 27.08.2018 15:45 ###
+#####################################
+
+# Define parallel rc.local
+if [ "$1" = 'parallel' ]; then
+	#for i in $(find /usr/local/etc/rc.local.d -type f -name "PS*" | sort); do
+	for i in $(find /usr/local/etc/rc.local.d/ -name "PS*" | sort); do
+		. ${i}
+	done
+	exit 0
+fi
+
+# Run S*.rc sequence in /usr/local/etc/rc.local.d
+#for i in $(find /usr/local/etc/rc.local.d -type f -name "S*" | sort); do
+for i in $(find /usr/local/etc/rc.local.d/ -name "S*" | sort); do
+	. ${i}
+done
+
+# Run P*.rc sequence in /usr/local/etc/rc.local.d
+$0 parallel > /tmp/.rc.local-parallel.log 2>&1 &
+
+# Send info to dmesg
+echo 'rc.local: OS has been loaded' > /dev/kmsg
+
+exit 0

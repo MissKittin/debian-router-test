@@ -1,0 +1,22 @@
+# ntpdate-daemon extension
+[ -e "${lib_dir}/libtimestamp.rc" ] && . ${lib_dir}/libtimestamp.rc
+event_name='Clock sync'
+
+check_ntpdate_daemon()
+{
+	local ping_host
+	local sync_every
+	local ntpdate_command
+
+	. /usr/local/etc/ntpdate-daemon.rc
+
+	if notify_daemon_timestamp 'ntpdate-daemon' "${path_event_temp}/.notify-daemon_event__ntpdate-daemon.timestamp" "${sync_every}"; then
+		log 'ntpdate_daemon: syncing...'
+		/usr/local/sbin/ntpdate-daemon.sh --oneshot > /dev/null 2>&1 &
+	else
+		log 'ntpdate_daemon: my time has not come yet'
+	fi
+
+	return 1
+}
+checklist="$checklist ntpdate_daemon"

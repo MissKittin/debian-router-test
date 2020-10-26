@@ -1,0 +1,8 @@
+# Settings
+host='http://your.webhost/ddns-server/'
+user='setuser'
+password='setpassword'
+client_name='debian-router'
+sleep_time='900' # seconds
+[ "$1" = '' ] && log_file='/var/log/ddns_client.log' || log_file="$1"
+ip_get_address='http://ipinfo.io/ip' # address for "Check if ip changed"

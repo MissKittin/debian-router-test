@@ -1,0 +1,33 @@
+# debian-eol extension
+[ -e "${lib_dir}/libtimestamp.rc" ] && . ${lib_dir}/libtimestamp.rc
+event_name='Debian EoL'
+
+check_debian_eol()
+{
+	if notify_daemon_timestamp 'debian-eol' "${path_event_temp}/.notify-daemon_event__debian-eol.timestamp" '2592000'; then
+		/usr/local/bin/debian-eol.php --check "$(cat /etc/debian_version)" > /dev/null 2>&1
+		case ${?} in
+			'0')
+				log 'debian_eol: OS is supported'
+			;;
+			'1')
+				log 'debian_eol: OS has LTS support'
+			;;
+			'2')
+				log 'debian_eol: support ended'
+				return 0
+			;;
+			*)
+				log 'debian_eol: WTF condition'
+			;;
+		esac
+	else
+		log 'debian_eol: my time has not come yet'
+	fi
+	return 1
+}
+send_notify_debian_eol()
+{
+	send_notify 'debian-eol' 'critical' 'Support ended for this debian version!'
+}
+checklist="$checklist debian_eol"

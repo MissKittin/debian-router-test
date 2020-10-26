@@ -1,0 +1,5 @@
+# PPTP
+if ifconfig | grep "${iface_pptp}" > /dev/null 2>&1; then
+	BREAK='true'
+	[ "${REASON}" = '' ] && REASON='PPTP clients connected'
+fi

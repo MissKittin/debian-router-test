@@ -1,0 +1,31 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          firewall
+# Required-Start:
+# Required-Stop:     $network
+# Default-Start:     S
+# Default-Stop:
+# Short-Description: Apply or flush firewall rules
+### END INIT INFO
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+. /lib/lsb/init-functions
+
+case "${1}" in
+	'start')
+		log_action_msg_pre; echo 'Applying firewall rules'
+		/usr/local/sbin/firewall.sh > /dev/null 2>&1
+		/usr/local/sbin/firewall6.sh > /dev/null 2>&1
+	;;
+	'stop')
+		log_action_msg_pre; echo 'Flushing firewall rules'
+		/usr/local/sbin/firewall.sh stop > /dev/null 2>&1
+		/usr/local/sbin/firewall6.sh stop > /dev/null 2>&1
+	;;
+	*)
+		echo 'firewall start|stop'
+	;;
+esac
+
+exit 0

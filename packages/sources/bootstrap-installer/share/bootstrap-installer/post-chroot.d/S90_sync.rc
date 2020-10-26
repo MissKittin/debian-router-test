@@ -1,0 +1,3 @@
+# Sync disks
+print_message 'syncing disks' "${COLOR_INFO}"
+sync

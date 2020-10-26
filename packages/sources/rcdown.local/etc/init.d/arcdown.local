@@ -1,0 +1,58 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          rcdown.local
+# Required-Start:    $all
+# Required-Stop:
+# Default-Start:     0 6
+# Default-Stop:
+# Short-Description: Run /etc/rcdown.local if it exist
+### END INIT INFO
+
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+
+. /lib/init/vars.sh
+. /lib/lsb/init-functions
+
+do_start() {
+	if [ -x /etc/rc.local ]; then
+	        #[ "$VERBOSE" != no ] && log_begin_msg "Running local boot scripts (/etc/rc.local)"
+	        log_begin_msg "Running local shutdown scripts (/etc/rcdown.local)"
+		/etc/rcdown.local
+		ES=$?
+		#[ "$VERBOSE" != no ] && log_end_msg $ES
+		log_end_msg $ES
+		return $ES
+	fi
+}
+
+do_check() {
+	# Check rc0
+	cd /etc/rc0.d
+	[ -e K*rcdown.local ] && [ ! -e K00rcdown.local ] && mv $(ls K*rcdown.local) K00rcdown.local
+
+	# Check rc6
+	cd /etc/rc6.d
+	[ -e K*rcdown.local ] && [ ! -e K00rcdown.local ] && mv $(ls K*rcdown.local) K00rcdown.local
+}
+
+case "$1" in
+    stop)
+	do_start
+        ;;
+    check)
+	do_check
+        ;;
+    restart|reload|force-reload)
+        echo "Error: argument '$1' not supported" >&2
+        exit 3
+        ;;
+    start|status)
+        # No-op
+        exit 0
+        ;;
+    *)
+        echo "Usage: $0 start|stop|check" >&2
+        exit 3
+        ;;
+esac

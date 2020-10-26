@@ -1,0 +1,2 @@
+# This scrapper requires internet connection
+scrapper_internet_required='true'

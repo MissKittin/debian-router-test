@@ -1,0 +1,5 @@
+# Compress networking.log
+if [ -e /tmp/.networking.log ]; then
+	echo '#!/bin/sh' > /tmp/.gzip_networking_log.sh; echo 'sleep 600' >> /tmp/.gzip_networking_log.sh; echo 'gzip -9 /tmp/.networking.log' >> /tmp/.gzip_networking_log.sh; echo 'rm /tmp/.gzip_networking_log.sh' >> /tmp/.gzip_networking_log.sh; echo 'exit 0' >> /tmp/.gzip_networking_log.sh; chmod 755 /tmp/.gzip_networking_log.sh
+	nohup /tmp/.gzip_networking_log.sh > /dev/null 2>&1 &
+fi

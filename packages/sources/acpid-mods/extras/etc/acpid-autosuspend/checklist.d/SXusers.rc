@@ -1,0 +1,5 @@
+# Logged users
+if last | grep 'still logged in' > /dev/null 2>&1; then
+	BREAK='true'
+	[ "${REASON}" = '' ] && REASON='user logged'
+fi

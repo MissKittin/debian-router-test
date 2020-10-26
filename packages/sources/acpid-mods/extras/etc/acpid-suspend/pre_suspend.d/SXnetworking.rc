@@ -1,0 +1,2 @@
+log 'stopping networking'
+/etc/init.d/networking stop

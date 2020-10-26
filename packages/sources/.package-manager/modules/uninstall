@@ -1,0 +1,24 @@
+#!/bin/sh
+# package/uninstall.sh automation
+# ${PACKAGES_DIR} from package-manager.sh
+[ "${PACKAGES_DIR}" = '' ] && exit 0
+
+if [ "$1" = '' ]; then
+	echo ' uninstall package-name'
+	exit 1
+fi
+
+if [ ! -e ${PACKAGES_DIR}/${1} ]; then
+	echo ' ! Package not exists'
+	exit 1
+fi
+
+if [ ! -e ${PACKAGES_DIR}/${1}/uninstall.sh ]; then
+	echo ' ! Package has no uninstall.sh'
+	exit 1
+fi
+
+[ -e ${PACKAGES_DIR}/${1}/extras-uninstall.sh ] && ${PACKAGES_DIR}/${1}/extras-uninstall.sh
+${PACKAGES_DIR}/${1}/uninstall.sh
+
+exit 0

@@ -1,0 +1,5 @@
+# Remove docs in /etc
+rm /etc/backupos_*.txt > /dev/null 2>&1
+
+# Compress /etc/README.TXT
+gzip -9 /etc/README.TXT &

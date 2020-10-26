@@ -1,0 +1,26 @@
+#!/bin/sh
+# Check installed extras
+# ${PACKAGES_DIR} from package-manager.sh
+[ "${PACKAGES_DIR}" = '' ] && exit 0
+
+echo ''
+for i in ${PACKAGES_DIR}/*; do
+	if [ -x $i/extras-status.sh ]; then
+		$i/extras-status.sh > /dev/null 2>&1
+		retVal=$?
+		if [ "$retVal" = '2' ]; then
+			echo -n ' [partially installed]        '
+			echo "$i" | sed -e 's\'"${PACKAGES_DIR}"'/\\g'
+		elif [ "$retVal" = '0' ]; then
+			echo -n ' [installed]     '
+			echo "$i" | sed -e 's\'"${PACKAGES_DIR}"'/\\g'
+		else
+			echo -n ' [not installed] '
+			echo "$i" | sed -e 's\'"${PACKAGES_DIR}"'/\\g'
+		fi
+		unset retVal
+	fi
+done
+echo ''
+
+exit 0

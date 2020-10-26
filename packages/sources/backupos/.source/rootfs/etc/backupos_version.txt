@@ -1,0 +1,5 @@
+BackupOS v1 26.02.2019-28.02.2019
+BackupOS v1.1 12.06.2020
+
+Kernel cmdline: rdinit=/sbin/init quiet loglevel=0 nodhcp network_ip=10.0.0 start_ip=10 netmask=255.255.255.0 telnet_password=mypassword
+Modprobe, ctty: https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/android-x86/android-x86-2.2-generic.iso

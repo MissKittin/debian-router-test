@@ -1,0 +1,12 @@
+#!/bin/sh
+# Custom daemon init script template
+# Copy this file, edit and chmod 755
+
+# Import library and wait for daemons (if needed)
+#. /usr/local/share/init-parallel/required_start.rc
+#required_start 'daemon1' 'daemon2'
+
+# Start daemon
+/etc/init.d/daemon3 start
+
+exit 0

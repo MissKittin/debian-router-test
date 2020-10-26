@@ -1,0 +1,7 @@
+# Check and correct the wake-on-lan feature on all NICs
+# and send logs to kernel log
+
+# usage: correct-wake-on-lan.sh wol_option
+# correct-wake-on-lan.sh without parameter disables wake-on-lan
+
+/usr/local/sbin/correct-wake-on-lan.sh g > /dev/null 2>&1 &

@@ -1,0 +1,13 @@
+# Configure sudo or set root password (13/21)
+if ${use_sudo} && [ ! "${username}" = '' ]; then
+	print_message 'configuring sudo' "${COLOR_SUCCESS}"
+
+	mkdir /usr/local/etc/${installer_config_dir}sudoers.d
+	${sudo_no_password} && echo "${username} ALL=NOPASSWD: ALL" > /usr/local/etc/${installer_config_dir}sudoers.d/${username} || echo "${username} ALL=PASSWD: ALL" > /usr/local/etc/${installer_config_dir}sudoers.d/${username}
+	echo 'Defaults !fqdn' > /usr/local/etc/${installer_config_dir}sudoers.d/nodns
+	ln -s /usr/local/etc/${installer_config_dir}sudoers.d/${username} /etc/sudoers.d/${username}
+	ln -s /usr/local/etc/${installer_config_dir}sudoers.d/nodns /etc/sudoers.d/nodns
+else
+	print_message 'set root password' "${COLOR_FAILED}"
+	passwd root
+fi

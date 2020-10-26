@@ -1,0 +1,32 @@
+# Send notify via phpmailer
+# 13.02.2019
+
+send_method_name='phpmailer'
+. ${home_dir}/sender.rc.cfg.d/phpmailer.rc
+
+send_by_phpmailer()
+{
+	if ${phpmailer__enabled}; then
+		case $2 in
+			'critical'|'medium')
+				# Don't spam
+				if send_check_notify '24' "${1}" "${2}" "${3}"; then
+					local output
+					if output="$(/usr/local/sbin/phpmailer.sh "${phpmailer__recipient}" "${phpmailer__subject_prefix}${1}" "${3} (${2})")"; then
+						log 'phpmailer: sended'
+					else
+						log "phpmailer: send error: ${output}"
+					fi
+				else
+					log 'phpmailer: mail was sent earlier'
+				fi
+			;;
+			*)
+				log 'phpmailer: importance too low'
+			;;
+		esac
+	else
+		log 'phpmailer: disabled in settings'
+	fi
+}
+send_methods="${send_methods} phpmailer"

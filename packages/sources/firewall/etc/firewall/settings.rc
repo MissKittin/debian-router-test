@@ -1,0 +1,14 @@
+# Commands
+iptables='iptables'
+ebtables='ebtables'
+ipset='ipset'
+
+# Configs
+config_files='firewall.rc forwarding.rc routing.rc'
+
+# Status sources
+status_firewall="${SETTINGS}/firewall.rc"
+status_routing="${SETTINGS}/routing.rc"
+
+# Network interfaces
+. $SETTINGS/networks.rc

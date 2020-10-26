@@ -1,0 +1,2 @@
+# User defined repos added by the bootstrap installer
+# (hint: add deb [trusted=yes] http://~~~ and remove [trusted=yes] after keys importing)

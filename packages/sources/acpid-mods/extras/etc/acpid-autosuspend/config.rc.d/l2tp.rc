@@ -1,0 +1,2 @@
+# VPN interfaces - L2TP/IPSec
+iface_l2tp='l2tp'

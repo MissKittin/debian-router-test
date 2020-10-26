@@ -1,0 +1,31 @@
+# Read args
+#for argv in ${@}; do case ${argv} in journal_workspace=*) journal_workspace=${argv#journal_workspace=}; ;; journal_log_file=*) journal_log_file=${argv#journal_log_file=}; ;; log_file=*) log_file=${argv#log_file=}; ;; path_event_temp=*) path_event_temp=${argv#path_event_temp=}; ;; esac; done; unset argv
+
+# Notify daemon's settings
+enabled='true' # true/false
+check_every='60' # seconds
+clear_environment='true' # true/false - re-exec daemon after ${clear_environment_every}
+clear_environment_every='1000' # number of loops
+rotate_log='true' # requires clear_environment='true'
+compress_log='true' # requires rotate_log='true'
+compress_log_command='gzip -9'
+
+# Default journal settings
+#[ "${journal_workspace}" = '' ] && journal_workspace='/var/run/notify-journal'
+#[ "${journal_log_file}" = '' ] && journal_log_file='/var/log/notify-journal.log'
+journal_workspace='/var/run/notify-journal'
+journal_log_file='/var/log/notify-journal.log'
+
+# Default logging settings
+#[ "${log_file}" = '' ] && log_file='/var/log/notify-daemon.log'
+log_file='/var/log/notify-daemon.log'
+
+# Default path for events' temps
+#[ "${path_event_temp}" = '' ] && path_event_temp='/var/tmp/.notify-temp'
+path_event_temp='/var/tmp/.notify-temp'
+
+# User-defined settings
+journal_workspace='/tmp/.rclocal_daemons_logs/.notify-journal'
+journal_log_file='/tmp/.rclocal_daemons_logs/.notify-journal.log'
+log_file='/tmp/.rclocal_daemons_logs/.notify-daemon.log'
+path_event_temp='/tmp/.rclocal_daemons_logs/.notify-temp'

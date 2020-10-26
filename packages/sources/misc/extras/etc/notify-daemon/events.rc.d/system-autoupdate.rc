@@ -1,0 +1,19 @@
+# Check if system-autoupdate.sh is not locked
+# 02.06.2019
+event_name='System autoupdate'
+
+check_systemautoupdate()
+{
+	if [ ! -e /tmp/.system-autoupdate-noupdate ]; then
+		log 'systemautoupdate: automatic update is enabled'
+		return 1
+	else
+		log 'systemautoupdate: automatic update is locked'
+		return 0
+	fi
+}
+send_notify_systemautoupdate()
+{
+	send_notify 'systemautoupdate' 'low' 'Automatic update is locked'
+}
+checklist="$checklist systemautoupdate"

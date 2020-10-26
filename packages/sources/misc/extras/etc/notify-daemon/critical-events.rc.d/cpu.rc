@@ -1,0 +1,29 @@
+# Check if CPU temperature is OK
+# 18.02.2019, 16.07.2020
+critical_event_name='CpuTemp'
+
+check_cputemp()
+{
+	local sensors_cpuMaxTemp='69'
+	local sensors_cpuLabel='CPU Temp'
+	local sensors_cpuField='3'
+
+	local output=`sensors | grep "${sensors_cpuLabel}:" | awk '{print $'"${sensors_cpuField}"'}' | tr -d '+'`
+	if [ "${output%.*}" -ge "${sensors_cpuMaxTemp}" ]; then
+		log 'cputemp: cpu too hot'
+		return 0
+	else
+		log 'cputemp: cpu temperature ok'
+		return 1
+	fi
+}
+send_notify_cputemp()
+{
+	send_notify 'cputemp' 'critical' 'CPU too hot'
+}
+do_critical_cputemp()
+{
+	log 'cputemp: sleeping now!'
+	echo -n 'mem' > /sys/power/state
+}
+critical_checklist="$critical_checklist cputemp"

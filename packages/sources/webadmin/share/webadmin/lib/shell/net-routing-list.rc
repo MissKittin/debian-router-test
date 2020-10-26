@@ -1,0 +1,74 @@
+# Routing listing library
+# Command stack: iptables, ip6tables
+# Optional command stack: route, brctl, ebtables, arp, ip
+
+case $1 in
+	'net-routing-list')
+		case $2 in
+			'route')
+				command -v route > /dev/null 2>&1 && route || echo '<span class="content_warning">Not installed!</span>'
+			;;
+			'route6')
+				command -v route > /dev/null 2>&1 && route -6 || echo '<span class="content_warning">Not installed!</span>'
+			;;
+			'brctl')
+				if command -v brctl > /dev/null 2>&1; then
+					print_details()
+					{
+						brctl showstp $1
+					}
+					INDICATOR=0
+					brctl show | grep 'br' | while read line; do
+						if [ "$INDICATOR" = 0 ]; then
+							INDICATOR=$((INDICATOR+1))
+						else
+							print_details $line
+						fi
+					done
+				else
+					echo '<span class="content_warning">Not installed!</span>'
+				fi
+			;;
+			'bonds')
+				echo '<span class="content_warning">Not implemented!</span>'
+			;;
+			'iptables')
+				echo 'Table: filter'; echo ''
+				iptables --table filter --list --verbose --numeric
+				echo ''; echo 'Table: nat'; echo ''
+				iptables --table nat --list --verbose --numeric
+				echo ''; echo 'Table: mangle'; echo ''
+				iptables --table mangle --list --verbose --numeric
+				echo ''; echo 'Table: raw'; echo ''
+				iptables --table raw --list --verbose --numeric
+			;;
+			'ip6tables')
+				echo 'Table: filter'; echo ''
+				ip6tables --table filter --list --verbose --numeric
+				echo ''; echo 'Table: nat'; echo ''
+				ip6tables --table nat --list --verbose --numeric
+				echo ''; echo 'Table: mangle'; echo ''
+				ip6tables --table mangle --list --verbose --numeric
+				echo ''; echo 'Table: raw'; echo ''
+				ip6tables --table raw --list --verbose --numeric
+			;;
+			'ebtables')
+				if command -v ebtables > /dev/null 2>&1; then
+					ebtables --table filter --list --Lmac2
+					echo ''; echo ''
+					ebtables --table nat --list --Lmac2
+					echo ''; echo ''
+					ebtables --table broute --list --Lmac2
+				else
+					echo '<span class="content_warning">Not installed!</span>'
+				fi
+			;;
+			'arp')
+				command -v arp > /dev/null 2>&1 && arp || echo '<span class="content_warning">Not installed!</span>'
+			;;
+			'ipv6-neighbor')
+				command -v ip > /dev/null 2>&1 && ip -6 neigh show || echo '<span class="content_warning">Not installed!</span>'
+			;;
+		esac
+	;;
+esac

@@ -1,0 +1,1 @@
+http://ftp.us.debian.org/debian/pool/main/n/ncurses/ncurses-base_6.1+20181013-2_all.deb

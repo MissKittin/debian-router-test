@@ -1,0 +1,2 @@
+# ipv4.rc & ipv6.rc configuration: ignore macs
+IP_IGNORE_MACS='c4:43:8f:c9:39:52 88:28:b3:37:ba:cc' # Huaweje

@@ -1,0 +1,18 @@
+# Insert block/allow port/protocol to server here
+
+# Default policy
+$iptables -P INPUT DROP
+$iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+$iptables -P OUTPUT ACCEPT
+
+# Import IP blacklist
+. $SETTINGS/firewall.rc.d/ip-blacklist.rc
+
+# Import permanently banned MACs
+. $SETTINGS/firewall.rc.d/permanently-banned.rc
+
+# Import ddos protection rules
+. $SETTINGS/firewall.rc.d/ddos.rc
+
+#################################
+

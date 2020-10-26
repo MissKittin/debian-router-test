@@ -1,0 +1,2 @@
+# Start system autoupdate daemon
+nohup /usr/local/sbin/system-autoupdate.sh ${rclocal_daemons_logs} > /dev/null 2>&1 &

@@ -1,0 +1,20 @@
+# webadmin session cleaner
+# 13.07.2020
+[ -e "${lib_dir}/libtimestamp.rc" ] && . ${lib_dir}/libtimestamp.rc
+event_name='Webadmin session cleaner'
+
+check_webadmin_sc()
+{
+	local webadmin_sc__php_bin='/usr/bin/php'
+
+	if notify_daemon_timestamp 'webadmin_sc' "${path_event_temp}/.notify-daemon_event__webadmin-sc.timestamp" '3600'; then
+		local webadmin_sc__beforeClean="$(ls -1q "$(${webadmin_sc__php_bin} -r 'echo ini_get("session.save_path");')" | wc -l)"
+		${webadmin_sc__php_bin} -d session.gc_probability=1 -d session.gc_divisor=1 -d session.gc_maxlifetime=86400 -r 'session_start(); session_destroy();' > /dev/null 2>&1
+		log "webadmin_sc: removed $((${webadmin_sc__beforeClean}-$(ls -1q "$(${webadmin_sc__php_bin} -r 'echo ini_get("session.save_path");')" | wc -l))) sessions"
+	else
+		log 'webadmin_sc: no action taken'
+	fi
+
+	return 1
+}
+checklist="$checklist webadmin_sc"

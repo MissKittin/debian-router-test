@@ -1,0 +1,2 @@
+log 'executing vbetool post'
+vbetool post

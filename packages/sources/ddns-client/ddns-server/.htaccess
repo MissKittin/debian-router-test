@@ -1,0 +1,15 @@
+# Fill two paths below
+#ErrorDocument 403 /404.php
+#ErrorDocument 404 /404.php
+
+# Deny access to saved data
+<FilesMatch ".txt">
+	Order Allow,Deny
+	Deny from All
+</FilesMatch>
+
+# Deny access to README.txt scrapper
+<FilesMatch "^(README\.txt|settings\.php)">
+	Order allow,deny
+	Deny from all
+</FilesMatch>

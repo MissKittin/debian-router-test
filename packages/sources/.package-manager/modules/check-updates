@@ -1,0 +1,44 @@
+#!/bin/sh
+# ${PACKAGES_DIR} from package-manager.sh
+[ "${PACKAGES_DIR}" = '' ] && exit 0
+
+# Set package repo url here
+REPO_URL='https://raw.githubusercontent.com/MissKittin/debian-router/master/packages/repo'
+WGET_OPTS='--no-check-certificate'
+
+if [ "${1}" = '--help' ] || [ "${1}" = '-h' ]; then
+	echo ' check-updates [--only-updates]'
+	exit 0
+fi
+
+if ! wget ${WGET_OPTS} -O- -q "${REPO_URL}/repo-test/repo-test.txt" > /dev/null 2>&1; then
+	echo ' ! Error connecting to the repository'
+	exit 1
+fi
+
+echo ''
+for i in ${PACKAGES_DIR}/.package-manager ${PACKAGES_DIR}/*; do
+	if [ ! "${i}" = "${PACKAGES_DIR}/*" ]; then
+		package_name="${i##*/}"
+		if [ -d "${i}" ]; then
+			if [ -e "${i}/VERSION.txt" ]; then
+				package_installed_version="$(cat "${i}/VERSION.txt")"
+				if package_repo_version="$(wget ${WGET_OPTS} -O- -q "${REPO_URL}/${package_name}/${package_name}-version.txt")"; then
+					if dpkg --compare-versions "${package_installed_version}" 'lt' "${package_repo_version}"; then
+						echo "U I| ${package_name} :: Exists: ${package_installed_version}, New: ${package_repo_version}"
+					else
+						[ "${1}" = '--only-updates' ] || echo "  I| ${package_name} :: Up to date: ${package_installed_version}"
+					fi
+				else
+					[ "${1}" = '--only-updates' ] || echo " E | ${package_name} :: local or obsolete"
+				fi
+			else
+				[ "${1}" = '--only-updates' ] || echo " ! | ${package_name} :: no VERSION.txt"
+			fi
+		fi
+	fi
+done
+echo ''
+
+echo 'OK'
+exit 0

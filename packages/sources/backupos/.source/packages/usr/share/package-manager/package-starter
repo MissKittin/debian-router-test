@@ -1,0 +1,19 @@
+#!/bin/sh
+print_none=true
+if [ -e /usr/share/packages ]; then
+	cd /usr/share/packages
+	for i in *; do
+		[ "$i" = '*' ] && break
+		if [ -d $i ]; then
+			cd $i
+			if [ -e start.sh ]; then
+				print_none=false
+				cat info.txt; echo -n ' '
+				./start.sh > /dev/null 2>&1
+			fi
+			cd ..
+		fi
+	done
+fi
+$print_none && echo '(none)'
+exit 0

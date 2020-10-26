@@ -1,0 +1,5 @@
+init-parallel queue
+
+How to use:
+1) in runlevel directory (rcS.d or rc2.d) link /etc/init.d/daemon to S01daemon
+2) or use TEMPLATE script.

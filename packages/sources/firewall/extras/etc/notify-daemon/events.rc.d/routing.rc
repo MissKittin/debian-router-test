@@ -1,0 +1,19 @@
+# Check routing
+# 19.02.2019
+event_name='Routing'
+
+check_routing()
+{
+	if /usr/local/sbin/firewall.sh routing-status > /dev/null 2>&1; then
+		log 'routing: routing ok'
+		return 1
+	else
+		log 'routing: routing fucked up'
+		return 0
+	fi
+}
+send_notify_routing()
+{
+	send_notify 'routing' 'medium' 'Routing fucked up'
+}
+checklist="$checklist routing"

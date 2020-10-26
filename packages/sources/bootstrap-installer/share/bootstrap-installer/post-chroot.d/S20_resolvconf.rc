@@ -1,0 +1,8 @@
+# Remove resolv.conf
+print_message 'removing resolv.conf' "${COLOR_INFO}"
+
+if [ -e './run/.resolv.conf' ]; then
+	rm ./run/.resolv.conf
+else
+	rm ./etc/resolv.conf
+fi

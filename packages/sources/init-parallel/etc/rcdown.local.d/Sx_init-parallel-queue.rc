@@ -1,0 +1,2 @@
+# init-parallel queue check
+[ -e /etc/init.d/ainit-parallel ] && /etc/init.d/ainit-parallel check

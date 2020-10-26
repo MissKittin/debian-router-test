@@ -1,0 +1,4 @@
+# Insert routing rules here
+
+# Default policy
+$iptables -P FORWARD DROP

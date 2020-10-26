@@ -1,0 +1,36 @@
+#!/bin/sh
+# ${PACKAGES_DIR} from package-manager.sh
+[ "${PACKAGES_DIR}" = '' ] && exit 0
+
+if [ "$1" = '' ]; then
+	echo ' add-package path/to/tarball.tar'
+	exit 1
+fi
+if [ ! -e "${1}" ]; then
+	echo ' ! Wrong path to tarball'
+	exit 1
+fi
+
+package_name="$(basename "$1")"
+package_name="${package_name%%.*}"
+
+if [ -e ${PACKAGES_DIR}/${package_name} ]; then
+	echo ' ! Package exists, run uninstall first.'
+	exit 1
+fi
+tar -tf "${1}" 2>&1 | while read line; do
+	if [ -e "${PACKAGES_DIR}/${line}" ]; then
+		echo ' ! Overwriting detected, aborting...'
+		exit 1
+	fi
+done
+
+echo -n " Unpacking ${package_name}..."
+if tar xf ${1} -C ${PACKAGES_DIR} > /dev/null 2>&1; then
+	echo ' [ OK ]'
+	echo " Now run package-manager install ${package_name}"
+	exit 0
+else
+	echo ' [Fail]'
+	exit 1
+fi

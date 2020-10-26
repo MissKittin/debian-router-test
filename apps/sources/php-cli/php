@@ -1,0 +1,25 @@
+#!/bin/sh
+
+if [ ! -e "$(dirname "$(readlink -f "${0}")")/php-cli.tar.gz" ]; then
+	echo 'Build PHP first'
+	exit 1
+fi
+
+if [ ! -e /tmp/.php-cli ]; then
+	tar xf $(dirname "$(readlink -f "${0}")")/php-cli.tar.gz -C /tmp
+
+	LD_LIBRARY_PATH=/tmp/.php-cli/lib /tmp/.php-cli/bin/php $@ &
+	PHP_PID="${!}"
+	trap 'kill ${PHP_PID}' INT
+	wait
+
+	while ps -A | grep php > /dev/null 2>&1; do
+		sleep 1
+	done
+
+	rm -r -f /tmp/.php-cli
+else
+	LD_LIBRARY_PATH=/tmp/.php-cli/lib /tmp/.php-cli/bin/php $@
+fi
+
+exit 0

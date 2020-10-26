@@ -1,0 +1,26 @@
+# Check if dpkg left the garbage in /etc
+# 11.06.2019
+event_name='dpkg rubbish'
+
+check_dpkg_rubbish()
+{
+	if find /etc | grep '.dpkg-dist' > /dev/null 2>&1; then
+		log 'dpkg_rubbish: trash in /etc'
+		return 0
+	elif find /etc | grep '.dpkg-old' > /dev/null 2>&1; then
+		log 'dpkg_rubbish: trash in /etc'
+		return 0
+	elif find /etc | grep '.dpkg-new' > /dev/null 2>&1; then
+		log 'dpkg_rubbish: trash in /etc'
+		return 0
+	elif find /etc | grep '.ucf-dist' > /dev/null 2>&1; then
+		log 'dpkg_rubbish: trash in /etc'
+		return 0
+	fi
+	return 1
+}
+send_notify_dpkg_rubbish()
+{
+	send_notify 'dpkg_rubbish' 'low' 'Trash in /etc'
+}
+checklist="$checklist dpkg_rubbish"

@@ -1,0 +1,25 @@
+#!/bin/sh -e
+### BEGIN INIT INFO
+# Provides:          networking ifupdown
+# Required-Start:    mountkernfs $local_fs urandom
+# Required-Stop:     $local_fs
+# Default-Start:     S
+# Default-Stop:      0 6
+# Short-Description: Raise network interfaces, mod.
+# Description:       Prepare /run/network directory, ifstate file and raise network interfaces, or take them down.
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+case "$1" in
+	'start')
+		log_action_msg_pre; echo 'Configuring network interfaces'
+		/etc/init.d/networking.old start > /tmp/.networking.log 2>&1 &
+		sleep 0.25
+	;;
+	*)
+		exec /etc/init.d/networking.old $@
+	;;
+esac
+
+exit 0

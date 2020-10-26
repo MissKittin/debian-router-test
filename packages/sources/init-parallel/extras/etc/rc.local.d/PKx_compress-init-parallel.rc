@@ -1,0 +1,2 @@
+# Compress init-parallel logs
+nohup /usr/local/sbin/init-parallel compress > /dev/null 2>&1 &

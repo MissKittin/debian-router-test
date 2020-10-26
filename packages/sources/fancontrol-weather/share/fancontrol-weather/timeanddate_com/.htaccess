@@ -1,0 +1,14 @@
+# Fill two paths below
+#ErrorDocument 403 /404.php
+#ErrorDocument 404 /404.php
+
+# Deny access to php_lib
+RewriteEngine On
+RewriteRule ^php_lib/?$ - [F,L]
+RewriteRule ^php_lib/* - [F,L]
+
+# Deny access to README.txt scrapper scrapper.rc VERSION.txt
+<FilesMatch "^(README\.txt|scrapper|scrapper\.rc|VERSION\.txt)">
+	Order allow,deny
+	Deny from all
+</FilesMatch>

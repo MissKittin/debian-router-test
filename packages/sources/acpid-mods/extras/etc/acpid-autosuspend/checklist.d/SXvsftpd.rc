@@ -1,0 +1,5 @@
+# vsftpd
+if [ "$(ps -A | grep vsftpd | wc -l)" -gt '1' ]; then
+	BREAK='true'
+	[ "${REASON}" = '' ] && REASON='vsftpd clients connected'
+fi

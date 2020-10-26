@@ -1,0 +1,4 @@
+# phpmailer settings
+server='http://your.webhost/phpmailer'
+user='username'
+password='password'

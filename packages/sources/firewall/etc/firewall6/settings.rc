@@ -1,0 +1,11 @@
+# Commands
+iptables='ip6tables'
+
+# Configs
+config_files='firewall.rc forwarding.rc routing.rc'
+
+# Status sources
+status_firewall="${SETTINGS}/firewall.rc"
+
+# Network interfaces
+. $SETTINGS/networks.rc

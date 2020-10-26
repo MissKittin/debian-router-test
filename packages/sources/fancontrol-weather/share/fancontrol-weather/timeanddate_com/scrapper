@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# Test php
+if command -v php > /dev/null 2>&1; then
+	if [ "${1}" = 'scrapper_test' ]; then
+		echo 'scrapper is working';
+		exit 0
+	fi
+	exec php -d allow_url_fopen=1 -d opcache.enable_cli=0 -d disable_functions= "$(dirname "${0}")/index.php" ${@}
+else
+	echo 'php is not installed';
+	exit 1
+fi

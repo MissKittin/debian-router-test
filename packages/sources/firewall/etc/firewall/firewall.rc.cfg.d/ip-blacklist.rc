@@ -1,0 +1,6 @@
+### Single addresses set
+# Filter PPTP scanners and bruteforce attacks
+#${ipset} add ${set_name_single} ADDRESS # comment
+
+### Multi addresses set
+#${ipset} add ${set_name_multi} ADDRESS/MASK # comment

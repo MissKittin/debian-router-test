@@ -1,0 +1,37 @@
+# Send notify on mail
+# 13.02.2019
+send_method_name='Mail'
+
+# Import configuration
+. $home_dir/sender-config.rc.d/mail.rc
+
+send_by_mail()
+{
+	if $mail__enabled; then
+		# Send only critical and medium importance messages
+		case $2 in
+			'critical'|'medium')
+				# GET does not recognize spaces
+				message=`echo $3 | tr ' ' '+'`
+
+				# Don't spam my email
+				if send_check_notify '24' "$1" "$2" "$3"; then
+					output=`notify-send-mail.sh \
+						"$mail__server" \
+						"$mail__user" \
+						"$mail__password" \
+						"$mail__recipient" \
+						"${mail__subject_prefix}${1}(${2})" \
+						"$message"`
+					[ "$output" = '' ] && log 'mail: sended' || log "mail: send error: $output"
+				fi
+			;;
+			*)
+				log 'mail: importance too low'
+			;;
+		esac
+	else
+		log 'mail: disabled in settings'
+	fi
+}
+send_methods="$send_methods mail"

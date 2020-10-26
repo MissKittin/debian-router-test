@@ -1,0 +1,21 @@
+#!/bin/sh
+
+if [ ! -e "$(dirname "$(readlink -f "${0}")")/leafpad.tar.gz" ]; then
+	echo 'Build leafpad first'
+	exit 1
+fi
+
+if [ ! -e /tmp/.leafpad ]; then
+	tar xf $(dirname "$(readlink -f "$0")")/leafpad.tar.gz -C /tmp
+	FONTCONFIG_FILE=/tmp/.leafpad/etc/fonts/fonts.conf LD_LIBRARY_PATH=/tmp/.leafpad/lib /tmp/.leafpad/bin/leafpad-bin $@ &
+
+	while ps -A | grep leafpad-bin > /dev/null 2>&1; do
+		sleep 1
+	done
+
+	rm -r -f /tmp/.leafpad
+else
+	FONTCONFIG_FILE=/tmp/.leafpad/etc/fonts/fonts.conf LD_LIBRARY_PATH=/tmp/.leafpad/lib /tmp/.leafpad/bin/leafpad-bin $@
+fi
+
+exit 0

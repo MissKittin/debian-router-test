@@ -1,0 +1,35 @@
+#!/bin/sh
+# ${PACKAGES_DIR} from package-manager.sh
+[ "${PACKAGES_DIR}" = '' ] && exit 0
+
+if [ "$1" = '' ]; then
+	echo ' remove-package package-name'
+	exit 1
+fi
+
+if [ ! -e ${PACKAGES_DIR}/${1} ]; then
+	echo ' ! Package not exists'
+	exit 1
+fi
+
+if [ ! -e ${PACKAGES_DIR}/${1}/status.sh ]; then
+	echo ' ! Package has no status.sh'
+	exit 1
+fi
+
+
+${PACKAGES_DIR}/${1}/status.sh
+retVal="$?"
+if [ "${retVal}" = 2 ]; then
+	echo ' ! Package is broken, aborting...'
+	exit 2
+fi
+if [ ! "${retVal}" = 1 ]; then
+	echo ' ! Uninstall package first'
+	exit 1
+fi
+
+echo -n " Removing package ${1}..."
+rm -r -f ${PACKAGES_DIR}/${1} && echo ' [ OK ]' || echo ' [Fail]'
+
+exit 0

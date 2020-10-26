@@ -1,0 +1,36 @@
+# autosuspend daemon config
+# achtung! activate_at_min is delayed 1 minute
+# calendar is disabled if oneshot config is present
+
+# on/off switch
+daemon_enabled=true
+
+# log file
+log_file="${1}"
+
+# Operating mode
+continuous_mode=false
+
+# Clock
+activate_at_hour=03
+activate_at_min=30
+deactivate_at_hour=06
+deactivate_at_min=30
+
+# Oneshot suspend file
+oneshot_file='/tmp/.acpid-autosuspend-oneshot.rc'
+oneshot_file_owner='root'
+oneshot_file_mode='644'
+
+# Suspend command
+suspend_command='/usr/local/sbin/acpid-suspend.sh'
+
+# Import programmed calendar
+[ -e "${config_dir}/calendar.rc" ] && . ${config_dir}/calendar.rc
+
+# Import config.rc.d
+for config_i in ${config_dir}/config.rc.d/*.rc; do
+	[ "${config_i}" = "${config_dir}/config.rc.d/*.rc" ] && break
+	. ${config_i}
+done
+unset config_i

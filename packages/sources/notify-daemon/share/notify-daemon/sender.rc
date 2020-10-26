@@ -1,0 +1,76 @@
+# Notify daemon's send part
+# Don't touch this!
+
+# Initialize methods list
+dlog "sender: send_methods='${send_methods}' :: clear"
+send_methods=''
+dlog "sender: send_methods='${send_methods}'"
+
+# Import send methods
+dlog "sender: [ ls $home_dir/sender.rc.d/*.rc = '' ] || for..."
+[ "`ls $home_dir/sender.rc.d/*.rc 2>/dev/null`" = '' ] || for i in $home_dir/sender.rc.d/*.rc; do
+	dlog "sender: import ${i}"
+	. $i
+done
+
+# Check if notify was sended
+send_check_notify()
+{
+	dlog "sender send_check_notify(): [ -e ${journal_log_file} ] || return 1"
+	[ -e $journal_log_file ] || return 1
+	now_date=`date '+%s'`
+	dlog "sender send_check_notify(): now_date=${now_date}"
+	dlog "sender send_check_notify(): touch /tmp/.ku__awjegomac"
+	touch /tmp/.ku__awjegomac # PIE_______ BASH
+	dlog "sender send_check_notify(): cat ${journal_log_file} | while read line; do"
+	cat $journal_log_file | while read line; do
+		dlog "sender send_check_notify(): eval ${line}"
+		eval ${line}
+		dlog "sender send_check_notify(): if [ ${2} = ${from} ] && [ ${3} = ${importance} ] && [ ${4} = ${message} ] = ?"
+		if [ "$2" = "$from" ] && [ "$3" = "$importance" ] && [ "$4" = "$message" ]; then
+			dlog "if [ ${2} = ${from} ] && [ ${3} = ${importance} ] && [ ${4} = ${message} ] = true"
+			date_to_timestamp=`date --date="$date $time" +"%s"`
+			input_hour="$1"; hour_to_minute=$((input_hour*60)); minute_to_seconds=$((hour_to_minute*60))
+			date_to_timestamp_plus_24h=$((date_to_timestamp+minute_to_seconds))
+			dlog "sender send_check_notify(): if [ ! ${now_date} -ge ${date_to_timestamp_plus_24h} ] = ? (default: false)"
+			if [ ! "$now_date" -ge "$date_to_timestamp_plus_24h" ]; then
+				dlog "sender send_check_notify(): if [ ! ${now_date} -ge ${date_to_timestamp_plus_24h} ] = true"
+				log "sender: notify sended in last $input_hour hour(s), blocking"
+				dlog "sender send_check_notify(): rm /tmp/.ku__awjegomac"
+				rm /tmp/.ku__awjegomac
+				dlog "sender send_check_notify(): break"
+				break
+			fi
+		else
+			dlog "sender send_check_notify(): if [ ${2} = ${from} ] && [ ${3} = ${importance} ] && [ ${4} = ${message} ] = false"
+			unset date
+			unset time
+			unset id
+			unset from
+			unset importance
+			unset message
+		fi
+	done
+	dlog "sender send_check_notify(): [ -e /tmp/.ku__awjegomac ] = ?"
+	if [ -e /tmp/.ku__awjegomac ]; then
+		dlog "sender send_check_notify(): [ -e /tmp/.ku__awjegomac ] = true"
+		dlog "sender send_check_notify(): rm /tmp/.ku__awjegomac"
+		rm /tmp/.ku__awjegomac
+		dlog "sender send_check_notify(): return 0"
+		return 0
+	else
+		dlog "sender send_check_notify(): [ -e /tmp/.ku__awjegomac ] = false"
+		dlog "sender send_check_notify(): return 1"
+		return 1
+	fi
+}
+
+# Send function
+send_notify()
+{
+	dlog "sender send_notify(): for i in ${send_methods}; do"
+	for i in $send_methods; do
+		dlog "sender send_notify(): send_by_${i} ${1} ${2} ${3}"
+		send_by_$i "$1" "$2" "$3"
+	done
+}

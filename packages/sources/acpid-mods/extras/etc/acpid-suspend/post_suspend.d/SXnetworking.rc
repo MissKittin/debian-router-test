@@ -1,0 +1,2 @@
+log 'starting networking'
+/etc/init.d/networking start

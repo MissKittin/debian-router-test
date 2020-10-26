@@ -1,0 +1,9 @@
+# Mail sender config
+mail__enabled='false' # true/false
+
+mail__server='http://your-server.com/mail_sender'
+mail__user='username'
+mail__password='password'
+
+mail__recipient='your-email@example.com'
+mail__subject_prefix='Router+-+' # "+" is a space

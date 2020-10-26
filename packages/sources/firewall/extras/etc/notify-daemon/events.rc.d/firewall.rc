@@ -1,0 +1,19 @@
+# Check if firewall is OK
+# 18.02.2019
+event_name='Firewall'
+
+check_firewall()
+{
+	if /usr/local/sbin/firewall.sh status > /dev/null 2>&1; then
+		log 'firewall: firewall loaded'
+		return 1
+	else
+		log 'firewall: firewall stopped'
+		return 0
+	fi
+}
+send_notify_firewall()
+{
+	send_notify 'firewall' 'critical' 'Firewall compromised'
+}
+checklist="$checklist firewall"

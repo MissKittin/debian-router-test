@@ -1,0 +1,24 @@
+# General
+mode='local' # local or remote (remote requires wget)
+server='https://your.webhost/weather/' # remote mode only
+scrapper='timeanddate_com' # local mode only
+[ "$1" = '' ] && log_file='/var/log/fancontrol-weather.log' || log_file="${1}"
+
+# Temperature
+limit_temperature=23
+winter_wait_cycles=3 # 1 cycle == 30 min, 0 cycles - disable
+
+# Clock
+activate_at_hour=12
+deactivate_at_hour=23
+
+# wget options
+wget_ping_host='http://ftp.debian.org/' # remote mode/if local scrapper requires internet
+wget_ping_options="${wget_ping_host}"
+wget_options='--no-check-certificate' # remote mode only
+
+# timeanddate.com scrapper settings and command line
+country='yourcountry'
+location='yourlocation'
+scrapper_local_args="${country} ${location}" # local scrappers
+scrapper_remote_args="country=${country}&location=${location}" # remote scrappers

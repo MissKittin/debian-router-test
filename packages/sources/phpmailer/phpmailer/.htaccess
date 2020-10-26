@@ -1,0 +1,9 @@
+# Fill two paths below
+#ErrorDocument 403 /404.php
+#ErrorDocument 404 /404.php
+
+# Deny access to README.txt settings.php
+<FilesMatch "^(README\.txt|settings\.php)">
+	Order allow,deny
+	Deny from all
+</FilesMatch>

@@ -1,0 +1,4 @@
+# phpmailer sender config
+phpmailer__enabled='false' # true/false
+phpmailer__recipient='your@mail.eg'
+phpmailer__subject_prefix='Router - '

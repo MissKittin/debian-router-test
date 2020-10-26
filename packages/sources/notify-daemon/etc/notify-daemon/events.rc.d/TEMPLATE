@@ -1,0 +1,21 @@
+# Description
+# [ -e "${lib_dir}/libtimestamp.rc" ] && . ${lib_dir}/libtimestamp.rc # if event will use a timestamp
+event_name='Pretty name'
+
+check_NAME()
+{
+	# if notify_daemon_timestamp 'NAME' "${path_event_temp}/.notify-daemon_event__TIMESTAMP-NAME.timestamp" 'period-in-seconds'; then # if event will use a timestamp
+	if CONDITION; then
+		log 'NAME: exception not occured'
+		return 1
+	else
+		log 'NAME: an exception occured'
+		return 0
+	fi
+}
+send_notify_NAME()
+{
+	# Importances highest -> lowest: critical high medium low
+	send_notify 'NAME' 'IMPORTANCE' 'Your notify content'
+}
+checklist="$checklist NAME"

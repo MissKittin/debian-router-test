@@ -1,0 +1,4 @@
+if test x"$HAS_CTTY" != x"Yes"; then
+	echo 'Starting...'
+	echo; echo
+fi

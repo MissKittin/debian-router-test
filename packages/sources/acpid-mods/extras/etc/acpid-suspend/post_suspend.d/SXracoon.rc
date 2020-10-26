@@ -1,0 +1,4 @@
+if $RACOON__ENABLED; then
+	log 'starting racoon'
+	/etc/init.d/racoon start
+fi

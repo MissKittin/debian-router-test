@@ -1,0 +1,9 @@
+# Start or debug notify daemon
+if [ "${notify_daemon_debug}" = '' ]; then
+	#nohup /usr/local/sbin/notify-daemon.sh daemon journal_workspace=${rclocal_daemons_logs}/.notify-journal journal_log_file=${rclocal_daemons_logs}/.notify-journal.log log_file=${rclocal_daemons_logs}/.notify-daemon.log path_event_temp=${rclocal_daemons_logs}/.notify-temp > /dev/null 2>&1 &
+	nohup /usr/local/sbin/notify-daemon.sh daemon > /dev/null 2>&1 &
+else
+	echo ' :: rc.local.d: notify-daemon.rc debug mode enabled'
+	#/usr/local/sbin/notify-daemon.sh daemon journal_workspace=${rclocal_daemons_logs}/.notify-journal journal_log_file=${rclocal_daemons_logs}/.notify-journal.log log_file=${rclocal_daemons_logs}/.notify-daemon.log path_event_temp=${rclocal_daemons_logs}/.notify-temp
+	/usr/local/sbin/notify-daemon.sh daemon
+fi

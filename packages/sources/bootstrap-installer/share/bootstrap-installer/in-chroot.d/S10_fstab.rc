@@ -1,0 +1,21 @@
+# Configure fstab (3/21)
+print_message 'generating fstab' "${COLOR_INFO}"
+
+for arg in ${@}; do
+	case ${arg} in
+		root=*)
+			part=${arg#root=}
+		;;
+	esac
+done
+unset arg
+
+disk="${part::-1}"
+${fstab_use_uuid} && part="UUID=$(lsblk -no UUID ${part})"
+
+echo "${part} / ext4 auto,suid,nodev,exec,noatime,nodiratime,async 0 1" > /usr/local/etc/${installer_config_dir}fstab
+${tmp_as_tmpfs} && echo 'tmp /tmp tmpfs auto,nosuid,nodev,noexec,noatime,nodiratime,mode=1777 0 0' >> /usr/local/etc/${installer_config_dir}fstab
+${tmp_as_tmpfs} && echo 'tmp /var/tmp tmpfs auto,nosuid,nodev,noexec,noatime,nodiratime 0 0' >> /usr/local/etc/${installer_config_dir}fstab
+
+rm /etc/fstab
+ln -s /usr/local/etc/${installer_config_dir}fstab /etc/fstab

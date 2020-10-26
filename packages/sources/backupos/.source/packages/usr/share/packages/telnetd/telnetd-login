@@ -1,0 +1,71 @@
+#!/bin/sh
+
+# Import colors
+. /etc/init-colors
+
+# Parse kernel command line
+for i in $(cat /proc/cmdline); do
+	case $i in
+		telnet_password=*)
+			passwd="${i#telnet_password=}"
+		;;
+	esac
+done
+
+# Check if console is locked
+if [ -e /tmp/.telnet-locked ]; then
+	echo -e " ${BLUE}[${BRED}!!${BLUE}] ${BRED}Telnet locked${NOCOLOR}"
+	sleep 1
+	exit 0
+fi
+
+# Authentication
+if [ ! "$passwd" = '' ]; then
+	echo -n ' Password: '
+	read -s tpasswd
+	echo ''
+	if [ ! "$passwd" = "$tpasswd" ]; then
+		echo -e " ${BRED}Wrong password${NOCOLOR}"
+		sleep 1
+		exit 0
+	fi
+	echo ''
+fi
+unset passwd; unset tpasswd
+unset telnet_password
+
+# Lock console
+touch /tmp/.telnet-locked
+
+# telnet menu extension
+telnet_menu=false
+if [ -e /sbin/telnet-menu ]; then
+	echo -ne " ${BLUE}[${SEABLUE}??${BLUE}] ${GREEN}Menu or console? ([m]/c) ${NOCOLOR}"
+	read answer
+	if [ ! "${answer}" = 'c' ]; then
+		telnet_menu=true
+		env - /sbin/telnet-menu
+	fi
+fi
+
+# Standard console
+if ! ${telnet_menu}; then
+	# Splash
+	echo -e " ${BLUE}[${SEABLUE}::${BLUE}] ${GREEN}Running shell${NOCOLOR}"
+	echo; echo -e " ${GREEN}Do not close window!${NOCOLOR}"
+	echo -e " ${GREEN}If you want close session, type ${SEABLUE}exit${NOCOLOR}"
+	echo -e " ${GREEN}reboot to main OS, type ${SEABLUE}boot_to_main${NOCOLOR}"
+	echo -e " ${GREEN}halt, type ${SEABLUE}halt${NOCOLOR}"
+	if [ -e /usr/bin/mc ]; then
+		echo; echo -e " ${GREEN}Midnight Commander: ${SEABLUE}mc${YELLOW}"
+	fi
+
+	# Shell
+	env - ENV=/etc/profile /bin/sh
+fi
+
+# Release console
+rm /tmp/.telnet-locked
+
+# Close connection
+exit 0

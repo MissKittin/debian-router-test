@@ -1,0 +1,23 @@
+# Check if SSH is running
+# 18.02.2019
+event_name='SSH'
+
+check_ssh()
+{
+	if [ ! -e '/etc/init.d/ssh' ]; then
+		log 'ssh: not installed'
+		return 1
+	fi
+	if /etc/init.d/ssh status > /dev/null 2>&1; then
+		log 'ssh: daemon running'
+		return 1
+	else
+		log 'ssh: daemon stopped'
+		return 0
+	fi
+}
+send_notify_ssh()
+{
+	send_notify 'ssh' 'high' 'SSH daemon stopped'
+}
+checklist="$checklist ssh"

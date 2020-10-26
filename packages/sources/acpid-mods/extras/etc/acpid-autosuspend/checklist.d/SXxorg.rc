@@ -1,0 +1,5 @@
+# X11 sessions
+if [ -e /tmp/.X*-lock ]; then
+	BREAK='true'
+	[ "${REASON}" = '' ] && REASON='X11 session is running'
+fi

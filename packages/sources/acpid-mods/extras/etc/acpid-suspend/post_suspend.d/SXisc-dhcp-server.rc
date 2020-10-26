@@ -1,0 +1,4 @@
+if $ISC_DHCPD__ENABLED; then
+	log 'starting isc-dhcp-server'
+	/etc/init.d/isc-dhcp-server start
+fi

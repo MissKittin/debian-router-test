@@ -1,0 +1,18 @@
+#!/bin/sh
+if [ -e /usr/share/packages ]; then
+	cd /usr/share/packages
+	for i in *; do
+		[ "$i" = '*' ] && break
+		if [ -d $i ]; then
+			cd $i
+			if [ -e unpack.sh ]; then
+				cat info.txt; echo -n ' '
+				./unpack.sh > /dev/null 2>&1
+			fi
+			cd ..
+		fi
+	done
+else
+	echo -n '(none)'
+fi
+exit 0

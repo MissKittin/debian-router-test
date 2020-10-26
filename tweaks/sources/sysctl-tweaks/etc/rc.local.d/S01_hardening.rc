@@ -1,0 +1,19 @@
+# Enable hardening options
+# https://blog.frehi.be/2019/01/30/linux-security-hardening-recommendations/
+
+# By mounting the /proc filesystem with the
+# hidepid=2 option, users cannot see the PIDs of
+# processes by other users in /proc, and hence these
+# processes also become invisible when using tools
+# like top and ps
+mount -o remount,hidepid=2 /proc
+
+# /proc/kallsyms contains information about how
+# the kernel's memory is laid out. With this
+# information it becomes easier to attack the
+# kernel itself, so hiding this information is
+# always a good idea. It should be noted though
+# that attackers can get this information from
+# other sources too, such as from the System.map
+# files in /boot
+chmod 400 /proc/kallsyms

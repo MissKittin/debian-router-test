@@ -1,0 +1,4 @@
+#!/bin/sh
+modprobe ext4 > /dev/null 2>&1
+modprobe crc32c > /dev/null 2>&1
+exec mount -t ext4 $@

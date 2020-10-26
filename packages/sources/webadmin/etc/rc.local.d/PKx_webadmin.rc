@@ -1,0 +1,48 @@
+# Configure non-privileged user below
+webadmin_user='user'
+webadmin_bin='/usr/local/sbin/webadmin.sh'
+webadmin_log="$webadmin_bin log=${rclocal_daemons_logs} append2log="
+
+# Start-as-user function
+webadmin_start_as_user()
+{
+	su ${webadmin_user} -c "$@"
+}
+
+# webadmin.log and webadmin.pid belongs to non-privileged user (webadmin.pid temporary)
+touch $($webadmin_bin log=${rclocal_daemons_logs} print_logfile_location)
+chown ${webadmin_user}:${webadmin_user} $($webadmin_bin log=${rclocal_daemons_logs} print_logfile_location)
+touch $($webadmin_bin log=${rclocal_daemons_logs} print_pidfile_location)
+chown ${webadmin_user}:${webadmin_user} $($webadmin_bin log=${rclocal_daemons_logs} print_pidfile_location)
+${webadmin_log}rc.local:___webadmin___logs___created
+
+# Create directory for sessions
+mountpoint -q /var/lib/php && mkdir /var/lib/php/sessions
+mountpoint -q /var/lib/php && chmod 1733 /var/lib/php/sessions
+${webadmin_log}rc.local:___/var/lib/php/sessions___created
+
+# Allow non-privileged user (only if mounted as tmpfs)
+mountpoint -q /var/lib/php && chmod 1773 /var/lib/php/sessions
+mountpoint -q /var/lib/php && chown root:${webadmin_user} /var/lib/php/sessions
+${webadmin_log}rc.local:___/var/lib/php/sessions___privileges___corrected
+
+# Start HTTP server
+webadmin_start_as_user "nohup $webadmin_bin log=${rclocal_daemons_logs} use_authbind > /dev/null 2>&1 &"
+sleep 1
+
+# Lock webadmin.pid
+chown root:root $($webadmin_bin log=${rclocal_daemons_logs} print_pidfile_location)
+${webadmin_log}rc.local:___webadmin.pid___locked
+
+# PHP preload
+${webadmin_log}rc.local:___starting___preload
+wget -O- -q http://localhost/lib/opcache.php?compile&autocompile > ${rclocal_daemons_logs}/.webadmin-preload.log 2>&1
+${webadmin_log}rc.local:___preload___ended
+gzip -9 ${rclocal_daemons_logs}/.webadmin-preload.log
+${webadmin_log}rc.local:___preload___log___compressed
+
+# Clear rc.local environment
+unset webadmin_user
+unset webadmin_bin
+unset webadmin_log
+unset webadmin_start_as_user

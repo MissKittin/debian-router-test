@@ -1,0 +1,24 @@
+# acpid-choice.sh functions
+
+# define functions here
+click_1()
+{
+	acpid_choice_beep 2
+
+	# Execute rtcwake suspend after power button click
+	## acpid-patch parameter not needed anymore
+	/usr/local/sbin/acpid-suspend.sh
+}
+click_2()
+{
+	acpid_choice_beep 3
+
+	# Shutdown
+	/sbin/halt
+}
+
+# if clicked more than needed, execute default function
+click_last()
+{
+	click_2
+}

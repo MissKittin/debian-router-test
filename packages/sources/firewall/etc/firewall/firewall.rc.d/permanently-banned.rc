@@ -1,0 +1,89 @@
+# Standard mode: function is imported in firewall.sh by firewall.rc
+#  ! ebtables='path-to/ebtables' in firewall/settings.rc required
+#  ! `permanently_banned enable --mode=append` should be executed after `permanently_banned flush-ebtables`
+
+# Debug mode:
+# SETTINGS='/usr/local/etc/firewall'; permanently_banned_define_only=true; ebtables='ebtables'
+# . /usr/local/etc/firewall/firewall.rc.d/permanently-banned.rc
+# permanently_banned selected_parameter
+
+# Define function
+permanently_banned()
+{
+	# Auto perm ban
+	# 10.08.2019
+	# Insert mode 26.05.2020
+	# Removed iptables 02.06.2020
+	# Script as function, --logical-in $LAN 10.06.2020
+
+	local CONFIG="${SETTINGS}/firewall.rc.cfg.d/permanently-banned.rc"
+
+	local insert_mode='-I'
+	[ "$2" = '--mode=append' ] && local insert_mode='-A'
+	print_S1()
+	{
+		echo -n "$1"
+	}
+
+	if [ "$ebtables" = '' ]; then
+		echo ' ! $ebtables is not defined'
+		return 1
+	fi
+	if [ ! -e "$CONFIG" ]; then
+		echo " ! $CONFIG not exists"
+		return 1
+	fi
+
+	case $1 in
+		'enable')
+			cat $CONFIG | while read line; do
+				if [ ! $(print_S1 $line) = '#' ]; then
+					# LAN
+					$ebtables $insert_mode FORWARD --logical-in $LAN -s $(print_S1 $line) -j DROP
+					$ebtables $insert_mode INPUT --logical-in $LAN -s $(print_S1 $line) -j DROP # replaces iptables rules
+				fi
+			done
+		;;
+		'disable')
+			cat $CONFIG | while read line; do
+				if [ ! $(print_S1 $line) = '#' ]; then
+					# LAN
+					$ebtables -D FORWARD --logical-in $LAN -s $(print_S1 $line) -j DROP
+					$ebtables -D INPUT --logical-in $LAN -s $(print_S1 $line) -j DROP # replaces iptables rules
+				fi
+			done
+		;;
+		'flush-ebtables')
+			$ebtables -t filter -P INPUT ACCEPT
+			$ebtables -t filter -P FORWARD ACCEPT
+			$ebtables -t filter -P OUTPUT ACCEPT
+			$ebtables -t nat -P PREROUTING ACCEPT
+			$ebtables -t nat -P OUTPUT ACCEPT
+			$ebtables -t nat -P POSTROUTING ACCEPT
+			$ebtables -t broute -P BROUTING ACCEPT
+			$ebtables -t filter -F
+			$ebtables -t nat -F
+			$ebtables -t broute -F
+			$ebtables -t filter -X
+			$ebtables -t nat -X
+			$ebtables -t broute -X
+		;;
+		*)
+			echo 'Auto perm ban'
+			echo " Config file: $CONFIG"
+			echo ' usage: permanently_banned enable [--mode=append] | disable | flush-ebtables'
+		;;
+	esac
+}
+
+# Check if define-only flag is set
+if [ "$permanently_banned_define_only" = '' ]; then
+	# Flush ebtables
+	permanently_banned flush-ebtables
+
+	# Exec permanently-banned function
+	permanently_banned enable --mode=append
+
+	# Remove function
+	unset permanently_banned; unset print_S1
+fi

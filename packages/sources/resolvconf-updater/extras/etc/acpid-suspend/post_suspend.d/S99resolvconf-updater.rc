@@ -1,0 +1,2 @@
+# Resume resolvconf-updater
+[ -e '/tmp/.resolvconf-updater.pause' ] && rm /tmp/.resolvconf-updater.pause

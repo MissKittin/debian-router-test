@@ -1,0 +1,5 @@
+# Deny access to README.txt
+<FilesMatch "^(README\.txt)">
+	Order allow,deny
+	Deny from all
+</FilesMatch>

@@ -1,0 +1,7 @@
+# Define forwarded ports/protocols here
+
+# Default policy
+$iptables -P FORWARD DROP
+
+#################################
+

@@ -1,0 +1,108 @@
+# Notify daemon's journal manager & parser
+# All log() needs to be forwarded to null due to parsers, that are run by non-root
+# Don't touch this!
+
+# workspace
+if [ ! -e $journal_workspace ]; then
+	log 'journal-manager: workspace not exists, creating' > /dev/null 2>&1
+	mkdir -p $journal_workspace
+fi
+if [ ! -e $journal_log_file ]; then
+	log 'journal-manager: log not exists, creating' > /dev/null 2>&1
+	touch $journal_log_file
+fi
+
+# functions
+journal_log()
+{
+	echo "`date '+date="%Y-%m-%d" time="%H:%M:%S"'` $@" >> $journal_log_file 2>&1
+}
+journal_parse_database()
+{
+	[ "`ls $home_dir/journal-manager.rc.d/*.rc 2>/dev/null`" = '' ] || \
+		for i in $home_dir/journal-manager.rc.d/*.rc; do
+			. $i
+			if set | grep parse_to_$1 > /dev/null 2>&1; then
+				[ "`ls $journal_workspace`" = '' ] || for i in $journal_workspace/*; do
+					. $i
+					parse_to_$1 "$id" "$from" "$importance" "$message"
+				done
+				break
+			fi
+		done
+}
+check_notify_exists()
+{
+	dlog "journal-manager check_notify_exists(): cd ${journal_workspace}"
+	pwd=`pwd`; cd $journal_workspace
+	dlog "journal-manager check_notify_exists(): [ `ls` = '' ] || for..."
+	[ "`ls`" = '' ] && \
+		exists='false' || \
+		for i in *; do
+			exists='true'
+			dlog "journal-manager check_notify_exists(): import ./${i}"
+			. ./$i
+			if [ ! "$1" = "$from" ]; then
+				dlog "journal-manager check_notify_exists(): exists=false by arg[1] != from"
+				exists='false'
+			else
+				if [ ! "$2" = "$importance" ]; then
+					dlog "journal-manager check_notify_exists(): exists=false by arg[2] != importance"
+					exists='false'
+				else
+					if [ ! "$3" = "$message" ]; then
+						dlog "journal-manager check_notify_exists(): exists=false by arg[3] != message"
+						exists='false'
+					fi
+				fi
+			fi
+			dlog "journal-manager check_notify_exists(): $exists && break"
+			$exists && break
+		done
+	dlog "journal-manager check_notify_exists(): cd ${pwd}"
+	cd $pwd; unset pwd
+
+	dlog 'journal-manager check_notify_exists(): if $exists = ?'
+	if $exists; then
+		log 'journal-manager: notify exists' > /dev/null 2>&1
+		dlog "journal-manager check_notify_exists(): return 0"
+		return 0
+	else
+		dlog "journal-manager check_notify_exists(): return 1"
+		return 1
+	fi
+}
+journal_add()
+{
+	dlog "journal-manager journal_add(): if ! check_notify_exists $1, $2, $3 = ? (default: false)"
+	if ! check_notify_exists "$1" "$2" "$3"; then
+		dlog "journal-manager journal_add(): if ! check_notify_exists $1, $2, $3 = true"
+
+		dlog "journal-manager journal_add(): cd ${journal_workspace}"
+		pwd=`pwd`; cd $journal_workspace
+		id=0; [ "`ls`" = '' ] || for i in *; do
+			[ "$i" -gt "$id" ] && id=$i
+		done; id=$((id+1))
+		dlog "journal-manager journal_add(): id=${id}"
+		dlog "journal-manager journal_add(): cd ${pwd}"
+		cd $pwd; unset pwd
+
+		echo "id='$id'" > $journal_workspace/$id
+		echo "from='$1'" >> $journal_workspace/$id
+		echo "importance='$2'" >> $journal_workspace/$id
+		echo "message='$3'" >> $journal_workspace/$id
+
+		dlog "journal-manager journal_add(): journal_log id=${id} from=${1} importance=${2} message=${3}"
+		journal_log 'id="'"$id"'" from="'"$1"'" importance="'"$2"'" message="'"$3"'"'
+	fi
+}
+journal_del()
+{
+	pwd=`pwd`; cd $journal_workspace
+	[ "`ls`" = '' ] || for i in *; do
+		. ./$i
+		[ "$1" = "$id" ] && rm $i
+		unset id
+	done
+	cd $pwd; unset pwd
+}

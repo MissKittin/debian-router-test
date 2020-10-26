@@ -1,0 +1,5 @@
+# Run correct-wake-on-lan.sh (only if enabled in rc.local.d)
+if [ -e /usr/local/etc/rc.local.d/PS*_correct-wake-on-lan.rc ]; then
+	log 'importing rc.local.d correct-wake-on-lan.rc'
+	. /usr/local/etc/rc.local.d/PS*_correct-wake-on-lan.rc
+fi

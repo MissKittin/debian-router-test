@@ -1,0 +1,17 @@
+#!/bin/sh
+modprobe ext4 > /dev/null 2>&1
+modprobe crc32c > /dev/null 2>&1
+mkdir /main
+for a in a b c d e f g h i; do
+	for b in 1 2 3 4 5 6 7 8 9; do
+		if mount /dev/sd${a}${b} /main > /dev/null 2>&1; then
+			[ -e /main/.boot-to-backupos ] && rm /main/.boot-to-backupos
+			sync
+			umount /main
+			echo ' Now you can close this window'
+			echo ' See you in SSH!'
+			reboot -f
+		fi
+	done
+done
+exit 0

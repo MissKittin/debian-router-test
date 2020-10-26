@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# Run K*.rc sequence in /usr/local/etc/rcdown.local.d
+for i in $(find /usr/local/etc/rcdown.local.d/ -name "K*" | sort); do
+	. ${i}
+done
+
+exit 0

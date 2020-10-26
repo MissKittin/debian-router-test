@@ -1,0 +1,5 @@
+# Program your calendar here
+if [ "$(LANG=C date +%A)" = 'Saturday' ]; then
+	log 'calendar: saturday rule activated'
+	wakeup_at='11:50'
+fi

@@ -1,0 +1,2 @@
+# Do not query DNS
+Defaults !fqdn

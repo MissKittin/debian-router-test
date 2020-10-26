@@ -1,0 +1,2 @@
+log 'starting ntpdate-daemon.sh in background'
+nohup /usr/local/sbin/ntpdate-daemon.sh > /dev/null 2>&1 &

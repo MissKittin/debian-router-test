@@ -1,0 +1,2 @@
+# Start autosuspend daemon
+nohup /usr/local/sbin/acpid-autosuspend.sh "${rclocal_daemons_logs}/.acpid-autosuspend.log" > /dev/null 2>&1 &

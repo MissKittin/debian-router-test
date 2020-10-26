@@ -1,0 +1,51 @@
+# (12/21)
+# Configure IceWM/ROX
+if [ "${desktop_env}" = 'icewm' ]; then
+	print_message 'configuring IceWM' "${COLOR_INFO}"
+
+	mkdir /home/${username}/.icewm
+	chown ${username}:${username} /home/${username}/.icewm
+	echo "rox -p $(cat /etc/hostname)" > /home/${username}/.icewm/startup
+	chown ${username}:${username} /home/${username}/.icewm/startup
+	chmod 755 /home/${username}/.icewm/startup
+	echo 'exec icewm-session' > /home/${username}/.xinitrc
+	chown ${username}:${username} /home/${username}/.xinitrc
+fi
+
+# Configure XFCE4
+if [ "${desktop_env}" = 'xfce' ]; then
+	print_message 'configuring XFCE4' "${COLOR_INFO}"
+
+	mkdir -p /usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d
+	echo '[Allow Everything Dammit]' > /usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/allow_everything.pkla
+	echo "Identity=unix-group:${username}" >> /usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/allow_everything.pkla
+	echo 'Action=*' >> /usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/allow_everything.pkla
+	echo 'ResultAny=yes' >> /usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/allow_everything.pkla
+	echo 'ResultInactive=yes' >> /usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/allow_everything.pkla
+	echo 'ResultActive=yes' >> /usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/allow_everything.pkla
+	ln -s /usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/allow_everything.pkla /etc/polkit-1/localauthority/50-local.d/allow_everything.pkla
+	echo 'exec xfce4-session' > /home/${username}/.xinitrc
+	chown ${username}:${username} /home/${username}/.xinitrc
+fi
+
+# Configure ubuntu desktop
+if [ "${desktop_env}" = 'ubuntu-desktop' ]; then
+	print_message 'configuring Ubuntu Desktop' "${COLOR_INFO}"
+
+	if [ -d '/etc/NetworkManager/conf.d' ]; then
+		print_message 'tweaking NetworkManager...' "${COLOR_INFO}"
+		mkdir -p /usr/local/etc/${installer_config_dir}NetworkManager/conf.d
+		echo '' > /usr/local/etc/${installer_config_dir}NetworkManager/conf.d/10-globally-managed-devices.conf
+		ln -s /usr/local/etc/${installer_config_dir}NetworkManager/conf.d/10-globally-managed-devices.conf /etc/NetworkManager/conf.d/10-globally-managed-devices.conf
+
+		print_message 'enabling systemd dns resolver...' "${COLOR_INFO}"
+		#ln -s /lib/systemd/system/systemd-resolved.service /etc/systemd/system/dbus-org.freedesktop.resolve1.service
+		#ln -s /lib/systemd/system/systemd-resolved.service /etc/systemd/system/multi-user.target.wants/systemd-resolved.service
+		systemctl enable systemd-resolved.service
+	fi
+
+	if ${use_sudo} && [ ! "${username}" = '' ]; then
+		print_message "${username} is administrator..." "${COLOR_INFO}"
+		usermod -a -G sudo ${username}
+	fi
+fi

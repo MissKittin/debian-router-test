@@ -1,0 +1,14 @@
+# Configure and install bootloader (19/21)
+if ${install_grub}; then
+	print_message 'installing bootloader' "${COLOR_INFO}"
+
+	mkdir -p /usr/local/etc/${installer_config_dir}default
+	cp -rfp /etc/default/grub /etc/default/grub.old
+	mv /etc/default/grub /usr/local/etc/${installer_config_dir}default/grub
+	ln -s /usr/local/etc/${installer_config_dir}default/grub /etc/default/grub
+	sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=1/g' /usr/local/etc/${installer_config_dir}default/grub
+	echo 'GRUB_HIDDEN_TIMEOUT_QUIET=false' >> /usr/local/etc/${installer_config_dir}default/grub
+	echo 'GRUB_TIMEOUT_STYLE=countdown' >> /usr/local/etc/${installer_config_dir}default/grub
+	grub-install ${disk}
+	update-grub
+fi

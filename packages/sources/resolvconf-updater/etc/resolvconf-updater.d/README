@@ -1,0 +1,8 @@
+resolvconf-updater queue
+
+*.top.conf will be added at the top of resolv.conf, *.bottom.conf at the bottom.
+If there are no *.top.conf files, addresses provided by the dhcp client will be used.
+Hint: *.top.conf files will be added in reverse order.
+
+WARNING: libc limitation of nameservers (MAXNS) is 3 by default.
+However dnsmasq can use all nameservers (except loopback).

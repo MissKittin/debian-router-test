@@ -1,0 +1,13 @@
+# Program your calendar here
+#if [ "$(LANG=C date +%A)" = 'Saturday' ]; then
+#	if [ "${calendar_logged}" = '' ]; then
+#		log 'calendar: saturday rule activated: 23:00-06:30'
+#		calendar_logged=true
+#	fi
+#	activate_at_hour=23
+#	activate_at_min=00
+#	deactivate_at_hour=06
+#	deactivate_at_min=30
+#else
+#	unset calendar_logged
+#fi

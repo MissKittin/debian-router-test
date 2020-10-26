@@ -1,0 +1,4 @@
+if $HOSTAPD__ENABLED; then
+	log 'starting hostapd'
+	/etc/init.d/hostapd start
+fi

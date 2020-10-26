@@ -1,0 +1,6 @@
+PPTPD__ENABLED=false
+if /etc/init.d/pptpd status > /dev/null 2>&1; then
+	log 'stopping pptpd'
+	/etc/init.d/pptpd stop
+	PPTPD__ENABLED=true
+fi

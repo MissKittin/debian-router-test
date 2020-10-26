@@ -1,0 +1,24 @@
+# Notify daemon's check-event part
+# Don't touch this!
+
+# Initialize checklist
+dlog "events: checklist='${checklist}' :: clean"
+checklist=''
+dlog "events: checklist='${checklist}'"
+
+# Check events' temps
+dlog "events: [ ! -e ${path_event_temp} ] = ? (default: false)"
+if [ ! -e $path_event_temp ]; then
+	log 'events: temp directory not exists, creating' > /dev/null 2>&1
+	dlog "mkdir -p ${path_event_temp}"
+	mkdir -p $path_event_temp
+fi
+
+# Import events
+dlog "events: [ ls ${home_dir}/events.rc.d/*.rc = '' ] || import"
+[ "`ls $home_dir/events.rc.d/*.rc 2>/dev/null`" = '' ] && \
+	log 'events: no events defined' || \
+	for i in $home_dir/events.rc.d/*.rc; do
+		dlog "events: import ${i}"
+		. $i
+	done

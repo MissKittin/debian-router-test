@@ -1,0 +1,2 @@
+log 'syncing filesystems'
+sync

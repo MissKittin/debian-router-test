@@ -1,0 +1,5 @@
+# Proftpd
+if [ "$(ps -A | grep 'proftpd' | wc -l)" -gt '1' ]; then
+	BREAK='true'
+	[ "${REASON}" = '' ] && REASON='Proftpd clients connected'
+fi

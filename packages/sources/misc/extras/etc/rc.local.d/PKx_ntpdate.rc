@@ -1,0 +1,3 @@
+# Sync clock
+# ${rclocal_daemons_logs} hardcoded inside
+nohup /usr/local/sbin/ntpdate-daemon.sh > /dev/null 2>&1 &

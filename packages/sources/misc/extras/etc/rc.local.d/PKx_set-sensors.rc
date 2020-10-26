@@ -1,0 +1,6 @@
+# Apply /etc/sensors.d configs
+sensors -s
+
+# Set case fan speed
+echo 1 > /sys/class/hwmon/hwmon1/pwm2_enable
+echo 240 > /sys/class/hwmon/hwmon1/pwm2 # ~1600RPM

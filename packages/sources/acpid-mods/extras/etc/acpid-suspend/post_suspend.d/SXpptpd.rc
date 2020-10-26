@@ -1,0 +1,4 @@
+if $PPTPD__ENABLED; then
+	log 'starting pptpd'
+	/etc/init.d/pptpd start
+fi

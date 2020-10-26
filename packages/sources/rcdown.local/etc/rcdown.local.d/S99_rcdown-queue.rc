@@ -1,0 +1,2 @@
+# rcdown.local queue check
+[ -e /etc/init.d/rcdown.local ] && /etc/init.d/rcdown.local check

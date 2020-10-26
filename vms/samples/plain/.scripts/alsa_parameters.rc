@@ -1,0 +1,12 @@
+# qemu audio device
+cmd_snd='-soundhw hda'
+
+# Tune-up qemu audio
+export QEMU_AUDIO_DRV='alsa'
+export QEMU_AUDIO_DAC_FIXED_FREQ='48000'
+export QEMU_AUDIO_DAC_TRY_POLL='0'
+export QEMU_AUDIO_ADC_FIXED_FREQ='48000'
+export QEMU_AUDIO_ADC_TRY_POLL='0'
+export QEMU_AUDIO_TIMER_PERIOD='1000'
+export QEMU_ALSA_DAC_BUFFER_SIZE='2048'
+export QEMU_ALSA_DAC_PERIOD_SIZE='1024'

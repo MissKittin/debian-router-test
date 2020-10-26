@@ -1,0 +1,20 @@
+. /etc/init-colors
+
+export HOME='/home'
+export PS1="${GREEN}\H${BLUE}:${GREEN}\w${BLUE}#${NOCOLOR} "
+export TERM='linux'
+
+init_colors_unset=true
+. /etc/init-colors
+unset init_colors_unset
+
+alias halt="poweroff -f"
+alias reboot="reboot -f"
+
+PATH=''
+for i in /usr/local/bin /usr/local/sbin /usr/bin /usr/sbin /bin /sbin; do
+	[ -e ${i} ] && export PATH="${PATH}:${i}"
+done
+unset i
+
+[ -e $HOME ] || mkdir -p $HOME; cd $HOME

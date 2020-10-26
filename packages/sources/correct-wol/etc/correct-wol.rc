@@ -1,0 +1,3 @@
+# Configure WOL correction
+ENABLED='true'
+WOL_OPTION='g'

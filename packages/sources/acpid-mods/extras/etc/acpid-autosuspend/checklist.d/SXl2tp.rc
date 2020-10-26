@@ -1,0 +1,5 @@
+# L2TP
+if ifconfig | grep "${iface_l2tp}" > /dev/null 2>&1; then
+	BREAK='true'
+	[ "${REASON}" = '' ] && REASON='L2TP clients connected'
+fi

@@ -1,0 +1,15 @@
+# Remove /etc/init
+rm -r -f /etc/init
+rm /sbin/init
+rmdir /sbin > /dev/null 2>&1
+
+# Set shell
+echo -e " ${BLUE}[${SEABLUE}::${BLUE}] ${GREEN}Running shell${YELLOW}"
+
+# Save boot time to kernel
+echo 'BackupOS has been loaded' > /dev/kmsg
+
+# Jump to shell
+while true; do
+	env - ENV=/etc/profile /bin/sh
+done

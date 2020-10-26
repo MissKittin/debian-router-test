@@ -1,0 +1,36 @@
+# Standard mode: script is imported in firewall.sh by firewall.rc
+#  ! ipset='path-to/ipset' in firewall/settings.rc required
+
+# Debug mode:
+# SETTINGS='/usr/local/etc/firewall'; ipset='ipset'
+# . /usr/local/etc/firewall/firewall.rc.d/ip-blacklist.rc
+
+if [ "$ipset" = '' ]; then
+	echo ' ! $ipset is not defined'
+else
+	# Define sets name
+	set_name_single='ip-blacklist-single'
+	set_name_multi='ip-blacklist-multi'
+
+	# Flush and create ip-blacklist sets
+	${ipset} list | grep '^Name:' | while read set; do
+		${ipset} destroy $(echo "${set}" | awk '{print $2}')
+	done; unset set
+	${ipset} create ${set_name_single} hash:ip
+	${ipset} create ${set_name_multi} hash:net
+
+	# Apply rules
+	. ${SETTINGS}/firewall.rc.cfg.d/ip-blacklist.rc
+
+	# Enable logs
+	${iptables} -A INPUT -i $WAN -m set --match-set ${set_name_single} src -j LOG --log-level info --log-prefix '[firewall] [ip blacklist s] '
+	${iptables} -A INPUT -i $WAN -m set --match-set ${set_name_multi} src -j LOG --log-level info --log-prefix '[firewall] [ip blacklist m] '
+
+	# Attach sets to iptables
+	${iptables} -A INPUT -i $WAN -m set --match-set ${set_name_single} src -j DROP
+	${iptables} -A INPUT -i $WAN -m set --match-set ${set_name_multi} src -j DROP
+
+	# Clear
+	unset set_name_single
+	unset set_name_multi
+fi

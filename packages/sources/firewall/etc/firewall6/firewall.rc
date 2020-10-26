@@ -1,0 +1,11 @@
+# Insert block/allow port/protocol to server here
+
+# Default policy
+$iptables -P INPUT DROP
+$iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+$iptables -P OUTPUT ACCEPT
+
+# IPv6 uses ICMPv6 for MAC address resolution
+$iptables -A INPUT -p icmpv6 -j ACCEPT
+
+#################################

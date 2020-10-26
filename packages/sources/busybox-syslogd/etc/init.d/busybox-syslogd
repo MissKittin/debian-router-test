@@ -1,0 +1,61 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          busybox-syslogd-dr
+# Required-Start:    hostname
+# Required-Stop:
+# Default-Start:     S
+# Default-Stop:
+# Short-Description: Run busybox syslogd
+### END INIT INFO
+
+# Options
+PIDFILE='/var/run/busybox-syslogd.pid'
+DAEMON='/bin/busybox'
+LOG='/tmp/.busybox-syslog_messages'
+[ -e /var/log/busybox-syslog ] && LOG='/var/log/busybox-syslog'
+DAEMON_OPTS="syslogd -n -O $LOG"
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+. /lib/lsb/init-functions
+
+case "$1" in
+	'start')
+		log_daemon_msg 'Starting busybox syslog' 'syslogd'
+		if start-stop-daemon --start --quiet --background --make-pidfile --pidfile $PIDFILE --exec $DAEMON -- $DAEMON_OPTS; then
+			while [ ! -e $LOG ]; do
+				sleep 0.1
+			done
+			chown root:adm $LOG
+			chmod 640 $LOG
+			log_end_msg 0
+		else
+			log_end_msg 1
+		fi
+	;;
+	'stop')
+		log_daemon_msg 'Stopping busybox syslog' 'syslogd'
+		if [ -e $PIDFILE ]; then
+			start-stop-daemon --stop --quiet --pidfile $PIDFILE && rm $PIDFILE
+			log_end_msg $?
+		else
+			log_end_msg 1
+		fi
+	;;
+	'status')
+		status_of_proc -p $PIDFILE $DAEMON "busybox syslogd" && exit 0 || exit $?
+	;;
+	'zip')
+		if [ -e "$LOG" ]; then
+			log_action_msg_pre; echo 'Zipping busybox syslogd log...'
+			[ -e "${LOG}.gz" ] && rm ${LOG}.gz
+			gzip -9 $LOG
+		fi
+	;;
+	*)
+		echo 'busybox-syslogd start|stop|status|zip'
+		exit 1
+	;;
+esac
+
+exit 0

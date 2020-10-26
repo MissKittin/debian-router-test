@@ -1,0 +1,1 @@
+https://github.s3.amazonaws.com/downloads/linux-static/linux-static-i386/mc-4.8.0-pre2-git30-04-2011.tar.xz

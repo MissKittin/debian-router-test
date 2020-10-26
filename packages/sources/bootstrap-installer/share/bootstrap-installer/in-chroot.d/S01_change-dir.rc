@@ -1,0 +1,2 @@
+print_message 'going to the root' "${COLOR_INFO}"
+cd /

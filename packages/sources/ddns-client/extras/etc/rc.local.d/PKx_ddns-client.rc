@@ -1,0 +1,2 @@
+# Start fancontrol-weather daemon
+/usr/local/etc/init.d/ddns-client.sh start "${rclocal_daemons_logs}/.ddns-client.log" > /dev/null 2>&1 &

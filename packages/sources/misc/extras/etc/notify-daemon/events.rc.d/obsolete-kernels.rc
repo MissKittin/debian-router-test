@@ -1,0 +1,39 @@
+# Check for obsolete kernels
+# 16.09.2019, 27.02.2020 (timestamp file path), 14.07.2020 (timestamp library)
+event_name='Obsoleted kernels'
+[ -e "${lib_dir}/libtimestamp.rc" ] && . ${lib_dir}/libtimestamp.rc
+
+check_obsolete_kernels()
+{
+#	# Initialize timestamp file
+#	[ -e $path_event_temp/.notify-daemon_event__obsolete-kernels.timestamp ] && obsolete_kernels__create_timestamp=false || obsolete_kernels__create_timestamp=true
+#	# Custom check time: 12 hours (43200 sec) -> $((obsolete_kernels__file_timestamp + 43200))
+#	[ -e $path_event_temp/.notify-daemon_event__obsolete-kernels.timestamp ] || echo "obsolete-kernels event begin timestamp $(date '+%d.%m.%Y %H:%M:%S')" >> $path_event_temp/.notify-daemon_event__obsolete-kernels.timestamp
+#	obsolete_kernels__file_timestamp=$(date -r $path_event_temp/.notify-daemon_event__obsolete-kernels.timestamp '+%s') # get timestamp
+#
+#	# If need update timestamp
+	if notify_daemon_timestamp 'obsolete-kernels' "${path_event_temp}/.notify-daemon_event__obsolete-kernels.timestamp" '43200'; then
+#	if $obsolete_kernels__create_timestamp || [ $((obsolete_kernels__file_timestamp + 43200)) -lt $(date '+%s') ]; then
+#		echo "obsolete-kernels event new timestamp $(date '+%d.%m.%Y %H:%M:%S')" >> $path_event_temp/.notify-daemon_event__obsolete-kernels.timestamp
+#
+		obsolete_kernels__result=$(apt list --manual-installed | grep 'local' | grep 'linux-image')
+		if [ "$obsolete_kernels__result" = '' ]; then
+			log 'obsolete-kernels: no obsolete kernels found'
+			return 1
+		else
+			log 'obsolete-kernels: obsolete kernels found'
+			return 0
+		fi
+	else
+		# shut up
+		log 'obsolete-kernels: my time has not come yet'
+		return 1
+	fi
+}
+send_notify_obsolete_kernels()
+{
+	apt list --manual-installed | grep 'local' | grep 'linux-image' | while read kernel_version; do
+		send_notify 'obsolete-kernels' 'low' "Kernel $(echo -n "$kernel_version" | sed 's\/.*\\' | sed 's/linux-image-//g') is obsolete" 
+	done
+}
+checklist="$checklist obsolete_kernels"

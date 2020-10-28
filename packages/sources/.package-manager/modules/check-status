@@ -3,24 +3,35 @@
 # ${PACKAGES_DIR} from package-manager.sh
 [ "${PACKAGES_DIR}" = '' ] && exit 0
 
+broken='0'
+installed='0'
+not_installed='0'
+
 echo ''
 for i in ${PACKAGES_DIR}/*; do
+	[ "${i}" = "${PACKAGES_DIR}/*" ] && break
 	if [ -x $i/status.sh ]; then
 		$i/status.sh > /dev/null 2>&1
 		retVal=$?
 		if [ "$retVal" = '2' ]; then
 			echo -n ' [broken]        '
 			echo "$i" | sed -e 's\'"${PACKAGES_DIR}"'/\\g'
+			broken="$((broken+1))"
 		elif [ "$retVal" = '0' ]; then
 			echo -n ' [installed]     '
 			echo "$i" | sed -e 's\'"${PACKAGES_DIR}"'/\\g'
+			installed="$((installed+1))"
 		else
 			echo -n ' [not installed] '
 			echo "$i" | sed -e 's\'"${PACKAGES_DIR}"'/\\g'
+			not_installed="$((not_installed+1))"
 		fi
 		unset retVal
 	fi
 done
+echo ''
+
+echo "Installed: ${installed}, Not installed: ${not_installed}, Broken: ${broken}"
 echo ''
 
 exit 0

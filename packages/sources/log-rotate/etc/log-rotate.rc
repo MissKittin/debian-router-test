@@ -1,0 +1,9 @@
+# log-rotate.sh configuration
+LOG='/var/log/log-rotate.log'
+LOG_DATE_FORMAT='%Y-%m-%d %H:%M:%S' 
+
+DATE_FORMAT='%Y-%m-%d'
+MOVE_LOGS_TO='' # empty - disabled
+LOGS_TO_ROTATE="
+	/var/log/syslog.log
+"

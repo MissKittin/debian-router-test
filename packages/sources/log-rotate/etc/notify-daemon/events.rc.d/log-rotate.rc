@@ -1,0 +1,27 @@
+# log-rotate.sh event
+# 02.11.2020
+[ -e "${lib_dir}/libtimestamp.rc" ] && . ${lib_dir}/libtimestamp.rc
+event_name='log-rotate'
+
+check_log_rotate()
+{
+	local log_rotate_every='604800' # seconds
+	local log_rotate_bin='/usr/local/sbin/log-rotate.sh'
+
+	local log_no_rotate='false'
+	[ ! -e "${path_event_temp}/.notify-daemon_event__log-rotate.timestamp" ] && local log_no_rotate='true'
+
+	if notify_daemon_timestamp 'log_rotate' "${path_event_temp}/.notify-daemon_event__log-rotate.timestamp" "${log_rotate_every}"; then
+		if ${log_no_rotate}; then
+			log 'log_rotate: first loop - no action taken'
+		else
+			log 'log_rotate: starting...'
+			${log_rotate_bin} &
+		fi
+	else
+		log 'log_rotate: no action taken'
+	fi
+
+	return 1
+}
+checklist="$checklist log_rotate"

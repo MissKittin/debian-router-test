@@ -1,0 +1,24 @@
+# PXE NAS installer splash
+clear
+
+cat << EOF
+
+ PXE NAS
+
+    ------------
+    | TUTORIAL |
+    ------------
+
+    1) Select service (arrow up, down)
+    2) Press <ENTER>
+    3) Configure service
+    4) Go to step 1
+    5) Select Exit
+
+
+
+      Press <ENTER> to continue
+
+EOF
+
+read enter

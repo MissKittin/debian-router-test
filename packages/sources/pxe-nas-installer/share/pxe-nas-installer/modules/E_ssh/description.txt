@@ -1,0 +1,4 @@
+
+
+      Connect to the console via network (OpenBSD SSH)
+

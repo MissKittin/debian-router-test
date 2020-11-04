@@ -1,0 +1,42 @@
+clear
+packages_to_install='xfce4 xfce4-terminal mousepad xserver-xorg xserver-xorg-legacy xinit dbus-x11'
+
+if [ "${menu_module_path[menu_selected_option]}" = '' ]; then
+	module_dir="${SHARE_DIR}/modules/${1}"
+else
+	module_dir="${menu_module_path[menu_selected_option]}"
+fi
+
+if [ "${apt_lists_updated}" = '' ]; then
+	while ! apt-get update; do
+		echo 'Updating failed, retrying...'
+		sleep 2
+	done
+	apt_lists_updated='true'
+fi
+
+while ! apt-get install --no-install-recommends -y ${packages_to_install}; do
+	echo 'Installing failed, retrying...'
+	sleep 2
+done
+
+pwd="$(pwd)"
+cd /home
+for i in *; do
+	[ "${i}" = '*' ] && break
+	if cd ./${i} > /dev/null 2>&1; then
+		tar xf ${module_dir}/config.tar.gz
+		chown -R $(stat -c %u .):$(stat -c %g .) ./.config
+		cd ..
+	fi
+done
+if cd /root; then
+	tar xf ${module_dir}/config.tar.gz
+fi
+cd "${pwd}"
+unset pwd
+
+rm -r -f "${module_dir}"
+
+unset module_dir
+unset packages_to_install

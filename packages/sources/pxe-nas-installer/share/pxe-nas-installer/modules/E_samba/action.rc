@@ -1,0 +1,53 @@
+# TODO: add and passwd user name from input
+clear
+packages_to_install='samba'
+
+if [ "${menu_module_path[menu_selected_option]}" = '' ]; then
+	module_dir="${SHARE_DIR}/modules/${1}"
+else
+	module_dir="${menu_module_path[menu_selected_option]}"
+fi
+
+if [ "${apt_lists_updated}" = '' ]; then
+	while ! apt-get update; do
+		echo 'Updating failed, retrying...'
+		sleep 2
+	done
+	apt_lists_updated='true'
+fi
+
+while ! apt-get install --no-install-recommends -y ${packages_to_install}; do
+	echo 'Installing failed, retrying...'
+	sleep 2
+done
+
+pwd="$(pwd)"
+cd /
+tar xf ${module_dir}/config.tar.gz
+cd "${pwd}"
+unset pwd
+
+echo ''; echo -n 'Change share name: '
+read share_answer
+if [ ! "${share_answer}" = '' ]; then
+	sed -i 's/libraries/'"${share_answer}"'/g' /etc/samba/smb.conf
+	sed -i 's/comment = Libraries/comment = '"${share_answer}"'/g' /etc/samba/smb.conf
+else
+	echo 'Share name: libraries'
+fi
+unset share_answer
+
+/etc/init.d/smbd stop
+/etc/init.d/nmbd stop
+
+echo ''; echo 'Change password to share (for user):'
+echo -ne 'wait...\r'; smbpasswd user
+echo ''
+
+/etc/init.d/smbd start
+/etc/init.d/nmbd start
+
+rm -r -f "${module_dir}"
+
+unset module_dir
+unset packages_to_install

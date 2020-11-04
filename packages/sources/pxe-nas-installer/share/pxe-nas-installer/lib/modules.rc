@@ -1,0 +1,28 @@
+# Modules functions
+
+# Read modules
+modules_read()
+{
+	local module
+	for module in ${INSTALL_DIR}/share/pxe-nas-installer/modules/E*; do
+		if [ -e "${module}/title.txt" ]; then
+			menu_options+=("$(cat ${module}/title.txt)")
+			menu_items=$((menu_items+1))
+
+			# for description
+			menu_module_path+=("${module}")
+		fi
+	done
+}
+
+# Import module code
+modules_import()
+{
+	local module
+	for module in ${INSTALL_DIR}/share/pxe-nas-installer/modules/E*; do
+		if [ "$(cat ${module}/title.txt)" = "${menu_options[$menu_selected_option]}" ]; then
+			. ${module}/action.rc
+			break
+		fi
+	done
+}

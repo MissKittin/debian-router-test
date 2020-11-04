@@ -1,0 +1,31 @@
+clear
+packages_to_install='locales'
+
+if [ "${menu_module_path[menu_selected_option]}" = '' ]; then
+	module_dir="${SHARE_DIR}/modules/${1}"
+else
+	module_dir="${menu_module_path[menu_selected_option]}"
+fi
+if [ "${apt_lists_updated}" = '' ]; then
+	while ! apt-get update; do
+		echo 'Updating failed, retrying...'
+		sleep 2
+	done
+	apt_lists_updated='true'
+fi
+
+while ! apt-get install --no-install-recommends -y dialog; do
+	echo 'Installing failed, retrying...'
+	sleep 2
+done
+while ! apt-get install --no-install-recommends -y ${packages_to_install}; do
+	echo 'Installing failed, retrying...'
+	sleep 2
+done
+
+dpkg-reconfigure ${packages_to_install}
+
+rm -r -f "${module_dir}"
+
+unset module_dir
+unset packages_to_install

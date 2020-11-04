@@ -1,0 +1,62 @@
+#!/bin/bash
+# PXE NAS package installer
+# 16-22.10.2020
+
+# Menu description mod:
+# lib/menu.rc line 68
+# lib/modules.rc line 13
+
+# Check root
+if [ ! "$(whoami)" = 'root' ]; then
+	echo 'Root required'
+	exit 1
+fi
+
+# Hardcoded settings
+INSTALL_DIR='/usr/local'
+SHARE_DIR="${INSTALL_DIR}/share/pxe-nas-installer"
+
+# Import libraries
+[ "${1}" = '' ] && . ${SHARE_DIR}/lib/splash.rc
+. ${SHARE_DIR}/lib/menu.rc
+. ${SHARE_DIR}/lib/modules.rc
+
+# Help
+if [ "${1}" = '--help' ] || [ "${1}" = '-h' ]; then
+	echo ' pxe-nas-installer [service-name] [--no-apt-update]'
+	exit 0
+fi
+
+# Automatic install
+if [ ! "${1}" = '' ]; then
+	[ "${2}" = '--no-apt-update' ] && apt_lists_updated='true'
+
+	if [ ! -e "${SHARE_DIR}/modules/${1}" ]; then
+		echo "Service ${1} not defined"
+		exit 1
+	fi
+
+	echo "Installing $(cat "${SHARE_DIR}/modules/${1}/title.txt") service"
+	. ${SHARE_DIR}/modules/${1}/action.rc
+
+	exit 0
+fi
+
+# Render menu
+menu_splash_banner=' PXE NAS'
+while true; do
+	menu_items=0
+	menu_options=()
+	menu_module_path=()
+
+	modules_read
+	if [ "${menu_items}" = '0' ]; then
+		echo 'Error! No modules defined'
+		exit 1
+	fi
+	menu $((menu_items-1))
+
+	modules_import
+done
+
+exit 0

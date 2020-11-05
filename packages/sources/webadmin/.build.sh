@@ -124,8 +124,6 @@ ${do_chown} && chown root:root ./share/webadmin/net-ifaces/index.php
 chmod 644 ./share/webadmin/net-ifaces/index.php
 ${do_chown} && chown root:root ./share/webadmin/net-ifaces/shell.sh
 chmod 755 ./share/webadmin/net-ifaces/shell.sh
-${do_chown} && chown root:root ./share/webadmin/MODULES_VERSION.TXT
-chmod 644 ./share/webadmin/MODULES_VERSION.TXT
 ${do_chown} && chown root:root ./share/webadmin/net-ap
 chmod 755 ./share/webadmin/net-ap
 ${do_chown} && chown root:root ./share/webadmin/net-ap/DEPRECATED.TXT

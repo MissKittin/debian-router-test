@@ -6,11 +6,6 @@ cd lib/range_icons
 [ -e index.php ] && rm index.php
 ln -s ../prevent-index.php index.php
 
-echo 'console'
-cd ../console
-chmod 755 check-command-stack.sh
-ln -s ../prevent-index.php index.php
-
 echo 'favicon'
 cd ../favicon
 [ -e index.php ] && rm index.php
@@ -29,34 +24,11 @@ ln -s ../prevent-index.php index.php
 echo 'superuser'
 chmod 750 ./superuser.sh
 
-echo 'themes'
-cd ../themes
-ln -s ../prevent-index.php index.php
-
-echo 'themes/bright'
-cd bright
-ln -s index.min.php index.php
-
-echo 'themes/dark'
-cd ../dark
-ln -s index.min.php index.php
-
 echo '01_internet-info'
-cd ../../../login-plugins/01_internet-info
+cd ../../login-plugins/01_internet-info
 [ -e index.php ] && rm index.php
 ln -s ../../lib/prevent-index.php index.php
 chmod 755 shell.sh
-
-echo '05_check-dash'
-cd ../05_check-dash
-[ -e index.php ] && rm index.php
-ln -s ../../lib/prevent-index.php index.php
-chmod 755 shell.sh
-
-echo '15_check-js'
-cd ../15_check-js
-[ -e index.php ] && rm index.php
-ln -s ../../lib/prevent-index.php index.php
 
 echo 'net-wifi'
 cd ../../net-wifi
@@ -192,22 +164,6 @@ while true; do
 	fi
 	[ "$answer" = 'n' ] && break
 done
-
-while true; do
-	echo; echo -n 'remove module-compatibility header? [y/n] '
-	read answer
-	if [ "$answer" = 'y' ]; then
-		echo 'rm module-compatibility.php'
-		cd lib
-		rm -r htmlheaders
-		cd ..
-		break
-	fi
-	[ "$answer" = 'n' ] && break
-done
-
-echo; echo 'setup.sh'
-rm setup.sh
 
 echo; echo 'OK'
 exit 0

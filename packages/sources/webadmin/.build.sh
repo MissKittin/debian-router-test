@@ -383,6 +383,8 @@ ln -s index.min.php ./share/webadmin/net-bwusage/style/index.php
 ln -s index.min.php ./share/webadmin/sys-storage/script/index.php
 ln -s index.min.php ./share/webadmin/sys-storage/style/index.php
 
+[ -x './.build-modules.sh' ] && ./.build-modules.sh
+
 chmod 644 ./.build.sh
 echo ''
 exit 0

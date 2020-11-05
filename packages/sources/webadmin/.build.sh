@@ -378,11 +378,6 @@ chmod 755 ./install.sh
 echo -n '' > ./etc/authbind/byport/80
 chmod 755 ./etc/authbind/byport/80
 
-ln -s index.min.php ./share/webadmin/net-bwusage/script/index.php
-ln -s index.min.php ./share/webadmin/net-bwusage/style/index.php
-ln -s index.min.php ./share/webadmin/sys-storage/script/index.php
-ln -s index.min.php ./share/webadmin/sys-storage/style/index.php
-
 [ -x './.build-modules.sh' ] && ./.build-modules.sh
 
 chmod 644 ./.build.sh

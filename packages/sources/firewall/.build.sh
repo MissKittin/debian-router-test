@@ -135,6 +135,8 @@ chmod 750 ./sbin/firewall6.sh
 ${do_chown} && chown root:root ./install.sh
 chmod 755 ./install.sh
 
+ln -s ../firewall/networks.rc ./etc/firewall6/networks.rc
+
 chmod 644 ./.build.sh
 echo ''
 exit 0

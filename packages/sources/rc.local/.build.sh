@@ -57,6 +57,8 @@ chmod 644 ./README.md
 ${do_chown} && chown root:root ./install.sh
 chmod 755 ./install.sh
 
+ln -s S01_rclocal_daemon_logs.rc ./etc/rc.local.d/PS01_rclocal_daemon_logs.rc
+
 chmod 644 ./.build.sh
 echo ''
 exit 0

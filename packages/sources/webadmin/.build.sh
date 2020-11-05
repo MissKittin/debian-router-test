@@ -62,8 +62,6 @@ ${do_chown} && chown root:root ./etc/authbind
 chmod 755 ./etc/authbind
 ${do_chown} && chown root:root ./etc/authbind/byport
 chmod 755 ./etc/authbind/byport
-${do_chown} && chown root:root ./etc/authbind/byport/80
-chmod 755 ./etc/authbind/byport/80
 ${do_chown} && chown root:root ./extras-install.sh
 chmod 755 ./extras-install.sh
 ${do_chown} && chown root:root ./CHANGELOG.txt
@@ -378,6 +376,12 @@ ${do_chown} && chown root:root ./install.sh
 chmod 755 ./install.sh
 
 echo -n '' > ./etc/authbind/byport/80
+chmod 755 ./etc/authbind/byport/80
+
+ln -s index.min.php ./share/webadmin/net-bwusage/script/index.php
+ln -s index.min.php ./share/webadmin/net-bwusage/style/index.php
+ln -s index.min.php ./share/webadmin/sys-storage/script/index.php
+ln -s index.min.php ./share/webadmin/sys-storage/style/index.php
 
 chmod 644 ./.build.sh
 echo ''

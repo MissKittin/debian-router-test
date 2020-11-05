@@ -44,6 +44,8 @@ chmod 755 ./config-uninstall.sh
 ${do_chown} && chown root:root ./VERSION.txt
 chmod 644 ./VERSION.txt
 
+ln -s fancontrol_880ga-ud3h ./etc/fancontrol_880ga-ud3h
+
 chmod 644 ./.build.sh
 echo ''
 exit 0

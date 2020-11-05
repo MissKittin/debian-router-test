@@ -11,7 +11,7 @@ debian stretch version
 * **Tweaks** OS tweaks
 * **VMs** Qemu daemons
 * **User packages** small packages for non-privileged user
-* **PXE Debian** debian builder for pxe boot
+* **PXE** server
 
 ### History
 The project was created a few years ago after the power supply in my AP burned out. Due to difficulties with the selection of the power supply, I replaced it with an old Compaq laptop - the Armada E500 with a WiFi USB card and Windows 7, and later with Debian with unofficial drivers. Everything was fine, but the protruding cables and the handling of this equipment were not very pleasant. I decided to create a dedicated PC for this task.  

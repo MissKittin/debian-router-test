@@ -1,0 +1,19 @@
+# Rename links in /media with /dev/disk/by-label
+if [ -e /dev/disk/by-label ] && [ "$no_link_by_label" = '' ]; then
+	print_S9()
+	{
+		echo -n "${9}" | sed 's\/dev/disk/by-label/\\g'
+	}
+	print_S11()
+	{
+		echo -n "${11}" | sed 's\../../\\g'
+	}
+
+	ls -ld /dev/disk/by-label/* | while read line; do
+		[ -e "/media/$(print_S11 ${line})" ] && mv "/media/$(print_S11 ${line})" "/media/$(print_S9 ${line})"
+	done
+	unset line
+
+	unset print_S9
+	unset print_S11
+fi

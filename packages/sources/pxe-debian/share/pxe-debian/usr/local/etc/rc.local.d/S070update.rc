@@ -1,0 +1,12 @@
+# Upgrade system
+if [ "${no_update_prompt}" = '' ]; then
+	echo ''
+	echo -n 'Update system? (y/[n]) '
+	read osupdateanswer
+	if [ "${osupdateanswer}" = 'y' ]; then
+		log_action_msg_pre; echo 'Updating system...'
+		nohup /usr/local/sbin/update-system.sh > /dev/null 2>&1 &
+	else
+		echo ''
+	fi
+fi

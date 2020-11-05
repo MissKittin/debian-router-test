@@ -1,0 +1,14 @@
+# Change hostname
+if [ "$no_hostname_prompt" = '' ]; then
+	echo ''
+	echo -n 'Enter new hostname: '
+	read new_hostname
+	if [ ! "$new_hostname" = '' ]; then
+		rm /etc/hostname
+		echo $new_hostname > /etc/hostname
+		hostname $new_hostname
+		[ -e '/etc/hosts' ] && sed -i 's/pxe-nas/'"${new_hostname}"'/g' /etc/hosts
+	else
+		echo 'Hostname not changed'
+	fi
+fi

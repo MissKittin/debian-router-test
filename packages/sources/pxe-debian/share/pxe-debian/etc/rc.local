@@ -1,0 +1,10 @@
+#!/bin/sh
+
+echo 'rc.local: OS has been loaded' > /dev/kmsg
+for rclocalscript in /usr/local/etc/rc.local.d/S*.rc; do
+	[ "$rclocalscript" = '/usr/local/etc/rc.local.d/S*.rc' ] && break
+	. $rclocalscript
+done
+echo 'rc.local: OS has been configured' > /dev/kmsg
+
+exit 0

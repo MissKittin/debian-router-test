@@ -1,0 +1,8 @@
+# Wait for lists (comment if not apt_cache=true in autoconfig.rc)
+wait_for_apt_lists='true'
+
+# Install base packages
+packages_to_install='e2fsprogs sudo'
+
+# Install extra packages
+packages_to_install="${packages_to_install} "'package1 package2 package3'

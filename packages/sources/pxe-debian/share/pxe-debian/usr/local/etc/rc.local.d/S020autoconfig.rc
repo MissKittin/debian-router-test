@@ -1,0 +1,53 @@
+# Search for autoconfig
+# Parameter in kernel command line: no_log_autoconfig
+
+# .pxe-debian/autoconfig.rc and .pxe-debian/autoconfig.rc.key needed
+# autoconfig file: .pxe-debian/autoconfig.rc
+# generate key: cat /sys/class/dmi/id/* /usr/local/etc/pxe-debian.id ./autoconfig.rc 2>/dev/null | md5sum | awk '{print $1}' > .pxe-debian/autoconfig.rc.key
+#  or use sign-autoconfig.sh
+
+# autoconfig.rc variables (variable_name=true):
+# apt_cache
+# apt_cache_update_on_boot
+# no_log_apt_cache
+# no_urandom_saving
+# no_log_urandom
+# no_link_by_label
+# no_hostname_prompt
+# no_passwd_prompts
+# no_samba_prompts
+# no_network_autoconfig
+# no_log_network_autoconfig
+# no_log_patches
+# no_update_prompt
+# no_log_optfs
+# no_ip_notification
+# no_daemon_syslog
+# no_daemon_ssh
+# no_daemon_samba
+
+if ! cat /proc/cmdline | grep 'no_log_autoconfig' > /dev/null 2>&1; then
+	log_action_msg_pre; echo 'Autoconfig search...'
+fi
+
+#if [ -e /sys/class/dmi/id/product_uuid ]; then
+if [ -e /sys/class/dmi/id ]; then
+	for autoconfig in /media/.*/.pxe-debian/autoconfig.rc; do
+		[ "$autoconfig" = '/media/.*/.pxe-debian/autoconfig.rc' ] && break
+		if [ -e "${autoconfig}.key" ]; then
+			#if [ "$(cat ${autoconfig}.key)" = "$(cat /sys/class/dmi/id/product_uuid /usr/local/etc/pxe-debian.id $autoconfig | md5sum | awk '{print $1}')" ]; then
+			if [ "$(cat ${autoconfig}.key)" = "$(cat /sys/class/dmi/id/* /usr/local/etc/pxe-debian.id $autoconfig 2>/dev/null | md5sum | awk '{print $1}')" ]; then
+				. $autoconfig
+				echo "$autoconfig passed" >> ${PXE_DEBIAN_LOG_DIR}/autoconfig.log
+
+				[ "$no_urandom_saving" = '' ] && dirname "$autoconfig" > ${PXE_DEBIAN_LOG_DIR}/.autoconfig-urandom
+				[ "$apt_cache" = '' ] || apt_cache_dir=$(dirname "$autoconfig")
+			else
+				echo "$autoconfig wrong key" >> ${PXE_DEBIAN_LOG_DIR}/autoconfig.log
+			fi
+		else
+			echo "$autoconfig no key" >> ${PXE_DEBIAN_LOG_DIR}/autoconfig.log
+		fi
+	done
+	unset autoconfig
+fi

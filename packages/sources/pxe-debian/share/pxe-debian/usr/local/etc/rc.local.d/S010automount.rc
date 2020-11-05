@@ -1,0 +1,15 @@
+# Automatically mount all devices
+# Parameter in kernel command line: no_log_automount
+
+if ! cat /proc/cmdline | grep 'no_log_automount' > /dev/null 2>&1; then
+	log_action_msg_pre; echo 'Mounting disks...'
+fi
+cd /dev
+for i in sd[a-z][0-9]; do
+	mkdir "/media/.${i}"
+	echo '/dev/'"$i"' /media/.'"${i}"' auto noauto,nouser,nosuid,nodev,noatime,async 0 0' >> /etc/fstab
+	mount "/media/.${i}" > /dev/null 2>&1
+	mountpoint -q "/media/.${i}" && ln -s "/media/.${i}" "/media/${i}" || rmdir "/media/.${i}"
+done
+unset i
+cd /

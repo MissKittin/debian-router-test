@@ -1,0 +1,3 @@
+# Correct reboot and halt scripts
+mv /etc/rc0.d/K*halt /etc/rc0.d/K99halt
+mv /etc/rc6.d/K*reboot /etc/rc6.d/K99reboot

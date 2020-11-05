@@ -1,0 +1,2 @@
+# Set hostname
+[ -e "${1}/rootfs.pre/etc/hostname" ] && hostname "$(cat "${1}/rootfs.pre/etc/hostname")"

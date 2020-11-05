@@ -1,0 +1,47 @@
+# Import configuration
+. ${1}/autoconfig.cfg.d/apt.rc
+
+# Wait for apt_cache.rc
+if [ ! "${wait_for_apt_lists}" = '' ]; then
+	while [ "$(readlink -f /var/lib/apt/lists)" = '/var/lib/apt/lists' ]; do
+		echo 'waiting for lists'  >> ${2}/apt-install.log
+		sleep 1
+	done
+fi
+
+# Create apt log
+echo 'apt install started' >> ${2}/apt-install.log
+
+# Check apt's lists availability
+if [ "$(ls -1q /var/lib/apt/lists | wc -l)" = '3' ]; then
+	# Not exists, try download lists
+	while ! apt-get update >> ${2}/apt-install.log 2>&1; do
+		echo 'update failed' >> ${2}/apt-install.log
+		sleep 10
+	done
+fi
+
+# Lists downloaded, upgrade system
+while ! apt-get dist-upgrade -y >> ${2}/apt-install.log 2>&1; do
+	echo 'failed' >> ${2}/apt-install.log
+	sleep 1
+done
+
+# try install packages
+while ! apt-get install -y ${packages_to_install} >> ${2}/apt-install.log 2>&1; do
+	echo 'failed' >> ${2}/apt-install.log
+	sleep 1
+done
+
+echo 'apt install ended' >> ${2}/apt-install.log
+
+# Remove trash files
+echo 'remove trash started' >> ${2}/apt-install.log
+rm /var/lib/dpkg/status-old >> ${2}/apt-install.log 2>&1
+rm /var/cache/debconf/config.dat-old >> ${2}/apt-install.log 2>&1
+rm /var/cache/debconf/templates.dat-old >> ${2}/apt-install.log 2>&1
+#rm /var/cache/ldconfig/aux-cache >> ${2}/apt-install.log 2>&1
+echo 'remove trash ended' >> ${2}/apt-install.log
+
+# Zip log
+gzip -9 ${2}/apt-install.log

@@ -1,0 +1,16 @@
+# Autoconfigure networking
+busybox ifconfig lo 127.0.0.1 netmask 255.0.0.0 up
+if [ "${no_network_autoconfig}" = '' ]; then
+	if [ "${no_log_network_autoconfig}" = '' ]; then
+		log_action_msg_pre; echo 'Configuring network...'
+	fi
+	cd /sys/class/net
+	for i in *; do
+		if [ ! "${i}" = 'lo' ]; then
+			busybox ifconfig ${i} up > /dev/null 2>&1
+			busybox udhcpc -q -s /usr/local/share/udhcpc/udhcpc.script -i ${i} -x hostname:$(cat /etc/hostname | xargs) > /dev/null 2>&1 &
+		fi
+	done
+	unset i
+	cd /
+fi

@@ -1,0 +1,2 @@
+# Start services
+# eg: /etc/init.d/service start > /dev/null 2>&1

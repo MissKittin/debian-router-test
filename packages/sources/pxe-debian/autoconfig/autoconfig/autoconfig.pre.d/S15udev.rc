@@ -1,0 +1,5 @@
+# Restart udev
+if [ -e "${1}/autoconfig.cfg.d/udev.rc" ]; then
+	/etc/init.d/udev stop > /dev/null 2>&1
+	/etc/init.d/udev start > /dev/null 2>&1
+fi

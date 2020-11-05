@@ -1,0 +1,2 @@
+# Import LSB functions
+. /lib/lsb/init-functions

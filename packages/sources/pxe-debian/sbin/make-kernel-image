@@ -1,0 +1,194 @@
+#!/bin/sh
+# Make PXE Debian kernel package
+
+# Setup path variable
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+
+# Workspace directory
+WORKSPACE='/pxe-debian'
+
+# Check parameters
+if [ "$2" = '' ]; then
+	echo 'usage: mkkernelsqs.sh apt-package-name sqs-patch-name'
+	echo 'eg: mkkernelsqs.sh linux-image-4-9.20-i386 kernel-i386'
+	echo ' ! install only one kernel'
+	exit 1
+fi
+
+# Functions
+backup_boot_and_modules()
+{
+	# $1 -> workdir
+
+	mkdir $1/boot.old
+	mv /boot/* $1/boot.old 2>/dev/null
+	mkdir $1/modules.old
+	mv /lib/modules/* $1/modules.old 2>/dev/null
+}
+restore_boot_and_modules()
+{
+	# $1 -> workdir
+
+	rm -r -f /boot/*
+	mv $1/boot.old/* /boot 2>/dev/null
+	rmdir $1/boot.old
+	rm -r -f /lib/modules/*
+	mv $1/modules.old/* /lib/modules 2>/dev/null
+	rmdir $1/modules.old
+}
+download_kernel_and_tools()
+{
+	# $1 -> workspace
+	# $2 -> kernel package name
+
+	backup_boot_and_modules ${1}
+	if ! apt-get install -y ${2} squashfs-tools cpio; then
+		echo 'Package not found, maybe do apt-get update or dpkg --add-architecture ?'
+		restore_boot_and_modules ${1}
+		rmdir ${WORKSPACE}/tmp
+		rmdir ${WORKSPACE}
+		exit 1
+	fi
+
+	# save version.txt
+	kernel_file="$(ls /boot/vmlinuz-* | sed 's\/boot/vmlinuz-\\g')"
+	dpkg-query --showformat '${Version}' --show ${2} > /boot/version.txt-${kernel_file}
+}
+make_squashfs()
+{
+	# $1 -> workdir
+	# $2 -> kernel version
+	# $3 -> output file
+	# $4 -> use initrd
+
+	pwd=$(pwd)
+	cd $1
+
+	# create workspace
+	mkdir ./squashfs
+	mkdir ./squashfs/boot
+	mkdir -p ./squashfs/lib/modules
+	mkdir -p ./squashfs/usr/lib/modules
+
+	# copy boot files
+	cp -p /boot/config-${2} ./squashfs/boot
+	cp -p /boot/System.map-${2} ./squashfs/boot
+	cp -p /boot/version.txt-${2} ./squashfs/boot
+
+	# copy modules
+	if [ "$4" = '' ]; then
+		cp -r -f -p /lib/modules/$2 ./squashfs/usr/lib/modules
+	else
+		kernel_file="$(ls /boot/vmlinuz-* | sed 's\/boot/vmlinuz-\\g')"
+		mkdir $4
+		cd $4
+		zcat /boot/initrd.img-${kernel_file} | cpio -id
+		cp -r -f -p ${4}/lib/modules/${2} ${1}/squashfs/usr/lib/modules
+		cd $1
+		rm -r -f $4
+	fi
+
+	# link usr/lib/modules/${kernelversion} to lib/modules/${kernelversion}
+	cd ./squashfs/lib/modules
+	ln -s ../../usr/lib/modules/$2 ./$2
+	cd ../../..
+
+	# create squashfs file
+	cd ./squashfs
+	mksquashfs . ${3} -b 1048576 -comp xz -Xdict-size 100%
+	cd ..
+
+	# remove workspace
+	rm -r -f ./squashfs
+
+	cd $pwd
+}
+make_cpio()
+{
+	# $1 -> workdir
+	# $2 -> kernel version
+	# $3 -> squashfs file
+	# $4 -> output file
+
+	pwd=$(pwd)
+	cd $1
+
+	# create workspace
+	mkdir ./cpio
+	mkdir -p ./cpio/img/patches
+	mkdir -p ./cpio/lib/modules/$2
+
+	# copy modules
+	for i in loop overlay squashfs; do
+		modprobe --show-depends --set-version=${2} ${i} | awk '{print $2}' | while read line; do
+			mkdir -p ./cpio/lib/modules/${2}$(dirname $line)
+			cp -p $line ./cpio/lib/modules/${2}${line}
+		done
+	done
+	cp /lib/modules/${2}/modules.order ./cpio/lib/modules/${2}
+	cp /lib/modules/${2}/modules.builtin ./cpio/lib/modules/${2}
+	depmod -b ${1}/cpio ${2}
+
+	# compress modules
+	cd ./cpio
+	tar cvf ./modules.tar ./lib
+	gzip -9 ./modules.tar
+	rm -r -f ./lib
+	cd ..
+
+	# place squashfs file
+	mv $3 ./cpio/img/patches
+
+	# create cpio file
+	cd ./cpio
+	find | cpio --create --format=newc > ${4}
+	cd ..
+
+	# remove workspace
+	rm -r -f ./cpio
+
+	cd $pwd
+}
+purge_kernel_and_tools()
+{
+	# $1 -> kernel package name
+
+	export DEBIAN_FRONTEND=noninteractive
+	apt-get purge -y ${1} squashfs-tools cpio
+	apt-get autoremove --purge -y
+}
+
+# create workspace
+mkdir ${WORKSPACE}
+mkdir ${WORKSPACE}/tmp
+
+# download
+download_kernel_and_tools ${WORKSPACE} ${1}
+
+# make full package
+mkdir ${WORKSPACE}/full
+make_squashfs ${WORKSPACE}/full "$(ls /boot/vmlinuz-* | sed 's\/boot/vmlinuz-\\g')" ${WORKSPACE}/tmp/${2}.sqs
+make_cpio ${WORKSPACE}/full "$(ls /boot/vmlinuz-* | sed 's\/boot/vmlinuz-\\g')" ${WORKSPACE}/tmp/${2}.sqs ${WORKSPACE}/modules.img-"$(ls /boot/vmlinuz-* | sed 's\/boot/vmlinuz-\\g')"
+rm -r -f ${WORKSPACE}/full
+
+# make slim package
+mkdir ${WORKSPACE}/slim
+make_squashfs ${WORKSPACE}/slim "$(ls /boot/vmlinuz-* | sed 's\/boot/vmlinuz-\\g')" ${WORKSPACE}/tmp/${2}.sqs ${WORKSPACE}/tmp/initrd
+make_cpio ${WORKSPACE}/slim "$(ls /boot/vmlinuz-* | sed 's\/boot/vmlinuz-\\g')" ${WORKSPACE}/tmp/${2}.sqs ${WORKSPACE}/modules-slim.img-"$(ls /boot/vmlinuz-* | sed 's\/boot/vmlinuz-\\g')"
+rm -r -f ${WORKSPACE}/slim
+
+# copy kernel
+cp -p /boot/vmlinuz-* ${WORKSPACE}
+
+# remove downloaded tools
+purge_kernel_and_tools ${1}
+
+# restore /boot and /lib/modules
+restore_boot_and_modules ${WORKSPACE}
+
+# remove workspace
+rm -r -f ${WORKSPACE}/tmp > /dev/null 2>&1
+rmdir $WORKSPACE > /dev/null 2>&1
+
+echo; echo "Take files from ${WORKSPACE}"
+exit 0

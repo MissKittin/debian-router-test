@@ -1,0 +1,2 @@
+# fsck.sh must be detached from this script
+/tmp/fsck.sh ${2} > /dev/null 2>&1 &

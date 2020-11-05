@@ -1,0 +1,7 @@
+# Restore saved urandom seed
+# indicator from autoconfig.rc
+if [ "${no_log_urandom}" = '' ]; then
+	/etc/init.d/pxe-nas-urandom.sh start
+else
+	/etc/init.d/pxe-nas-urandom.sh start > /dev/null 2>&1
+fi

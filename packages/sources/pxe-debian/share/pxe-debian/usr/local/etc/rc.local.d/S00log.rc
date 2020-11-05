@@ -1,0 +1,3 @@
+# Create directory for logs and indicators
+PXE_DEBIAN_LOG_DIR='/run/pxe-debian'
+[ -e "${PXE_DEBIAN_LOG_DIR}" ] || mkdir -p "${PXE_DEBIAN_LOG_DIR}"

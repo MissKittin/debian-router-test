@@ -1,0 +1,6 @@
+# Clean rootfs
+if [ -e "${1}/autoconfig.cfg.d/clean-root.rc" ]; then
+	rmdir /mnt > /dev/null 2>&1; ln -s /media /mnt > /dev/null 2>&1
+	rm -r -f /root > /dev/null 2>&1; ln -s /home/root /root > /dev/null 2>&1
+	rmdir /srv > /dev/null 2>&1
+fi

@@ -1,0 +1,14 @@
+# save apt cache and lists to disk
+# ${apt_cache_dir} from autoconfig.rc
+if [ ! "${apt_cache}" = '' ]; then
+	[ -e "${apt_cache_dir}/apt-cache" ] || mkdir "${apt_cache_dir}/apt-cache"
+	[ -e "${apt_cache_dir}/apt-cache/packages" ] && rm -rf /var/cache/apt/archives || mv /var/cache/apt/archives "${apt_cache_dir}/apt-cache/packages"
+	[ -e "${apt_cache_dir}/apt-cache/lists" ] && rm -rf /var/lib/apt/lists || mv /var/lib/apt/lists "${apt_cache_dir}/apt-cache/lists"
+	ln -s ${apt_cache_dir}/apt-cache/packages /var/cache/apt/archives
+	ln -s ${apt_cache_dir}/apt-cache/lists /var/lib/apt/lists
+	[ "${apt_cache_update_on_boot}" = '' ] || /usr/local/sbin/update-system.sh no-apt-update > /dev/null 2>&1 &
+	echo -n '' > ${PXE_DEBIAN_LOG_DIR}/.apt_cache-enabled
+	if [ "${no_log_apt_cache}" = '' ]; then
+		log_action_msg_pre; echo 'apt cache enabled'
+	fi
+fi

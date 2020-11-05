@@ -1,0 +1,2 @@
+# Remove /etc/*.dpkg-*
+find /etc -name *.dpkg-* -exec rm {} +

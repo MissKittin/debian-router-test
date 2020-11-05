@@ -1,0 +1,9 @@
+# Apply patches
+if [ "${no_log_patches}" = '' ]; then
+	log_action_msg_pre; echo 'Applying patches...'
+fi
+for i in /tmp/.patches/*.sh; do
+	[ "${i}" = '/tmp/.patches/*.sh' ] && break
+	${i} > /dev/null 2>&1 &
+done
+unset i

@@ -1,0 +1,13 @@
+# Optimize mount flags
+if [ "${no_log_optfs}" = '' ]; then
+	log_action_msg_pre; echo 'Optimizing filesystems...'
+fi
+remount()
+{
+	mount -o remount,noatime,nodiratime ${3}
+}
+mount | while read line; do
+	echo "${line}" | grep 'relatime' > /dev/null 2>&1 && \
+		remount ${line}
+done
+unset line

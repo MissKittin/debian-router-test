@@ -1,0 +1,14 @@
+# PXE Debian default autoconfig
+
+#no_log_urandom='true'
+no_hostname_prompt='true'
+no_passwd_prompts='true'
+no_log_network_autoconfig='true'
+no_log_patches='true'
+no_update_prompt='true'
+no_log_optfs='true'
+apt_cache='true'
+no_log_apt_cache='true'
+no_link_by_label='true'
+
+$(dirname "${autoconfig}")/autoconfig/.autoconfig.sh "$(dirname "${autoconfig}")/autoconfig" "${PXE_DEBIAN_LOG_DIR}"

@@ -1,0 +1,126 @@
+#!/bin/sh
+###########################################
+### PXE Debian - init script            ###
+###  27.03.2020, 22.06.2020, 13.10.2020 ###
+### Busybox:                            ###
+###   debian busybox-static             ###
+### Required kernel modules:            ###
+###  - loop                             ###
+###  - squashfs                         ###
+###  - overlayfs                        ###
+### debian image: /img/rootfs.sqs       ###
+### Patches:                            ###
+###  - /img/patches                     ###
+###  - *.sqs    [compressed imgs]       ###
+###  - *.sh     [scripts]               ###
+###  - *.rc     [importable scripts]    ###
+###  - *.tar.gz [archives]              ###
+###########################################
+PATH='/bin'
+cd /
+
+# Install busybox
+/bin/busybox --install -s /bin
+
+# Basic dirs and filesystems
+[ -e '/dev' ] || mkdir /dev
+[ -e '/proc' ] || mkdir /proc
+mount -t devtmpfs -o nosuid,mode=0755 udev /dev
+mount -t proc proc /proc
+
+# Boot parameters
+DIFFFLAGS=''
+ROOTFLAGS=''
+PATCHFLAGS=''
+DEBUG=false
+INIT='/sbin/init'
+ROOTFS_AT_THE_END='false'
+for x in $(cat /proc/cmdline); do
+	case ${x} in
+		diffflags=*)
+			DIFFFLAGS='-o '${x#diffflags=}
+		;;
+		rootflags=*)
+			ROOTFLAGS=','${x#rootflags=}
+		;;
+		patchflags=*)
+			PATCHFLAGS=','${x#patchflags=}
+		;;
+		'debuginitrd')
+			DEBUG=true
+		;;
+		init=*)
+			INIT=${x#init=}
+		;;
+		'rootfs_at_the_end')
+			ROOTFS_AT_THE_END='true'
+		;;
+	esac
+done
+
+# Root mountpoint
+[ -e '/mnt' ] || mkdir /mnt
+mount -t tmpfs ${DIFFFLAGS} root /mnt
+mkdir /mnt/diff /mnt/root /mnt/rootfs /mnt/tmp
+
+# Modules
+if [ -e '/modules.tar.gz' ]; then
+	zcat /modules.tar.gz | tar xf -
+	modprobe loop
+	modprobe squashfs
+	modprobe overlay
+fi
+
+# Find patches
+PATCHES=''
+if [ -e '/img/patches' ]; then
+	cd /img/patches
+	mkdir /mnt/patches
+	for i in *.sqs; do
+		[ "${i}" = '*.sqs' ] && break
+		mkdir /mnt/patches/${i}
+		mount -o loop${PATCHFLAGS} /img/patches/${i} /mnt/patches/${i}
+		${ROOTFS_AT_THE_END} && PATCHES="/mnt/patches/${i}:${PATCHES}" || PATCHES="${PATCHES}:/mnt/patches/${i}"
+	done
+	cd /
+fi
+
+# Rootfs image
+mount -o loop${PATCHFLAGS} /img/rootfs.sqs /mnt/rootfs
+${ROOTFS_AT_THE_END} mount -t overlay -o lowerdir=${PATCHES}/mnt/rootfs,upperdir=/mnt/diff,workdir=/mnt/tmp${ROOTFLAGS} root /mnt/root || mount -t overlay -o lowerdir=/mnt/rootfs${PATCHES},upperdir=/mnt/diff,workdir=/mnt/tmp${ROOTFLAGS} root /mnt/root
+
+# Move to new root
+mount -n -o move /dev /mnt/root/dev
+umount /proc
+
+# Unpack patches
+if [ -e '/img/patches' ]; then
+	cd /img/patches
+	for i in *.tar.gz; do
+		[ "${i}" = '*.tar.gz' ] && break
+		tar zx -C /mnt/root -f /img/patches/${i}
+	done
+	cd /
+fi
+
+# Exec shellscript patches
+if [ -e '/img/patches' ]; then
+	cd /img/patches
+	for i in *.sh; do
+		[ "${i}" = '*.sh' ] && break
+		/img/patches/${i} $@
+	done
+	for i in *.rc; do
+		[ "${i}" = '*.rc' ] && break
+		./img/patches/${i}
+	done
+	cd /
+fi
+
+# Debug shell
+${DEBUG} && /bin/sh
+
+# Jump to the new init...
+exec busybox run-init /mnt/root ${INIT} "${@}" < /mnt/root/dev/console > /mnt/root/dev/console 2>&1
+
+# ...or kernel panic here

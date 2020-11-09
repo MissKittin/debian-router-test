@@ -165,5 +165,8 @@ while true; do
 	[ "$answer" = 'n' ] && break
 done
 
+echo; echo 'setup.sh'
+chmod 644 ../../build-modules.sh
+
 echo; echo 'OK'
 exit 0

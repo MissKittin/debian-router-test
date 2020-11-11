@@ -14,7 +14,7 @@ debian stretch version
 * **PXE** server
 
 ### History
-The project was created a few years ago after the power supply in my AP burned out. Due to difficulties with the selection of the power supply, I replaced it with an old Compaq laptop - the Armada E500 with a WiFi USB card and Windows 7, and later with Debian with unofficial drivers. Everything was fine, but the protruding cables and the handling of this equipment were not very pleasant. I decided to create a dedicated PC for this task.  
+The project was created a few years ago after the power supply in my AP burned out. Due to difficulties with the selection of the power supply, I replaced it with an old Compaq laptop - the Armada E500 with a WiFi USB card and Windows 7, and later with Debian with unofficial drivers. Everything was fine, but the protruding cables and the handling of this equipment were not very pleasant. I decided to build a dedicated PC for this task.  
 So the project of a debian-router was born, which for several years has grown from an old PC with a motherboard lying on two sheets of paper to the size of a small server.
 
 ## My configuration

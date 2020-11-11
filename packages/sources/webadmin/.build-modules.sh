@@ -30,6 +30,12 @@ cd ../../login-plugins/01_internet-info
 ln -s ../../lib/prevent-index.php index.php
 chmod 755 shell.sh
 
+echo '05_check-dash'
+cd ../05_check-dash
+[ -e index.php ] && rm index.php
+ln -s ../../lib/prevent-index.php index.php
+chmod 755 shell.sh
+
 echo 'net-wifi'
 cd ../../net-wifi
 chmod 755 shell.sh
@@ -165,8 +171,8 @@ while true; do
 	[ "$answer" = 'n' ] && break
 done
 
-echo; echo 'setup.sh'
-chmod 644 ../../build-modules.sh
+echo; echo '.build-modules.sh'
+chmod 644 ../../.build-modules.sh
 
 echo; echo 'OK'
 exit 0

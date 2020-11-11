@@ -8,6 +8,10 @@
 				'Restart'=>'/etc/init.d/acpid restart',
 				'Stop'=>'/etc/init.d/acpid stop'
 			)
+		),
+		'example'=>array(
+			'status'=>'/etc/init.d/example status',
+			'buttons'=>array()
 		)
 	);
 ?>

@@ -12,6 +12,13 @@ case $1 in
 	'remove-notify')
 		notify-daemon.sh journal del $2
 	;;
+	'clear-notifications')
+		. $(notify-daemon.sh print-home-dir)/settings.rc
+		for notification in ${journal_workspace}/*; do
+			[ "${notification}" = "${journal_workspace}/*" ] && break
+			notify-daemon.sh journal del ${notification##*/}
+		done
+	;;
 esac
 
 exit 0

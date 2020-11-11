@@ -1,2 +1,0 @@
-This module is deprecated and will not be updated anymore.
-PPTP and L2TP/IPSec daemons was moved to vpn container.

@@ -1,10 +1,9 @@
 <?php if(!function_exists('prevent_direct')) include($system['location_php'] . '/lib/prevent-direct.php'); prevent_direct('notifications.php');?>
 <?php
-	if(isset($_GET['remove-notify']))
+	function hide_scrollbars()
 	{
-		if(strpos($_GET['remove-notify'], '\'') === false) shell_exec($system['location_php'] . '/home-plugins/' . $plugin . '/shell.sh remove-notify ' . '\''.$_GET['remove-notify'].'\'');
+		global $system;
 
-		// hide scrollbars
 		echo '<style> body { overflow: hidden; } </style>';
 		// meta refresh
 		echo '<meta http-equiv="refresh" content="0; url=' . $system['location_html'] . '/">';
@@ -20,13 +19,24 @@
 			});
 		</script><!--<![endif]-->';
 	}
+
+	if(isset($_GET['remove-notify']))
+	{
+		if(strpos($_GET['remove-notify'], '\'') === false) shell_exec($system['location_php'] . '/home-plugins/' . $plugin . '/shell.sh remove-notify ' . '\''.$_GET['remove-notify'].'\'');
+		hide_scrollbars();
+	}
+	if(isset($_GET['clear-notifications']))
+	{
+		shell_exec($system['location_php'] . '/home-plugins/' . $plugin . '/shell.sh clear-notifications');
+		hide_scrollbars();
+	}
 ?>
 <div id="notifications">
 	<?php
 		$notifications=shell_exec($system['location_php'] . '/home-plugins/' . $plugin . '/shell.sh get-notifications');
 		if($notifications != '')
 		{
-			echo '<h1>Notifications</h1>';
+			echo '<h1><a href="?clear-notifications" style="text-decoration: none; color: var(--content_text-color);">Notifications</a></h1>';
 			echo "$notifications";
 		}
 		unset($notifications); // clear environment

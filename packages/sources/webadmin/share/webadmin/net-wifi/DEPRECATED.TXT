@@ -1,2 +1,0 @@
-This module is deprecated and will not be updated anymore.
-Use net-wicd module instead.

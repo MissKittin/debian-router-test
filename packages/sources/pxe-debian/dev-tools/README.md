@@ -10,12 +10,14 @@
 * `debootstrap` that supports debian buster (for `pxe-debian-toolbox.sh bootstrap`)
 
 ### Mastering tutorial
+You can make your corrections after each step
 1) copy this directory to the build OS
 2) run `pxe-debian-toolbox.sh bootstrap ARCH` where ARCH is amd64 or i386  
 	or `mkdir rootfs` and put rootfs into this directory
 3) run `pxe-debian-toolbox.sh bootstrap-clear` (if you used `bootstrap` command)
 4) run `pxe-debian-toolbox.sh install-packages`
-5) run `pxe-debian-toolbox.sh strip` to remove unnecessary files
+5) run `pxe-debian-toolbox.sh strip` to remove unnecessary files  
+	(ignore errors)
 6) put `pxe-debian` and other packages to the eg `usr/local/share/packages`
 7) run `pxe-debian-toolbox.sh install-pxe-debian-package usr/local/share/packages/package`  
 	repeat this step for all packages
@@ -23,11 +25,16 @@
 9) run `pxe-debian-toolbox.sh mkinitrd` to create first part of initial ramdisk
 10) run `pxe-debian-toolbox.sh mkinitrd-bin` to create second part
 11) run `pxe-debian-toolbox.sh mksquashfs-rootfs` to create root filesystem image
-12) run `pxe-debian-toolbox.sh mksquashfs-kernel linux-image-package`  
+12) run `pxe-debian-toolbox.sh mksquashfs-kernel linux-image-package kernel-arch`  
 	where `linux-image-package` is kernel name in repo (eg. `linux-image-amd64`)  
+	`kernel-arch` is eg `amd64` or `686` etc etc  
 	if you want to build amd64 kernel image on i386 debian, add `amd64` at the end of the command line
-13) run `pxe-debian-toolbox.sh make-tarball`
-14) send `pxe-debian.tar.gz` to the server and deploy
+13) run `pxe-debian-toolbox.sh make-pxe-directory`
+14) run `pxe-debian-toolbox.sh make-syslinux-config`  
+	and edit `img/menu.cfg`  
+	and optionally `img/menu-autoboot.cfg` sample
+15) run `pxe-debian-toolbox.sh make-tarball`
+16) send `pxe-debian.tar.gz` to the server and deploy
 
 ### Updating kernel (on running PXE Debian)
 1) run `apt-get update`
@@ -52,3 +59,6 @@
 2) do maintenance tasks
 3) follow steps 5, 8 and 11 from Mastering tutorial
 4) send `img/rootfs.img` to the server
+
+### .load-modules.sh
+Run this script to load kernel modules when PXE Debian is not running (`debuginitrd` kernel parameter)

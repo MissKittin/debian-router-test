@@ -113,7 +113,7 @@ case ${1} in
 		fi
 		if [ -e ./${2}/install.sh ]; then
 			chroot . ${2}/install.sh --force
-			chroot . ${2}/extras-install.sh
+			[ -e "./${2}/extras-install.sh" ] && chroot . ${2}/extras-install.sh
 		else
 			echo 'wrong path'
 			exit 1
@@ -262,13 +262,109 @@ case ${1} in
 		rm -r -f ./pxe-debian
 		umount ./build
 	;;
+	'make-pxe-directory')
+		cd ./img || exit 1
+
+		ls vmlinuz-* | while read kernel; do
+			kernel_directory="${kernel##*-}"
+			[ ! -e "./${kernel_directory}" ] && mkdir ./${kernel_directory}
+			mv vmlinuz-*-${kernel_directory} ./${kernel_directory}
+			mv modules.img-*-${kernel_directory} ./${kernel_directory}
+			mv modules-slim.img-*-${kernel_directory} ./${kernel_directory}
+			cd ./${kernel_directory}
+				ln -s vmlinuz-*-${kernel_directory} vmlinuz
+				ln -s modules.img-*-${kernel_directory} modules.img
+				ln -s modules-slim.img-*-${kernel_directory} modules-slim.img
+			cd ..
+		done
+	;;
+	'make-syslinux-config')
+		cd ./img || exit 1
+
+		# create empty
+		echo -n '' > ./menu.cfg
+
+		# cheats
+		echo '# cmdline:' >> ./menu.cfg
+		echo '#	debuginitrd' >> ./menu.cfg
+		echo '#	init=/path/to/init' >> ./menu.cfg
+		echo '#	diffflags=mount_flags_for_mnt' >> ./menu.cfg
+		echo '#	rootflags=mount_flags_for_mnt_root' >> ./menu.cfg
+		echo '#	patchflafs=mount_flags_for_sqs_patches' >> ./menu.cfg
+		echo '' >> ./menu.cfg
+
+		# header
+		echo 'MENU TITLE PXE Debian' >> ./menu.cfg
+		echo 'MENU TABMSG' >> ./menu.cfg
+		echo 'MENU MASTER PASSWD yourpassword' >> ./menu.cfg
+		echo 'ALLOWOPTIONS 0' >> ./menu.cfg
+		echo '' >> ./menu.cfg
+
+		# boot options
+		find -type d | while read bootoption; do
+			if [ ! "${bootoption}" = '.' ]; then
+				bootoption="$(echo -n "${bootoption}" | sed 's\./\\g')"
+
+				# full kernel
+				echo "LABEL pxedebian${bootoption}" >> ./menu.cfg
+				echo "	MENU LABEL PXE Debian ${bootoption}" >> ./menu.cfg
+				echo "	KERNEL pxe-debian/${bootoption}/vmlinuz" >> ./menu.cfg
+				echo "	APPEND initrd=pxe-debian/initrd.img,pxe-debian/initrd-bin.img,pxe-debian/${bootoption}/modules.img,pxe-debian/rootfs.img quiet loglevel=0 nomodeset" >> ./menu.cfg
+				echo "	TEXT HELP" >> ./menu.cfg
+				echo "#			384MB RAM required, 1GB recommended" >> ./menu.cfg
+				echo "			1GB RAM recommended" >> ./menu.cfg
+				echo "	ENDTEXT" >> ./menu.cfg
+				echo '' >> ./menu.cfg
+
+				# slim kernel
+				echo "LABEL pxedebian${bootoption}slim" >> ./menu.cfg
+				echo "	MENU LABEL PXE Debian ${bootoption} (slim kernel)" >> ./menu.cfg
+				echo "	KERNEL pxe-debian/${bootoption}/vmlinuz" >> ./menu.cfg
+				echo "	APPEND initrd=pxe-debian/initrd.img,pxe-debian/initrd-bin.img,pxe-debian/${bootoption}/modules-slim.img,pxe-debian/rootfs.img quiet loglevel=0 nomodeset" >> ./menu.cfg
+				echo "	TEXT HELP" >> ./menu.cfg
+				echo "#			384MB RAM required, 1GB recommended" >> ./menu.cfg
+				echo "			1GB RAM recommended" >> ./menu.cfg
+				echo "	ENDTEXT" >> ./menu.cfg
+				echo '' >> ./menu.cfg
+			fi
+		done
+
+		# back option
+		echo "#label back" >> ./menu.cfg
+		echo "#	MENU LABEL <- Back" >> ./menu.cfg
+		echo "#	KERNEL menu.c32" >> ./menu.cfg
+		echo "#	APPEND pxelinux.cfg/default" >> ./menu.cfg
+		echo "#	TEXT HELP" >> ./menu.cfg
+		echo "#			384MB RAM required, 1GB recommended" >> ./menu.cfg
+		echo "#			1GB RAM recommended" >> ./menu.cfg
+		echo "#	ENDTEXT" >> ./menu.cfg
+
+		# autoboot sample
+		echo -n '' > ./menu-autoboot.cfg
+		echo "# Automatically boot pxe-debian on certain macs" >> ./menu-autoboot.cfg
+		echo "" >> ./menu-autoboot.cfg
+		echo "PROMPT 0" >> ./menu-autoboot.cfg
+		echo "NOESCAPE 1" >> ./menu-autoboot.cfg
+		echo "ALLOWOPTIONS 0" >> ./menu-autoboot.cfg
+		echo "TIMEOUT 1" >> ./menu-autoboot.cfg
+		echo "DEFAULT pxedebian" >> ./menu-autoboot.cfg
+		echo "" >> ./menu-autoboot.cfg
+		echo "LABEL pxedebian" >> ./menu-autoboot.cfg
+		echo "	MENU LABEL PXE Debian" >> ./menu-autoboot.cfg
+		echo "	KERNEL root/pxe-debian/686/vmlinuz" >> ./menu-autoboot.cfg
+		echo "	APPEND initrd=root/pxe-debian/initrd.img,root/pxe-debian/initrd-bin.img,root/pxe-debian/686/modules-slim.img,root/pxe-debian/rootfs.img quiet loglevel=0 nomodeset console=tty2" >> ./menu-autoboot.cfg
+	;;
 	'make-tarball')
 		[ -e './pxe-debian.tar' ] && exit 1
 		[ -e './pxe-debian.tar.gz' ] && exit 1
-		cd ./img || exit 1
-		tar cvf ../pxe-debian.tar *
-		cd ..
-		echo 'zipping...' gzip -9 ./pxe-debian.tar
+		[ ! -e './img' ] && exit 1
+
+		mv ./img ./pxe-debian
+		tar cvf ./pxe-debian.tar ./pxe-debian
+		echo 'zipping...'
+		gzip -9 ./pxe-debian.tar
+
+		mv ./pxe-debian ./img
 	;;
 	*)
 		echo 'PXE Debian build toolbox'
@@ -284,6 +380,8 @@ case ${1} in
 		echo ' mkinitrd-bin'
 		echo ' mksquashfs-rootfs'
 		echo ' mksquashfs-kernel linux-image-package kernel-ARCH [ARCH-FOR-DPKG-ADD-ARCH]'
+		echo ' make-pxe-directory'
+		echo ' make-syslinux-config'
 		echo ' make-tarball'
 	;;
 esac

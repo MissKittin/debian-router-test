@@ -108,7 +108,7 @@ case ${1} in
 	'install-pxe-debian-package')
 		cd ./rootfs || exit 1
 		if [ "${2}" = '' ]; then
-			install-pxe-debian /path/to/package
+			echo 'install-pxe-debian /path/to/package'
 			exit 1
 		fi
 		if [ -e ./${2}/install.sh ]; then
@@ -280,6 +280,7 @@ case ${1} in
 	;;
 	'make-syslinux-config')
 		cd ./img || exit 1
+		[ ! "${path_prefix}" = '' ] && path_prefix="${2}/"
 
 		# create empty
 		echo -n '' > ./menu.cfg
@@ -308,51 +309,67 @@ case ${1} in
 				# full kernel
 				echo "LABEL pxedebian${bootoption}" >> ./menu.cfg
 				echo "	MENU LABEL PXE Debian ${bootoption}" >> ./menu.cfg
-				echo "	KERNEL pxe-debian/${bootoption}/vmlinuz" >> ./menu.cfg
-				echo "	APPEND initrd=pxe-debian/initrd.img,pxe-debian/initrd-bin.img,pxe-debian/${bootoption}/modules.img,pxe-debian/rootfs.img quiet loglevel=0 nomodeset" >> ./menu.cfg
-				echo "	TEXT HELP" >> ./menu.cfg
-				echo "#			384MB RAM required, 1GB recommended" >> ./menu.cfg
-				echo "			1GB RAM recommended" >> ./menu.cfg
-				echo "	ENDTEXT" >> ./menu.cfg
+				echo "	KERNEL ${path_prefix}pxe-debian/${bootoption}/vmlinuz" >> ./menu.cfg
+				echo "	APPEND initrd=${path_prefix}pxe-debian/initrd.img,${path_prefix}pxe-debian/initrd-bin.img,${path_prefix}pxe-debian/${bootoption}/modules.img,${path_prefix}pxe-debian/rootfs.img quiet loglevel=0 nomodeset" >> ./menu.cfg
+				echo '	TEXT HELP' >> ./menu.cfg
+				echo '#			384MB RAM required, 1GB recommended' >> ./menu.cfg
+				echo '			1GB RAM recommended' >> ./menu.cfg
+				echo '	ENDTEXT' >> ./menu.cfg
 				echo '' >> ./menu.cfg
 
 				# slim kernel
 				echo "LABEL pxedebian${bootoption}slim" >> ./menu.cfg
 				echo "	MENU LABEL PXE Debian ${bootoption} (slim kernel)" >> ./menu.cfg
-				echo "	KERNEL pxe-debian/${bootoption}/vmlinuz" >> ./menu.cfg
-				echo "	APPEND initrd=pxe-debian/initrd.img,pxe-debian/initrd-bin.img,pxe-debian/${bootoption}/modules-slim.img,pxe-debian/rootfs.img quiet loglevel=0 nomodeset" >> ./menu.cfg
-				echo "	TEXT HELP" >> ./menu.cfg
-				echo "#			384MB RAM required, 1GB recommended" >> ./menu.cfg
-				echo "			1GB RAM recommended" >> ./menu.cfg
-				echo "	ENDTEXT" >> ./menu.cfg
+				echo "	KERNEL ${path_prefix}pxe-debian/${bootoption}/vmlinuz" >> ./menu.cfg
+				echo "	APPEND initrd=${path_prefix}pxe-debian/initrd.img,${path_prefix}pxe-debian/initrd-bin.img,${path_prefix}pxe-debian/${bootoption}/modules-slim.img,${path_prefix}pxe-debian/rootfs.img quiet loglevel=0 nomodeset" >> ./menu.cfg
+				echo '	TEXT HELP' >> ./menu.cfg
+				echo '#			384MB RAM required, 1GB recommended' >> ./menu.cfg
+				echo '			1GB RAM recommended' >> ./menu.cfg
+				echo '	ENDTEXT' >> ./menu.cfg
 				echo '' >> ./menu.cfg
 			fi
 		done
 
 		# back option
-		echo "#label back" >> ./menu.cfg
-		echo "#	MENU LABEL <- Back" >> ./menu.cfg
-		echo "#	KERNEL menu.c32" >> ./menu.cfg
-		echo "#	APPEND pxelinux.cfg/default" >> ./menu.cfg
-		echo "#	TEXT HELP" >> ./menu.cfg
-		echo "#			384MB RAM required, 1GB recommended" >> ./menu.cfg
-		echo "#			1GB RAM recommended" >> ./menu.cfg
-		echo "#	ENDTEXT" >> ./menu.cfg
+		echo '#label back' >> ./menu.cfg
+		echo '#	MENU LABEL <- Back' >> ./menu.cfg
+		echo '#	KERNEL menu.c32' >> ./menu.cfg
+		echo '#	APPEND pxelinux.cfg/default' >> ./menu.cfg
+		echo '#	TEXT HELP' >> ./menu.cfg
+		echo '##			384MB RAM required, 1GB recommended' >> ./menu.cfg
+		echo '#			1GB RAM recommended' >> ./menu.cfg
+		echo '#	ENDTEXT' >> ./menu.cfg
+	;;
+	'make-syslinux-autoboot')
+		cd ./img || exit 1
+		[ ! "${path_prefix}" = '' ] && path_prefix="${3}/"
+		if [ "${2}" = '' ]; then
+			echo 'make-syslinux-autoboot kernel [path/from/syslinux/to/files]'
+			exit 1
+		fi
+		if [ ! -e "./${2}" ]; then
+			echo 'kernel not exists'
+			exit 1
+		fi
 
-		# autoboot sample
+		# create empty
 		echo -n '' > ./menu-autoboot.cfg
-		echo "# Automatically boot pxe-debian on certain macs" >> ./menu-autoboot.cfg
-		echo "" >> ./menu-autoboot.cfg
-		echo "PROMPT 0" >> ./menu-autoboot.cfg
-		echo "NOESCAPE 1" >> ./menu-autoboot.cfg
-		echo "ALLOWOPTIONS 0" >> ./menu-autoboot.cfg
-		echo "TIMEOUT 1" >> ./menu-autoboot.cfg
-		echo "DEFAULT pxedebian" >> ./menu-autoboot.cfg
-		echo "" >> ./menu-autoboot.cfg
-		echo "LABEL pxedebian" >> ./menu-autoboot.cfg
-		echo "	MENU LABEL PXE Debian" >> ./menu-autoboot.cfg
-		echo "	KERNEL root/pxe-debian/686/vmlinuz" >> ./menu-autoboot.cfg
-		echo "	APPEND initrd=root/pxe-debian/initrd.img,root/pxe-debian/initrd-bin.img,root/pxe-debian/686/modules-slim.img,root/pxe-debian/rootfs.img quiet loglevel=0 nomodeset console=tty2" >> ./menu-autoboot.cfg
+
+		# header
+		echo '# Automatically boot pxe-debian on certain macs' >> ./menu-autoboot.cfg
+		echo '' >> ./menu-autoboot.cfg
+		echo 'PROMPT 0' >> ./menu-autoboot.cfg
+		echo 'NOESCAPE 1' >> ./menu-autoboot.cfg
+		echo 'ALLOWOPTIONS 0' >> ./menu-autoboot.cfg
+		echo 'TIMEOUT 1' >> ./menu-autoboot.cfg
+		echo 'DEFAULT pxedebian' >> ./menu-autoboot.cfg
+		echo '' >> ./menu-autoboot.cfg
+
+		# menu entry
+		echo 'LABEL pxedebian' >> ./menu-autoboot.cfg
+		echo '	MENU LABEL PXE Debian' >> ./menu-autoboot.cfg
+		echo "	KERNEL ${path_prefix}pxe-debian/${2}/vmlinuz" >> ./menu-autoboot.cfg
+		echo "	APPEND initrd=${path_prefix}pxe-debian/initrd.img,${path_prefix}pxe-debian/initrd-bin.img,${path_prefix}pxe-debian/${2}/modules-slim.img,${path_prefix}pxe-debian/rootfs.img quiet loglevel=0 nomodeset console=tty2" >> ./menu-autoboot.cfg
 	;;
 	'make-tarball')
 		[ -e './pxe-debian.tar' ] && exit 1
@@ -381,7 +398,8 @@ case ${1} in
 		echo ' mksquashfs-rootfs'
 		echo ' mksquashfs-kernel linux-image-package kernel-ARCH [ARCH-FOR-DPKG-ADD-ARCH]'
 		echo ' make-pxe-directory'
-		echo ' make-syslinux-config'
+		echo ' make-syslinux-config [path/from/syslinux/to/files]'
+		echo ' make-syslinux-autoboot kernel [path/from/syslinux/to/files]'
 		echo ' make-tarball'
 	;;
 esac

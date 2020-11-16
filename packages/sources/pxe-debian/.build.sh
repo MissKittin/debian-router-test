@@ -38,12 +38,6 @@ ${do_chown} && chown root:root ./dev-tools
 chmod 755 ./dev-tools
 ${do_chown} && chown root:root ./dev-tools/README.md
 chmod 644 ./dev-tools/README.md
-${do_chown} && chown root:root ./dev-tools/pxelinux.cfg
-chmod 755 ./dev-tools/pxelinux.cfg
-${do_chown} && chown root:root ./dev-tools/pxelinux.cfg/menu-autoboot.cfg
-chmod 644 ./dev-tools/pxelinux.cfg/menu-autoboot.cfg
-${do_chown} && chown root:root ./dev-tools/pxelinux.cfg/menu.cfg
-chmod 644 ./dev-tools/pxelinux.cfg/menu.cfg
 ${do_chown} && chown root:root ./dev-tools/initrd
 chmod 755 ./dev-tools/initrd
 ${do_chown} && chown root:root ./dev-tools/initrd/init

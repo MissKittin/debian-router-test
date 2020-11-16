@@ -1,6 +1,7 @@
 # notify-daemon
 Checks the OS and creates notifications when a defined exception occurs (and possibly takes action).  
-The program was created mainly to deliver a list of notifications to the webadmin's dashboard.
+The program was created mainly to deliver a list of notifications to the webadmin's dashboard.  
+**Conflicts with notify-daemon-v2.**
 
 ### Configuration
 * `settings.rc` -> basic settings

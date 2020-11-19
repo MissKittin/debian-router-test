@@ -1,0 +1,13 @@
+# Misc
+CONTAINER_NAME='plain'
+DESTINATION="$(dirname $0)"
+CONTAINER_ROOT='.container'
+
+# Start/Stop
+MOUNT_LABEL="${CONTAINER_NAME}"
+
+# Service
+CONTAINER_SERVICES=''
+
+# Console
+SHELL_PROMPT="${CONTAINER_NAME}"'@\\w:: '

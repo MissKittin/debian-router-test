@@ -2,7 +2,6 @@
 #################### Config ################################
 CONTAINER_NAME='vnc'
 DESTINATION=$(dirname $0)
-#DESTINATION='/home/containers/'"${CONTAINER_NAME}"
 MOUNT_LABEL="${CONTAINER_NAME}"
 CONTAINER_ROOT='.container'
 ############################################################
@@ -100,6 +99,22 @@ EOF
 chmod 755 ${DESTINATION}/${CONTAINER_ROOT}/mnt/tmp/.start-vnc.sh
 chroot ${DESTINATION}/${CONTAINER_ROOT}/mnt /tmp/.start-vnc.sh
 rm ${DESTINATION}/${CONTAINER_ROOT}/mnt/tmp/.start-vnc.sh
+############################################################
+
+#################### Bind directories ######################
+bindDirectory(){ [ "${2}" = '' ] && return 1; mount --bind "${1}" "${2}"; }
+if [ -e "${DESTINATION}/.binds.rc" ]; then
+	echo 'Binding directories...'
+	cat "${DESTINATION}/.binds.rc" | while read bindSource; do
+		bindSource="$(eval echo -n "${bindSource}")"
+		if [ ! "${bindSource%"${bindSource#?}"}" = '#' ] && [ -e "${bindSource}" ]; then
+			read bindDestination
+			bindDestination="$(eval echo -n "${bindDestination}")"
+			[ ! -e "${bindDestination}" ] && mkdir "${bindDestination}"
+			bindDirectory "${bindSource}" "${bindDestination}"
+		fi
+	done
+fi
 ############################################################
 
 #################### Configure desktop #####################

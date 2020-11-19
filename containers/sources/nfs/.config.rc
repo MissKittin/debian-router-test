@@ -1,0 +1,18 @@
+### Container configuration
+# Misc
+CONTAINER_NAME='nfs'
+DESTINATION="$(dirname $0)"
+CONTAINER_ROOT='.container'
+
+# Start/Stop
+MOUNT_LABEL="${CONTAINER_NAME}"
+
+# Service
+CONTAINER_SERVICES='
+	/etc/init.d/rpcbind
+	/etc/init.d/nfs-common
+	/etc/init.d/nfs-kernel-server
+'
+
+# Console
+SHELL_PROMPT="${CONTAINER_NAME}"'> '

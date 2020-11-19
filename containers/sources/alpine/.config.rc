@@ -1,0 +1,17 @@
+### Container configuration
+# Misc
+CONTAINER_NAME='alpine'
+DESTINATION="$(dirname $0)"
+CONTAINER_ROOT='.container'
+
+# Start/Stop
+MOUNT_LABEL="${CONTAINER_NAME}"
+
+# Build
+mirror='http://dl-cdn.alpinelinux.org/alpine'
+arch='x86_64'
+alpine_version='latest-stable'
+#apk_version='2.10.5-r0' # force version
+
+# Console
+SHELL_PROMPT="${CONTAINER_NAME}"'> '

@@ -1,0 +1,25 @@
+### Container configuration
+# Misc
+CONTAINER_NAME='corelinux'
+DESTINATION="$(dirname "$(readlink -f ${0})")" # Must be absolute path
+CONTAINER_ROOT='.container'
+
+# Build
+mirror='http://tinycorelinux.net'
+version='10.x'
+
+# 32bit version
+#arch='x86'
+#image_name='Core-current.iso'
+#rootfs_image_name='core.gz'
+
+# 64bit version
+arch='x86_64'
+image_name='CorePure64-current.iso'
+rootfs_image_name='corepure64.gz'
+
+# Start/Stop
+MOUNT_LABEL="${CONTAINER_NAME}"
+
+# Console
+SHELL_PROMPT="${CONTAINER_NAME}"'> '

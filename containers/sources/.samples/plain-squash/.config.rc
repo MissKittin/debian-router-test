@@ -1,0 +1,15 @@
+# Misc
+CONTAINER_NAME='plain-squash'
+DESTINATION="$(dirname $0)"
+CONTAINER_ROOT='.container'
+
+# Start/Stop
+MOUNT_LABEL="${CONTAINER_NAME}"
+CONTAINER_ON_RAM=true
+CONTAINER_ROOTFS_IMAGE='.rootfs.img'
+
+# Service
+CONTAINER_SERVICES=''
+
+# Console
+SHELL_PROMPT="${CONTAINER_NAME}"'> '

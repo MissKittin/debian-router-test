@@ -1,0 +1,3 @@
+# PXE server
+/home/pxe/root
+	${DESTINATION}/${CONTAINER_ROOT}/mnt/home/pxe/root

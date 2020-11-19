@@ -1,23 +1,30 @@
 #!/bin/sh
 #################### Config - container ####################
-CONTAINER_NAME='corelinux'
-#DESTINATION='/home/containers/'"${CONTAINER_NAME}"
-DESTINATION=$(dirname "$(readlink -f ${0})") # Must be absolute path
-MOUNT_LABEL="${CONTAINER_NAME}"
-CONTAINER_ROOT='.container'
+#CONTAINER_NAME='corelinux'
+#DESTINATION=$(dirname "$(readlink -f ${0})") # Must be absolute path
+#MOUNT_LABEL="${CONTAINER_NAME}"
+#CONTAINER_ROOT='.container'
 #################### Config - build ########################
-mirror='http://tinycorelinux.net'
-version='10.x'
-
-# 32bit version
-#arch='x86'
-#image_name='Core-current.iso'
-#rootfs_image_name='core.gz'
-
-# 64bit version
-arch='x86_64'
-image_name='CorePure64-current.iso'
-rootfs_image_name='corepure64.gz'
+#mirror='http://tinycorelinux.net'
+#version='10.x'
+#
+## 32bit version
+##arch='x86'
+##image_name='Core-current.iso'
+##rootfs_image_name='core.gz'
+#
+## 64bit version
+#arch='x86_64'
+#image_name='CorePure64-current.iso'
+#rootfs_image_name='corepure64.gz'
+#################### Config ################################
+config_rc_path="$(dirname "$(readlink -f "${0}")")/.config.rc"
+if [ ! -e "${config_rc_path}" ]; then
+	echo "error: ${config_rc_path} not found"
+	exit 1
+fi
+. "${config_rc_path}"
+unset config_rc_path
 ############################################################
 
 #################### Check environment #####################
@@ -147,6 +154,22 @@ EOF
 chmod 755 ${DESTINATION}/${CONTAINER_ROOT}/setup.sh
 chroot ${DESTINATION}/${CONTAINER_ROOT} /setup.sh
 rm ${DESTINATION}/${CONTAINER_ROOT}/setup.sh
+############################################################
+
+#################### Bind directories ######################
+bindDirectory(){ [ "${2}" = '' ] && return 1; mount --bind "${1}" "${2}"; }
+if [ -e "${DESTINATION}/.binds.rc" ]; then
+	echo 'Binding directories...'
+	cat "${DESTINATION}/.binds.rc" | while read bindSource; do
+		bindSource="$(eval echo -n "${bindSource}")"
+		if [ ! "${bindSource%"${bindSource#?}"}" = '#' ] && [ -e "${bindSource}" ]; then
+			read bindDestination
+			bindDestination="$(eval echo -n "${bindDestination}")"
+			[ ! -e "${bindDestination}" ] && mkdir "${bindDestination}"
+			bindDirectory "${bindSource}" "${bindDestination}"
+		fi
+	done
+fi
 ############################################################
 
 logger --tag containers container ${CONTAINER_NAME} started

@@ -2,16 +2,23 @@
 # TUT: https://wiki.alpinelinux.org/wiki/Alpine_Linux_in_a_chroot
 
 #################### Config - container ####################
-CONTAINER_NAME='alpine'
-DESTINATION=$(dirname $0)
-#DESTINATION='/home/containers/'"${CONTAINER_NAME}"
-MOUNT_LABEL="${CONTAINER_NAME}"
-CONTAINER_ROOT='.container'
+#CONTAINER_NAME='alpine'
+#DESTINATION=$(dirname $0)
+#MOUNT_LABEL="${CONTAINER_NAME}"
+#CONTAINER_ROOT='.container'
 #################### Config - build ########################
-mirror='http://dl-cdn.alpinelinux.org/alpine'
-arch='x86_64'
-alpine_version='latest-stable'
-#apk_version='2.10.5-r0' # force version
+#mirror='http://dl-cdn.alpinelinux.org/alpine'
+#arch='x86_64'
+#alpine_version='latest-stable'
+##apk_version='2.10.5-r0' # force version
+#################### Config ################################
+config_rc_path="$(dirname "$(readlink -f "${0}")")/.config.rc"
+if [ ! -e "${config_rc_path}" ]; then
+	echo "error: ${config_rc_path} not found"
+	exit 1
+fi
+. "${config_rc_path}"
+unset config_rc_path
 ############################################################
 
 #################### Check environment #####################
@@ -68,6 +75,22 @@ rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/build
 for i in dev dev/pts proc sys; do
 	mount --bind /${i} ${DESTINATION}/${CONTAINER_ROOT}/${i}
 done
+############################################################
+
+#################### Bind directories ######################
+bindDirectory(){ [ "${2}" = '' ] && return 1; mount --bind "${1}" "${2}"; }
+if [ -e "${DESTINATION}/.binds.rc" ]; then
+	echo 'Binding directories...'
+	cat "${DESTINATION}/.binds.rc" | while read bindSource; do
+		bindSource="$(eval echo -n "${bindSource}")"
+		if [ ! "${bindSource%"${bindSource#?}"}" = '#' ] && [ -e "${bindSource}" ]; then
+			read bindDestination
+			bindDestination="$(eval echo -n "${bindDestination}")"
+			[ ! -e "${bindDestination}" ] && mkdir "${bindDestination}"
+			bindDirectory "${bindSource}" "${bindDestination}"
+		fi
+	done
+fi
 ############################################################
 
 logger --tag containers container ${CONTAINER_NAME} started

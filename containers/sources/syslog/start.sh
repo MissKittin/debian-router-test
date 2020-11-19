@@ -1,10 +1,17 @@
 #!/bin/sh
 #################### Config ################################
-CONTAINER_NAME='syslog'
-DESTINATION=$(dirname $0)
-#DESTINATION='/home/containers/'"${CONTAINER_NAME}"
-MOUNT_LABEL="${CONTAINER_NAME}"
-CONTAINER_ROOT='.container'
+#CONTAINER_NAME='syslog'
+#DESTINATION=$(dirname $0)
+#MOUNT_LABEL="${CONTAINER_NAME}"
+#CONTAINER_ROOT='.container'
+
+config_rc_path="$(dirname "$(readlink -f "${0}")")/.config.rc"
+if [ ! -e "${config_rc_path}" ]; then
+	echo "error: ${config_rc_path} not found"
+	exit 1
+fi
+. "${config_rc_path}"
+unset config_rc_path
 ############################################################
 
 #################### Check environment #####################
@@ -71,6 +78,22 @@ echo 'Stopping service...'
 chroot ${DESTINATION}/${CONTAINER_ROOT}/mnt /etc/init.d/rsyslog stop > /dev/null 2>&1
 ############################################################
 
+#################### Bind directories ######################
+bindDirectory(){ [ "${2}" = '' ] && return 1; mount --bind "${1}" "${2}"; }
+if [ -e "${DESTINATION}/.binds.rc" ]; then
+	echo 'Binding directories...'
+	cat "${DESTINATION}/.binds.rc" | while read bindSource; do
+		bindSource="$(eval echo -n "${bindSource}")"
+		if [ ! "${bindSource%"${bindSource#?}"}" = '#' ] && [ -e "${bindSource}" ]; then
+			read bindDestination
+			bindDestination="$(eval echo -n "${bindDestination}")"
+			[ ! -e "${bindDestination}" ] && mkdir "${bindDestination}"
+			bindDirectory "${bindSource}" "${bindDestination}"
+		fi
+	done
+fi
+############################################################
+
 #################### Secure container ######################
 echo 'Removing system mountpoints...'
 for i in sys dev/pts; do
@@ -112,11 +135,12 @@ if [ "$1" = 'strip' ] && [ -e ${DESTINATION}/${CONTAINER_ROOT}/diff ]; then
 fi
 ############################################################
 
-#################### Start service #########################
-echo 'Starting service...'
-chroot ${DESTINATION}/${CONTAINER_ROOT}/mnt /etc/init.d/rsyslog start
-[ -e "${DESTINATION}/${CONTAINER_ROOT}/mnt/etc/init.d/log-rotate.sh" ] && chroot ${DESTINATION}/${CONTAINER_ROOT}/mnt /etc/init.d/log-rotate.sh start
-############################################################
+#################### Start services ########################
+if [ -e "${DESTINATION}/service.sh" ]; then
+	echo 'Starting services...'
+	${DESTINATION}/service.sh start
+fi
+###########################################################
 
 logger --tag containers container ${CONTAINER_NAME} started
 [ -e ${DESTINATION}/${CONTAINER_ROOT}/.start.sh.pid ] && rm ${DESTINATION}/${CONTAINER_ROOT}/.start.sh.pid # remove start.sh PID

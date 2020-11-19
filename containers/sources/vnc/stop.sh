@@ -2,7 +2,6 @@
 #################### Config ################################
 CONTAINER_NAME='vnc'
 DESTINATION=$(dirname $0)
-#DESTINATION='/home/containers/'"${CONTAINER_NAME}"
 CONTAINER_ROOT='.container'
 ############################################################
 
@@ -25,15 +24,31 @@ if ! mountpoint -q ${DESTINATION}/${CONTAINER_ROOT} > /dev/null 2>&1; then
 fi
 ############################################################
 
-#################### Stop service ##########################
-echo 'Stopping service...'
-${DESTINATION}/service.sh stop > /dev/null 2>&1
-sleep 1
+#################### Stop services #########################
+if [ -e "${DESTINATION}/service.sh" ]; then
+	echo 'Stopping services...'
+	${DESTINATION}/service.sh stop
+	sleep 1
+fi
 ############################################################
 
 #################### Kill start.sh #########################
 [ -e ${DESTINATION}/${CONTAINER_ROOT}/mnt/tmp/.start-${CONTAINER_NAME}.sh.pid ] && kill -9 $(cat ${DESTINATION}/${CONTAINER_ROOT}/mnt/tmp/.start-${CONTAINER_NAME}.sh.pid)
 [ -e ${DESTINATION}/${CONTAINER_ROOT}/.start.sh.pid ] && kill -9 $(cat ${DESTINATION}/${CONTAINER_ROOT}/.start.sh.pid)
+############################################################
+
+#################### Unbind directories ####################
+unbindDirectory(){ [ "${2}" = '' ] && return 1; container_umount "${2}"; }
+if [ -e "${DESTINATION}/.binds.rc" ]; then
+	echo 'Unbinding directories...'
+	cat "${DESTINATION}/.binds.rc" | while read unbindSource; do
+		if [ ! "${unbindSource%"${unbindSource#?}"}" = '#' ]; then
+			read unbindDestination
+			unbindDestination="$(eval echo -n "${unbindDestination}")"
+			mountpoint -q "${unbindDestination}" && unbindDirectory "${unbindSource}" "${unbindDestination}"
+		fi
+	done
+fi
 ############################################################
 
 #################### Stop container ########################

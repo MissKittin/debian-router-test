@@ -1,0 +1,14 @@
+### Container configuration
+# Misc
+CONTAINER_NAME='stunnel'
+DESTINATION="$(dirname $0)"
+CONTAINER_ROOT='.container'
+
+# Start/Stop
+MOUNT_LABEL="${CONTAINER_NAME}"
+
+# Service
+CONTAINER_SERVICES='/etc/init.d/stunnel4'
+
+# Console
+SHELL_PROMPT="${CONTAINER_NAME}"'> '

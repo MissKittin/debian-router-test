@@ -1,10 +1,17 @@
 #!/bin/sh
 #################### Config ################################
-CONTAINER_NAME='syslog'
-DESTINATION=$(dirname $0)
-#DESTINATION='/home/containers/'"${CONTAINER_NAME}"
-CONTAINER_ROOT='.container'
-SERVICE_NAME='/etc/init.d/rsyslog'
+#CONTAINER_NAME='syslog'
+#DESTINATION=$(dirname $0)
+#CONTAINER_ROOT='.container'
+#CONTAINER_SERVICES='/etc/init.d/rsyslog'
+
+config_rc_path="$(dirname "$(readlink -f "${0}")")/.config.rc"
+if [ ! -e "${config_rc_path}" ]; then
+	echo "error: ${config_rc_path} not found"
+	exit 1
+fi
+. "${config_rc_path}"
+unset config_rc_path
 ############################################################
 
 #################### Check environment #####################
@@ -22,4 +29,10 @@ if ! mountpoint -q ${DESTINATION}/${CONTAINER_ROOT} > /dev/null 2>&1; then
 fi
 ############################################################
 
-[ "$SERVICE_NAME" = '' ] && exec chroot ${DESTINATION}/${CONTAINER_ROOT}/mnt $@ || exec chroot ${DESTINATION}/${CONTAINER_ROOT}/mnt ${SERVICE_NAME} $@
+if [ "${CONTAINER_SERVICES}" = '' ]; then
+	exec chroot ${DESTINATION}/${CONTAINER_ROOT}/mnt $@
+else
+	for service in ${CONTAINER_SERVICES}; do
+		exec chroot ${DESTINATION}/${CONTAINER_ROOT}/mnt ${service} $@
+	done
+fi

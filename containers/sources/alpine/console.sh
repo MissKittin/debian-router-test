@@ -1,10 +1,17 @@
 #!/bin/sh
 #################### Config ################################
-CONTAINER_NAME='alpine'
-DESTINATION=$(dirname $0)
-#DESTINATION='/home/containers/'"${CONTAINER_NAME}"
-SHELL_PROMPT="${CONTAINER_NAME}"'@\\w:: '
-CONTAINER_ROOT='.container'
+#CONTAINER_NAME='alpine'
+#DESTINATION=$(dirname $0)
+#SHELL_PROMPT="${CONTAINER_NAME}"'@\\w:: '
+#CONTAINER_ROOT='.container'
+
+config_rc_path="$(dirname "$(readlink -f "${0}")")/.config.rc"
+if [ ! -e "${config_rc_path}" ]; then
+	echo "error: ${config_rc_path} not found"
+	exit 1
+fi
+. "${config_rc_path}"
+unset config_rc_path
 ############################################################
 
 #################### Check environment #####################

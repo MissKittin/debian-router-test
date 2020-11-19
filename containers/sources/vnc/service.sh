@@ -2,7 +2,6 @@
 #################### Config ################################
 CONTAINER_NAME='vnc'
 DESTINATION=$(dirname $0)
-#DESTINATION='/home/containers/'"${CONTAINER_NAME}"
 CONTAINER_ROOT='.container'
 ############################################################
 

@@ -1,0 +1,17 @@
+default menu.c32
+
+menu title PXE
+menu tabmsg
+MENU MASTER PASSWD yourpasswordhash
+ALLOWOPTIONS 0
+
+LABEL -
+	MENU LABEL First section
+	MENU DISABLE
+
+LABEL dos622
+	MENU LABEL MS-DOS 6.22
+	LINUX memdisk
+	INITRD root/dos622/dos622.img.gz
+
+MENU SEPARATOR

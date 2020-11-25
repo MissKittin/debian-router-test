@@ -4,16 +4,20 @@ notify_daemon_timestamp()
 	# ${1} -> event name
 	# ${2} -> timestamp path
 	# ${3} -> timestamp validity
+	# ${4} -> 'empty-timestamp' (optional)
 
 	# Declare variables
 	local create_timestamp=true
 
 	# Initialize timestamp file
 	[ -e "${2}" ] && create_timestamp=false || log " ${1} notify_daemon_timestamp: timestamp file will be created"
-	[ -e "${2}" ] || echo "${1} event begin timestamp $(date '+%d.%m.%Y %H:%M:%S')" >> ${2}
+	#[ -e "${2}" ] || echo "${1} event begin timestamp $(date '+%d.%m.%Y %H:%M:%S')" >> ${2}
+	if [ ! -e "${2}" ]; then
+		[ "${4}" = 'empty-timestamp' ] && echo -n '' > ${2} || echo "${1} event begin timestamp $(date '+%d.%m.%Y %H:%M:%S')" >> ${2}
+	fi
 
 	if ${create_timestamp} || [ "$(($(date -r ${2} '+%s') + ${3}))" -lt "$(date '+%s')" ]; then
-		echo "${1} event new timestamp $(date '+%d.%m.%Y %H:%M:%S')" >> ${2}
+		[ "${4}" = 'empty-timestamp' ] && echo -n '' > ${2} || echo "${1} event new timestamp $(date '+%d.%m.%Y %H:%M:%S')" >> ${2}
 		log " ${1} notify_daemon_timestamp: new timestamp saved"
 		return 0
 	else

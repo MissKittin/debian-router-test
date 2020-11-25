@@ -1,0 +1,26 @@
+# fstrim task
+# 20.11.2020
+[ -e "${lib_dir}/libtimestamp.rc" ] && . ${lib_dir}/libtimestamp.rc
+event_name='fstrim'
+
+check_fstrim()
+{
+	local trim_every='604800' # seconds
+
+	if [ ! -d '/var/local/notify-daemon-fstrim' ]; then
+		log 'fstrim: error - notify-daemon-fstrim package is broken'
+	elif [ ! -x '/sbin/fstrim' ]; then
+		log 'fstrim: error - /sbin/fstrim not found'
+	elif notify_daemon_timestamp 'fstrim' '/var/local/notify-daemon-fstrim/last-trim' "${trim_every}" 'empty-timestamp'; then
+		log 'fstrim: starting'
+		/sbin/fstrim -a -v 2>&1 | while read output_line; do
+			log "fstrim: ${output_line}"
+		done
+		log 'fstrim: ended'
+	else
+		log 'fstrim: no action taken'
+	fi
+
+	return 1
+}
+checklist="$checklist fstrim"

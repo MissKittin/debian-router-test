@@ -54,9 +54,7 @@ ln -s ../../pxelinux/pxelinux.cfg .
 # pxelinux root - pxe root
 cd ${destination}/root
 ln -s ${destination%/*}/root .
-######################################################
 
-######################################################
 # pxelinux root - memdisk
 cd ${destination}/root
 ln -s ../../pxelinux/memdisk/memdisk .

@@ -35,6 +35,7 @@ case ${1} in
 	'bootstrap')
 		[ -e './rootfs' ] || mkdir rootfs
 		cd ./rootfs || exit 1
+
 		if [ "${2}" = '' ]; then
 			echo 'usage: bootstrap ARCHITECTURE'
 			exit 1
@@ -50,6 +51,7 @@ case ${1} in
 	;;
 	'bootstrap-clear')
 		cd ./rootfs || exit 1
+
 		rm -r -f ./dev/*
 		rm ./etc/resolv.conf
 		echo 'debian' > ./etc/hostname
@@ -57,6 +59,7 @@ case ${1} in
 	;;
 	'install-packages')
 		cd ./rootfs || exit 1
+
 		mount --bind /dev ./dev
 		mount --bind /dev/pts ./dev/pts
 		cat /etc/resolv.conf > ./etc/resolv.conf
@@ -69,10 +72,16 @@ case ${1} in
 	;;
 	'strip')
 		cd ./rootfs || exit 1
-		chroot . apt-get purge -y --allow-remove-essential e2fsprogs tzdata
-		chroot . apt-get autoremove --purge -y
-		chroot . apt-get clean
+
+		# remove packages
+		[ "${2}" = 'noapt' ] || chroot . apt-get purge -y --allow-remove-essential e2fsprogs tzdata
+		[ "${2}" = 'noapt' ] || chroot . apt-get autoremove --purge -y
+		[ "${2}" = 'noapt' ] || chroot . apt-get clean
+
+		# remove cache
 		rm ./var/cache/ldconfig/aux-cache
+
+		# remove backup files
 		rm ./var/cache/debconf/*.dat-old
 		rm ./var/lib/dpkg/*-old
 		rm ./var/lib/ucf/hashfile.*
@@ -80,21 +89,39 @@ case ${1} in
 		for i in group- gshadow- passwd- shadow- subgid- subuid-; do
 			rm ./etc/${i}
 		done
+
+		# remove docs except copyrights
 		find ./usr/share/doc -depth -type f ! -name copyright | xargs rm
 		for i in 1 2 3 4 5 6 7 8 9 10; do
 			find ./usr/share/doc -empty | xargs rmdir
 		done
 		rm -rf ./usr/share/man/* ./usr/share/groff/* ./usr/share/info/* ./usr/share/lintian/* ./usr/share/linda/* ./var/cache/man/*
+
+		# remove translations
 		find ./usr/share/locale -mindepth 1 -maxdepth 1 | xargs rm -r
+
+		# remove bash completions
 		rm ./usr/share/bash-completion/completions/*
+
+		# remove python bytecodes
 		find ./usr/share/python -type f -name *.pyc | xargs rm
+
+		# remove pixmaps
 		find ./usr/share/pixmaps -type f -or -type l | xargs rm
+
+		# remove C headers
 		rm -r -f ./usr/includes/*
+
+		# purge fdisk
 		for i in $(ls ./sbin/*fdisk | xargs) ./usr/share/doc/fdisk/copyright; do
 			[ -e "${i}" ] && echo -n '' > ${i}
 		done
+
+		# purge startpar
 		echo -n '' > ./lib/startpar/startpar
 		echo -n '' > ./usr/share/doc/startpar/copyright
+
+		# remove apt lists
 		for i in ./var/lib/apt/lists/*; do
 			[ "${i}" = './var/lib/apt/lists/*' ] && break
 			if [ "${i}" = './var/lib/apt/lists/auxfiles' ] || [ "${i}" = './var/lib/apt/lists/lock' ] || [ "${i}" = './var/lib/apt/lists/partial' ]; then
@@ -103,10 +130,17 @@ case ${1} in
 				rm "${i}"
 			fi
 		done
+
+		# clear mountpoints
+		rm -r -f ./dev/*
+		rm -r -f ./run/*
+
+		# remove root history
 		rm ./root/.bash_history
 	;;
 	'install-pxe-debian-package')
 		cd ./rootfs || exit 1
+
 		if [ "${2}" = '' ]; then
 			echo 'install-pxe-debian /path/to/package'
 			exit 1
@@ -180,6 +214,7 @@ case ${1} in
 	;;
 	'mkinitrd')
 		setup_build_env
+
 		if [ ! -e './build-initrd.sh' ]; then
 			echo '#!/bin/sh' > ./build-initrd.sh
 			echo 'cd /build/initrd' >> ./build-initrd.sh
@@ -196,12 +231,14 @@ case ${1} in
 	;;
 	'mkinitrd-bin')
 		setup_build_env
+
 		if [ ! -e './build-initrd-bin.sh' ]; then
 			echo '#!/bin/sh' > ./build-initrd-bin.sh
 			echo 'cd /build' >> ./build-initrd-bin.sh
 			echo 'mkdir ./.initrd-bin' >> ./build-initrd-bin.sh
 			echo 'cd ./.initrd-bin' >> ./build-initrd-bin.sh
 			echo 'mkdir ./bin' >> ./build-initrd-bin.sh
+			echo 'ln -s /bin/busybox ./sh' >> ./build-initrd-bin.sh
 			echo 'cd ./bin' >> ./build-initrd-bin.sh
 			echo 'cp -rfp /bin/busybox ./busybox' >> ./build-initrd-bin.sh
 			echo 'cd ..' >> ./build-initrd-bin.sh
@@ -220,6 +257,7 @@ case ${1} in
 	;;
 	'mksquashfs-rootfs')
 		setup_build_env
+
 		if [ ! -e './build-root.sh' ]; then
 			echo '#!/bin/sh' > ./build-root.sh
 			echo 'cd /build' >> ./build-root.sh
@@ -245,6 +283,7 @@ case ${1} in
 			exit 1
 		fi
 		setup_build_env
+
 		mount --bind /dev ./dev
 		mount --bind /dev/pts ./dev/pts
 		cat /etc/resolv.conf > ./etc/resolv.conf
@@ -289,9 +328,13 @@ case ${1} in
 		echo '# cmdline:' >> ./menu.cfg
 		echo '#	debuginitrd' >> ./menu.cfg
 		echo '#	init=/path/to/init' >> ./menu.cfg
+		echo '#	rdinit=/sh' >> ./menu.cfg
 		echo '#	diffflags=mount_flags_for_mnt' >> ./menu.cfg
 		echo '#	rootflags=mount_flags_for_mnt_root' >> ./menu.cfg
 		echo '#	patchflafs=mount_flags_for_sqs_patches' >> ./menu.cfg
+		echo '#	forcemodule=forcemodulename' >> ./menu.cfg
+		echo '#	forcemodulename.parameter=value' >> ./menu.cfg
+		echo '#	blacklistmodule=blacklistmodulename' >> ./menu.cfg
 		echo '' >> ./menu.cfg
 
 		# header
@@ -371,11 +414,44 @@ case ${1} in
 		echo "	KERNEL ${path_prefix}pxe-debian/${2}/vmlinuz" >> ./menu-autoboot.cfg
 		echo "	APPEND initrd=${path_prefix}pxe-debian/initrd.img,${path_prefix}pxe-debian/initrd-bin.img,${path_prefix}pxe-debian/${2}/modules-slim.img,${path_prefix}pxe-debian/rootfs.img quiet loglevel=0 nomodeset console=tty2" >> ./menu-autoboot.cfg
 	;;
+	'make-grub2-debug-config')
+		cd ./img || exit 1
+		current_directory="$(pwd)"
+
+		# create empty
+		echo -n '' > ./grub-debug.cfg
+
+		# header
+		echo "search --set=root --file ${current_directory}" >> ./grub-debug.cfg
+		echo '' >> ./grub-debug.cfg
+
+		# boot options
+		find -type d | while read bootoption; do
+			if [ ! "${bootoption}" = '.' ]; then
+				bootoption="$(echo -n "${bootoption}" | sed 's\./\\g')"
+
+				# full kernel
+				echo "menuentry \"PXE Debian ${bootoption}\" {" >> ./grub-debug.cfg
+				echo "	linux ${current_directory}/${bootoption}/vmlinuz quiet loglevel=0 nomodeset" >> ./grub-debug.cfg
+				echo "	initrd ${current_directory}/initrd.img ${current_directory}/initrd-bin.img ${current_directory}/${bootoption}/modules.img ${current_directory}/rootfs.img" >> ./grub-debug.cfg
+				echo '}' >> ./grub-debug.cfg
+				echo '' >> ./grub-debug.cfg
+
+				# slim kernel
+				echo "menuentry \"PXE Debian ${bootoption} slim\" {" >> ./grub-debug.cfg
+				echo "	linux ${current_directory}/${bootoption}/vmlinuz quiet loglevel=0 nomodeset" >> ./grub-debug.cfg
+				echo "	initrd ${current_directory}/initrd.img ${current_directory}/initrd-bin.img ${current_directory}/${bootoption}/modules-slim.img ${current_directory}/rootfs.img" >> ./grub-debug.cfg
+				echo '}' >> ./grub-debug.cfg
+				echo '' >> ./grub-debug.cfg
+			fi
+		done
+	;;
 	'make-tarball')
 		[ -e './pxe-debian.tar' ] && exit 1
 		[ -e './pxe-debian.tar.gz' ] && exit 1
 		[ ! -e './img' ] && exit 1
 
+		[ -e './img/grub-debug.cfg' ] && rm ./img/grub-debug.cfg
 		mv ./img ./pxe-debian
 		tar cvf ./pxe-debian.tar ./pxe-debian
 		echo 'zipping...'
@@ -390,7 +466,7 @@ case ${1} in
 		echo ' bootstrap ARCH'
 		echo ' bootstrap-clear'
 		echo ' install-packages'
-		echo ' strip'
+		echo ' strip [noapt]'
 		echo ' install-pxe-debian-package /path/to/package'
 		echo ' setup-boot-queue [pxe-debian-only]'
 		echo ' mkinitrd'
@@ -400,6 +476,7 @@ case ${1} in
 		echo ' make-pxe-directory'
 		echo ' make-syslinux-config [path/from/syslinux/to/files]'
 		echo ' make-syslinux-autoboot kernel [path/from/syslinux/to/files]'
+		echo ' make-grub2-debug-config'
 		echo ' make-tarball'
 	;;
 esac

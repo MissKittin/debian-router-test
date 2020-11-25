@@ -13,7 +13,7 @@
 			shell_exec($shell_sh_location . ' reboot');
 			break;
 		case 'suspend':
-			shell_exec('nohup ' . $shell_sh_location . ' suspend > /dev/null 2>&1 &');
+			shell_exec($shell_sh_location . ' suspend');
 			break;
 	}
 ?>

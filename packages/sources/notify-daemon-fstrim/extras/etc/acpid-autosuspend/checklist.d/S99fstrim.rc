@@ -1,0 +1,5 @@
+# Block suspend if fstrim is running
+if ps --no-headers -exo args | grep '/sbin/fstrim' | grep -v 'grep'; then
+	BREAK='true'
+	[ "${REASON}" = '' ] && REASON='/sbin/fstrim is running'
+fi

@@ -5,8 +5,8 @@ Simple wrappers for qemu
 1) create directory for VMs (eg `/home/vms`)
 
 ### First method
-2) copy files from `tools` directory, chmod 755 all `*.sh` files
-3) remove `PLACEHOLDER` from `.bin` directory
+2) run `.build.sh`
+3) copy `.drivers` `.samples` `.webadmin` from `tools` directory, chmod 755 all `*.sh` files
 4) copy vm directory
 5) cd to the vm directory
 6) configure vm in `*.sh` files, create hdd, etc
@@ -19,3 +19,8 @@ Simple wrappers for qemu
 4) configure vm in `*.sh` files, create hdd, etc
 5) `./start.sh`, setup guest OS, create snapshots, etc
 6) `./daemon.sh`
+
+### webadmin module
+(uses scripts from `.bin` directory)
+1) `cd .webadmin`
+2) `./install.sh`

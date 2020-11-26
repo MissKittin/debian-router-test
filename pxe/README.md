@@ -9,9 +9,10 @@ UEFI is not supported yet
 3) run `apt-get install pxelinux` on server
 4) run `/home/pxe/pxelinux/update-links.sh`
 5) edit config files listed below
-6) restart isc-dhcp-server and dnsmasq
-7) place OS files to the eg `/home/pxe/root/OSNAME`
-8) edit `/home/pxe/pxelinux/pxelinux.cfg/default`
+6) configure firewall: allow in `69/udp` (tftp)
+7) restart isc-dhcp-server and dnsmasq
+8) place OS files to the eg `/home/pxe/root/OSNAME`
+9) edit `/home/pxe/pxelinux/pxelinux.cfg/default`
 
 ### Configs
 DHCP: `configs/sources/isc-dhcp-server/etc/dhcp/subnet-lan.conf`  

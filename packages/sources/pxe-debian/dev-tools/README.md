@@ -40,7 +40,7 @@ You can make your corrections after each step
 	edit `img/menu-autoboot.cfg`  
 	if you using debian-router pxe solution, type `pxe-debian-toolbox.sh make-syslinux-autoboot kernel root`  
 	cd to pxelinux.cfg and `ln -s ../../root/pxe-debian/menu-autoboot.cfg 00-11-22-33-44-55-66`  
-	where `00-11-22-33-44-55-66` is client MAC address
+	where `00-11-22-33-44-55-66` is client MAC address (you can read this value from `dnsmasq-tftp` in syslog)
 17) run `pxe-debian-toolbox.sh make-tarball`
 18) send `pxe-debian.tar.gz` to the server, unpack and deploy
 

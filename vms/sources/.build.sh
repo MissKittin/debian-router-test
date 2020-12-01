@@ -2,7 +2,7 @@
 cd "$(dirname "$(readlink -f "${0}")")"
 do_chown='false'
 
-[ ! -e './sources/.bin' ] && mkdir ./sources/.bin
+[ ! -e './.bin' ] && mkdir ./.bin
 
 find -type d | while read dir; do
 	${do_chown} && chown root:root ${dir}

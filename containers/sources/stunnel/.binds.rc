@@ -3,5 +3,5 @@ ${DESTINATION}/.ssl
 	${DESTINATION}/${CONTAINER_ROOT}/mnt/ssl
 
 # Log
-/tmp
-	${DESTINATION}/${CONTAINER_ROOT}/mnt/tmp
+/tmp/.rclocal_daemons_logs
+	${DESTINATION}/${CONTAINER_ROOT}/mnt/tmp/.rclocal_daemons_logs

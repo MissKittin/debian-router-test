@@ -21,7 +21,7 @@ if [ -e "$(dirname "${0}")/extras-status.sh" ]; then
 fi
 
 # Check if installed
-if [ ! -e /usr/local/etc/init-parallel.d ] || [ ! -e /usr/local/etc/init.d/ainit-parallel ] || [ ! -e /usr/local/etc/init.d/ainit-parallel-single ] || [ ! -e /etc/init.d/ainit-parallel ] || [ ! -e /etc/init.d/ainit-parallel-single ] || [ ! -e /usr/local/sbin/init-parallel ]; then
+if [ ! -e /usr/local/etc/init-parallel ] || [ ! -e /usr/local/etc/init.d/ainit-parallel ] || [ ! -e /usr/local/etc/init.d/ainit-parallel-single ] || [ ! -e /etc/init.d/ainit-parallel ] || [ ! -e /etc/init.d/ainit-parallel-single ] || [ ! -e /usr/local/sbin/init-parallel ]; then
 	echo 'Not installed'
 	exit 1
 fi
@@ -42,8 +42,8 @@ echo ''
 #	rm /usr/local/etc/rc.local.d/*_init-parallel-queue.rc > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Uninstall - /usr/local/etc
-echo -n '[rm] /usr/local/etc/init-parallel.d'
-	rm /usr/local/etc/init-parallel.d > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+echo -n '[rm] /usr/local/etc/init-parallel'
+	rm /usr/local/etc/init-parallel > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Uninstall - /usr/local/etc/init.d
 for i in ainit-parallel ainit-parallel-single; do

@@ -169,7 +169,7 @@ while true; do
 			dlog 'main: if ${rotate_log} = ? (default: false)'
 			if ${rotate_log}; then
 				dlog 'main: if ${rotate_log} = true'
-				rotated_log="${log_file}-$(date '+%d_%m_%Y')"
+				rotated_log="${log_file}-$(date '+%d_%m_%Y-%H_%M_%S')"
 				dlog "main: mv ${log_file} ${rotated_log}"
 				mv ${log_file} ${rotated_log}
 				dlog 'main: if ${compress_log} = ? (default: false)'
@@ -179,7 +179,7 @@ while true; do
 				fi
 			fi
 			dlog "main: exec ${0} daemon"
-			exec $0 daemon $@
+			exec $0 $@
 		else
 			dlog "main: if [ ${loop_indicator} -ge ${clear_environment_every} ] = false"
 			dlog "main: loop_indicator++ (${loop_indicator}+1)"

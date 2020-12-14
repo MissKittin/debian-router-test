@@ -59,7 +59,7 @@ cat > ${DESTINATION}/${CONTAINER_ROOT}/mnt/tmp/.start-${CONTAINER_NAME}.sh << EO
 exit 0
 EOF
 chmod 755 "${DESTINATION}/${CONTAINER_ROOT}/mnt/tmp/.start-${CONTAINER_NAME}.sh"
-chroot "${DESTINATION}/${CONTAINER_ROOT}/mnt /tmp/.start-${CONTAINER_NAME}.sh"
+chroot "${DESTINATION}/${CONTAINER_ROOT}/mnt" "/tmp/.start-${CONTAINER_NAME}.sh"
 echo -n '' > "${DESTINATION}/${CONTAINER_ROOT}/.configured"
 fi
 

@@ -27,10 +27,3 @@ suspend_command='/usr/local/sbin/acpid-suspend.sh'
 
 # Import programmed calendar
 [ -e "${config_dir}/calendar.rc" ] && . ${config_dir}/calendar.rc
-
-# Import config.rc.d
-for config_i in ${config_dir}/config.rc.d/*.rc; do
-	[ "${config_i}" = "${config_dir}/config.rc.d/*.rc" ] && break
-	. ${config_i}
-done
-unset config_i

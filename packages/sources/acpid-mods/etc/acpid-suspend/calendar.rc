@@ -1,5 +1,11 @@
 # Program your calendar here
-if [ "$(LANG=C date +%A)" = 'Saturday' ]; then
-	log 'calendar: saturday rule activated'
-	wakeup_at='11:50'
-fi
+calendar__dayName="$(LANG=C date '+%A')"
+calendar__hour="$(LANG=C date '+%H')"
+
+#if [ "${calendar__dayName}" = 'Saturday' ] && [ "${calendar__hour}" -ge '22' ]; then
+#	log 'calendar: saturday rule activated'
+#	wakeup_at='11:50'
+#fi
+
+unset calendar__day
+unset calendar__hour

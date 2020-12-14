@@ -57,7 +57,7 @@ for i in cpu.rc; do
 done
 
 # Uninstall - /usr/local/etc/rc.local.d
-for i in cpufreq.rc fs-hdd.rc set-sensors.rc zram.rc; do
+for i in cpufreq.rc zz-fs-ssd-tweaks.rc set-sensors.rc zram.rc; do
 	echo -n "[rm] /usr/local/etc/rc.local.d/${i}"
 		rm /usr/local/etc/rc.local.d/P*_${i} > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 done

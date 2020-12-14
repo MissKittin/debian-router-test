@@ -55,7 +55,7 @@ chmod 755 ./autoconfig/autoconfig
 ${do_chown} && chown root:root ./autoconfig/autoconfig/rootfs.post
 chmod 755 ./autoconfig/autoconfig/rootfs.post
 ${do_chown} && chown root:root ./autoconfig/autoconfig/rootfs.post/tmp
-chmod 777 ./autoconfig/autoconfig/rootfs.post/tmp
+chmod 755 ./autoconfig/autoconfig/rootfs.post/tmp
 ${do_chown} && chown root:root ./autoconfig/autoconfig/rootfs.post/tmp/fsck.sh
 chmod 755 ./autoconfig/autoconfig/rootfs.post/tmp/fsck.sh
 ${do_chown} && chown root:root ./autoconfig/autoconfig/autoconfig.cfg.d

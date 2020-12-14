@@ -1,8 +1,15 @@
 # Configuration file for acpid-suspend
 wakeup_at='10:30'
 wakeup_enabled='true' # use rtcwake (true) or echo mem > /sys/power/state (false)
-log_file='/tmp/.acpid-suspend.log'
-[ -e '/var/log/acpid-suspend.log' ] && log_file='/var/log/acpid-suspend.log'
+
+# Log file
+log_file='/run/acpid-suspend.log'
+log_file_owner='root:adm'
+log_file_perm='640'
+[ -e '/var/log/acpid-suspend.log' ] && log_file='/var/log/acpid-suspend.log' # save log to /var/log if exists
+
+# Commands
+rtcwake='rtcwake'
 
 # Import programmed calendar
 [ -e "${conf_dir}/calendar.rc" ] && . ${conf_dir}/calendar.rc

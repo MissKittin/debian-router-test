@@ -1,5 +1,5 @@
 # log-rotate.sh configuration
-LOG='/var/log/log-rotate.log'
+LOG='/var/run/log-rotate.log'
 LOG_DATE_FORMAT='%Y-%m-%d %H:%M:%S' 
 
 DATE_FORMAT='%Y-%m-%d'

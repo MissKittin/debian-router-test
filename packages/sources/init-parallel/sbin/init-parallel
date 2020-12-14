@@ -1,18 +1,25 @@
 #!/bin/sh
 # Init parallel tweak for sysvinit
-# 12.12.2019
+# 12.12.2019 initial version
 # 27.02.2020 compress logs
 # 07.07.2020 /proc/uptime in log
+# 09.12.2020 removed awk, ls and removed [ -e ] from for loop, mkdir -p $log_dir, config file, log dir(?) and tarball rotating, logging exit time
 
 # Settings
-config_dir='/usr/local/etc/init-parallel.d'
-log_dir='/tmp/.init-parallel'
+config_dir='/usr/local/etc/init-parallel'
+log_dir='/var/run/init-parallel'
+
+# Configuration
+. ${config_dir}/config.rc
 
 # Compress logs
-if [ "$1" = 'compress' ] && [ -e ${log_dir} ]; then
+if [ "$1" = 'compress' ] && [ -e "${log_dir}" ]; then
 	sleep 600 # Long wait for end
-	tar cf - -C ${log_dir} . | gzip > ${log_dir}.tar.gz
-	rm -r -f ${log_dir}
+	[ -e "${log_dir}.tar.gz" ] && mv "${log_dir}.tar.gz" "${log_dir}.$(date '+%d_%m_%Y-%H_%M_%S').tar.gz"
+	tar cf - -C "${log_dir}" . | gzip > "${log_dir}.tar.gz"
+	chown root:adm "${log_dir}.tar.gz"
+	chmod 640 "${log_dir}.tar.gz"
+	rm -r -f "${log_dir}"
 	exit 0
 fi
 
@@ -20,16 +27,30 @@ fi
 [ "${runlevel}" = '' ] && exit 1
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
+# Helper
+print_S1() { echo -n "${1}"; }
+
+# Logs
+if [ -e "${log_dir}" ]; then
+	echo -n '' # "syntax error" workaround
+#	mv "${log_dir}" "${log_dir}.$(date '+%d_%m_%Y-%H_%M_%S')"
+#	mkdir "${log_dir}"
+else
+	mkdir -p "${log_dir}"
+	chown root:adm "${log_dir}"
+	chmod 750 "${log_dir}"
+fi
+mkdir "${log_dir}/rc${runlevel}.d"
+
 # Do!
-[ -e ${log_dir} ] || mkdir ${log_dir}
-[ -e "${log_dir}/rc${runlevel}.d" ] || mkdir "${log_dir}/rc${runlevel}.d"
+echo "[$(print_S1 $(cat /proc/uptime))] Script started for rc${runlevel}.d" >> "${log_dir}/init-parallel.log"
+for daemon in ${config_dir}/rc${runlevel}.d/S*; do
+	[ "${daemon}" = "${config_dir}/rc${runlevel}.d/S*" ] && break
 
-[ -e ${config_dir}/rc${runlevel}.d ] && \
-[ ! "$(ls ${config_dir}/rc${runlevel}.d)" = '' ] && \
-	for daemon in ${config_dir}/rc${runlevel}.d/S*; do
-		echo "[$(cat /proc/uptime | awk '{print $1}')] Starting rc${runlevel}.d $(basename ${daemon})" >> ${log_dir}/init-parallel.log 2>&1
-		LOG="${log_dir}/rc${runlevel}.d/$(basename ${daemon}).log"
-		${daemon} start > ${LOG} 2>&1 &
-	done
+	echo "[$(print_S1 $(cat /proc/uptime))] Starting rc${runlevel}.d $(basename ${daemon})" >> "${log_dir}/init-parallel.log"
+	LOG="${log_dir}/rc${runlevel}.d/$(basename ${daemon}).log"
+	${daemon} start > "${LOG}" 2>&1 &
+done
 
+echo "[$(print_S1 $(cat /proc/uptime))] Script finished for rc${runlevel}.d" >> "${log_dir}/init-parallel.log"
 exit 0

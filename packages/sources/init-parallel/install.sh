@@ -37,7 +37,7 @@ fi
 #fi
 
 # Check if installed
-if [ -e /usr/local/etc/init-parallel.d ] || [ -e /usr/local/etc/init.d/ainit-parallel ] || [ -e /usr/local/etc/init.d/ainit-parallel-single ] || [ -e /etc/init.d/ainit-parallel ] || [ -e /etc/init.d/ainit-parallel-single ] || [ -e /usr/local/sbin/init-parallel ]; then
+if [ -e /usr/local/etc/init-parallel ] || [ -e /usr/local/etc/init.d/ainit-parallel ] || [ -e /usr/local/etc/init.d/ainit-parallel-single ] || [ -e /etc/init.d/ainit-parallel ] || [ -e /etc/init.d/ainit-parallel-single ] || [ -e /usr/local/sbin/init-parallel ]; then
 	echo 'Already installed'
 	exit 1
 fi
@@ -61,8 +61,8 @@ echo ''
 
 # Install - /usr/local/etc
 cd /usr/local/etc
-echo -n '[ln] etc/init-parallel.d /usr/local/etc'
-	ln -s ${PACKAGE_DIR}/etc/init-parallel.d . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+echo -n '[ln] etc/init-parallel /usr/local/etc'
+	ln -s ${PACKAGE_DIR}/etc/init-parallel . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Install - /usr/local/etc/init.d
 cd /usr/local/etc/init.d

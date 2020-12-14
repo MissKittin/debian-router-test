@@ -14,5 +14,8 @@ $iptables -P OUTPUT ACCEPT
 # Import ddos protection rules
 . $SETTINGS/firewall.rc.d/ddos.rc
 
+# Allow ping
+#$iptables -A INPUT -i $WAN -p ICMP -j ACCEPT
+
 #################################
 

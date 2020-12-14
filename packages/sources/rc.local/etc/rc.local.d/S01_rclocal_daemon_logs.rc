@@ -1,3 +1,4 @@
 # Create directory for logs
 rclocal_daemons_logs='/tmp/.rclocal_daemons_logs'
-[ -e ${rclocal_daemons_logs} ] || mkdir ${rclocal_daemons_logs}
+[ -e "${rclocal_daemons_logs}" ] || mkdir -p "${rclocal_daemons_logs}"
+mount -t tmpfs -o nosuid,nodev,noexec,noatime,nodiratime,mode=755,uid=0,gid=0 rclocal_daemons_logs "${rclocal_daemons_logs}"

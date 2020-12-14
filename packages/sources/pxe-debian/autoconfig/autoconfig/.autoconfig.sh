@@ -11,6 +11,8 @@ if [ "${3}" = 'post' ]; then
 		cd ${1}/rootfs.post
 		tar cf - * 2>/dev/null | tar xf - -C / > /dev/null 2>&1
 		tar cf - --exclude='.' --exclude='..' .* 2>/dev/null | tar xf - -C / > /dev/null 2>&1
+		chmod 777 /tmp
+		chmod 777 /var/tmp
 		cd ${pwd}
 		unset pwd
 	fi
@@ -28,6 +30,8 @@ if [ -e "${1}/rootfs.pre" ]; then
 	cd ${1}/rootfs.pre
 	tar cf - * 2>/dev/null | tar xf - -C / > /dev/null 2>&1
 	tar cf - --exclude='.' --exclude='..' .* 2>/dev/null | tar xf - -C / > /dev/null 2>&1
+	chmod 777 /tmp
+	chmod 777 /var/tmp
 	cd ${pwd}
 	unset pwd
 fi

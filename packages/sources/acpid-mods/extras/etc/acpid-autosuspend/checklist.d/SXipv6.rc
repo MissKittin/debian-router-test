@@ -1,11 +1,8 @@
 # IPv6
-for i in $(ip -6 neigh | grep "${LAN}" | grep -v "${HOSTNAME}" | awk '{print $1}'); do
-	if ping6 -I ${LAN} -c 1 -W 1 ${i} > /dev/null 2>&1; then
-		ipv6_mac_allowed='true'
-		for x in ${IP_IGNORE_MACS}; do
-			$(ip -6 neigh | grep "${x}" | awk '{print $5}') | grep "${x}" > /dev/null 2>&1 && ipv6_mac_allowed='false'
-		done
-		if ${ipv6_mac_allowed}; then
+. ${config_dir}/config.rc.d/ipvx.rc
+for i in $(ip -6 neigh | grep "dev ${LAN}" | grep -v "${HOSTNAME}" | awk '{print $1}'); do
+	if ping6 -I "${LAN}" -c 1 -W 1 "${i}" > /dev/null 2>&1; then
+		if ! echo -n "${IP_IGNORE_MACS}" | grep "$(ip -6 neigh | grep "${i}" | awk '{print $5}')" > /dev/null 2>&1; then
 			BREAK='true'
 			[ "${REASON}" = '' ] && REASON="IPv6 clients connected: ${i} $(ip -6 neigh | grep $i | awk '{print $5}')"
 			break

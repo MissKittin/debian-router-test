@@ -5,46 +5,67 @@
 ### Config mod 11.01.2020
 ### More logs 27.07.2020
 ### Config file 12.08.2020
+### Log file permissions 04.12.2020
+### Removed ls and acpid-patch, moved log function, check for log file in log(), rtcwake path config, removed touch 08.12.2020
+
+# Log function
+log()
+{
+	# Check for log file
+	if [ ! -e "${log_file}" ]; then
+		echo -n '' > $log_file
+		[ ! "${log_file_owner}" = '' ] && chown "${log_file_owner}" "${log_file}"
+		[ ! "${log_file_perm}" = '' ] && chmod "${log_file_perm}" "${log_file}"
+	fi
+
+	echo ":: `date '+%d.%m.%Y %H:%M:%S'` $PPID $@" >> $log_file 2>&1
+}
 
 # Settings
 conf_dir='/usr/local/etc/acpid-suspend'
 . ${conf_dir}/config.rc
 
 # Lock file with acpid patch
-if [ "$1" = 'acpid-patch' ]; then
-	echo "`date '+%d.%m.%Y %H:%M:%S'` acpid patch activated" >> $log_file 2>&1
-	if [ -e /tmp/.acpid-suspend.lock ]; then
-		echo "!! `date '+%d.%m.%Y %H:%M:%S'` $PPID lock file exists, removing, exiting..." >> $log_file 2>&1
-		rm /tmp/.acpid-suspend.lock
-		exit 0
-	fi
-else
+#if [ "$1" = 'acpid-patch' ]; then
+#	log 'acpid patch activated'
+#	if [ -e /tmp/.acpid-suspend.lock ]; then
+#		echo "!! `date '+%d.%m.%Y %H:%M:%S'` $PPID lock file exists, removing, exiting..." >> $log_file 2>&1
+#		rm /tmp/.acpid-suspend.lock
+#		exit 0
+#	fi
+#else
 	if [ -e /tmp/.acpid-suspend.lock ]; then
 		echo "!! `date '+%d.%m.%Y %H:%M:%S'` $PPID lock file exists, exiting..." >> $log_file 2>&1
 		exit 0
 	fi
-fi
-touch /tmp/.acpid-suspend.lock
-echo "`date '+%d.%m.%Y %H:%M:%S'` executing locked" >> $log_file 2>&1
+#fi
+echo -n '' > /tmp/.acpid-suspend.lock
+log 'executing locked'
 
 # Functions
 pre_suspend()
 {
-	ls ${conf_dir}/pre_suspend.d/S*.rc > /dev/null 2>&1 && for i in ${conf_dir}/pre_suspend.d/S*.rc; do
+	local i
+	for i in ${conf_dir}/pre_suspend.d/S*.rc; do
+		if [ "${i}" = "${conf_dir}/pre_suspend.d/S*.rc" ]; then
+			log 'pre_suspend() queue is empty'
+			break
+		fi
 		log "pre_suspend() importing ${i}"
 		. $i
 	done
 }
 post_suspend()
 {
-	ls ${conf_dir}/post_suspend.d/S*.rc > /dev/null 2>&1 && for i in ${conf_dir}/post_suspend.d/S*.rc; do
+	local i
+	for i in ${conf_dir}/post_suspend.d/S*.rc; do
+		if [ "${i}" = "${conf_dir}/post_suspend.d/S*.rc" ]; then
+			log 'post_suspend() queue is empty'
+			break
+		fi
 		log "post_suspend() importing ${i}"
 		. $i
 	done
-}
-log()
-{
-	echo ":: `date '+%d.%m.%Y %H:%M:%S'` $PPID $@" >> $log_file 2>&1
 }
 
 # Log starting
@@ -67,7 +88,7 @@ if [ "$actual_time" -gt "$wakeup_time" ]; then
 	log 'wakeup time corrected'
 	corrected_wakeup_time=$((wakeup_time + 86400))
 else
-	log 'wakeup time correct'
+	log 'wakeup time is correct'
 	corrected_wakeup_time=$wakeup_time
 fi
 
@@ -77,10 +98,10 @@ log 'wakeup time calculated'
 
 # Call suspend
 if $wakeup_enabled; then
-	log 'autowakeup enabled, calling rtcwake...'
-	rtcwake -s $wakeup_in -m mem >> $log_file 2>&1
+	log "autowakeup enabled, calling ${rtcwake}..."
+	${rtcwake} -s $wakeup_in -m mem >> $log_file 2>&1
 	log 'woke up'
-	rtcwake -m disable
+	${rtcwake} -m disable
 	log 'alarm clock disabled'
 else
 	log 'autowakeup disabled, suspending...'
@@ -98,12 +119,12 @@ log 'waiting...'
 sleep 10
 
 # Remove lock file
-if [ "$1" = 'acpid-patch' ]; then
-	log 'acpid patch active, not removing lock file'
-else
+#if [ "$1" = 'acpid-patch' ]; then
+#	log 'acpid patch active, not removing lock file'
+#else
 	rm /tmp/.acpid-suspend.lock
 	log 'executing unlocked'
-fi
+#fi
 
 # Exit
 log 'exiting...'

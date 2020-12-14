@@ -66,8 +66,8 @@ ${do_chown} && chown root:root ./extras/etc/notify-daemon/events.rc.d/apt.rc
 chmod 644 ./extras/etc/notify-daemon/events.rc.d/apt.rc
 ${do_chown} && chown root:root ./extras/etc/rc.local.d
 chmod 755 ./extras/etc/rc.local.d
-${do_chown} && chown root:root ./extras/etc/rc.local.d/PKx_fs-hdd.rc
-chmod 644 ./extras/etc/rc.local.d/PKx_fs-hdd.rc
+${do_chown} && chown root:root ./extras/etc/rc.local.d/PK99_zz-fs-ssd-tweaks.rc
+chmod 644 ./extras/etc/rc.local.d/PK99_zz-fs-ssd-tweaks.rc
 ${do_chown} && chown root:root ./extras/etc/rc.local.d/PKx_ntpdate.rc
 chmod 644 ./extras/etc/rc.local.d/PKx_ntpdate.rc
 ${do_chown} && chown root:root ./extras/etc/rc.local.d/PKx_zram.rc

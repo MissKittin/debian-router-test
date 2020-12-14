@@ -44,20 +44,22 @@ ${do_chown} && chown root:root ./extras-uninstall.sh
 chmod 755 ./extras-uninstall.sh
 ${do_chown} && chown root:root ./etc
 chmod 755 ./etc
-${do_chown} && chown root:root ./etc/init-parallel.d
-chmod 755 ./etc/init-parallel.d
-${do_chown} && chown root:root ./etc/init-parallel.d/rcS.d
-chmod 755 ./etc/init-parallel.d/rcS.d
-${do_chown} && chown root:root ./etc/init-parallel.d/rcS.d/PLACEHOLDER
-chmod 644 ./etc/init-parallel.d/rcS.d/PLACEHOLDER
-${do_chown} && chown root:root ./etc/init-parallel.d/TEMPLATE
-chmod 644 ./etc/init-parallel.d/TEMPLATE
-${do_chown} && chown root:root ./etc/init-parallel.d/rc2.d
-chmod 755 ./etc/init-parallel.d/rc2.d
-${do_chown} && chown root:root ./etc/init-parallel.d/rc2.d/PLACEHOLDER
-chmod 644 ./etc/init-parallel.d/rc2.d/PLACEHOLDER
-${do_chown} && chown root:root ./etc/init-parallel.d/README
-chmod 644 ./etc/init-parallel.d/README
+${do_chown} && chown root:root ./etc/init-parallel
+chmod 755 ./etc/init-parallel
+${do_chown} && chown root:root ./etc/init-parallel/config.rc
+chmod 644 ./etc/init-parallel/config.rc
+${do_chown} && chown root:root ./etc/init-parallel/rcS.d
+chmod 755 ./etc/init-parallel/rcS.d
+${do_chown} && chown root:root ./etc/init-parallel/rcS.d/PLACEHOLDER
+chmod 644 ./etc/init-parallel/rcS.d/PLACEHOLDER
+${do_chown} && chown root:root ./etc/init-parallel/TEMPLATE
+chmod 644 ./etc/init-parallel/TEMPLATE
+${do_chown} && chown root:root ./etc/init-parallel/rc2.d
+chmod 755 ./etc/init-parallel/rc2.d
+${do_chown} && chown root:root ./etc/init-parallel/rc2.d/PLACEHOLDER
+chmod 644 ./etc/init-parallel/rc2.d/PLACEHOLDER
+${do_chown} && chown root:root ./etc/init-parallel/README
+chmod 644 ./etc/init-parallel/README
 ${do_chown} && chown root:root ./etc/rcdown.local.d
 chmod 755 ./etc/rcdown.local.d
 ${do_chown} && chown root:root ./etc/rcdown.local.d/Sx_init-parallel-queue.rc
@@ -93,8 +95,8 @@ chmod 755 ./sbin/init-parallel
 ${do_chown} && chown root:root ./install.sh
 chmod 755 ./install.sh
 
-rm ./etc/init-parallel.d/rc2.d/PLACEHOLDER
-rm ./etc/init-parallel.d/rcS.d/PLACEHOLDER
+rm ./etc/init-parallel/rc2.d/PLACEHOLDER
+rm ./etc/init-parallel/rcS.d/PLACEHOLDER
 
 chmod 644 ./.build.sh
 echo ''

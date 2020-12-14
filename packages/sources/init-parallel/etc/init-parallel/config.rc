@@ -1,0 +1,2 @@
+# Init parallel config - log directory
+log_dir='/var/run/init-parallel'

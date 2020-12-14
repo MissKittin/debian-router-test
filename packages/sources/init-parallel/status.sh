@@ -23,8 +23,8 @@ echo ''
 #	fi
 
 # /usr/local/etc
-echo -n "/usr/local/etc/init-parallel.d"
-	if [ -L /usr/local/etc/init-parallel.d ] && [ -e /usr/local/etc/init-parallel.d ]; then
+echo -n "/usr/local/etc/init-parallel"
+	if [ -L /usr/local/etc/init-parallel ] && [ -e /usr/local/etc/init-parallel ]; then
 		installed=true
 		echo ' [ OK ]'
 	else

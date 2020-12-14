@@ -11,8 +11,10 @@
 # Options
 PIDFILE='/var/run/busybox-syslogd.pid'
 DAEMON='/bin/busybox'
-LOG='/tmp/.busybox-syslog_messages'
+LOG='/var/run/.busybox-syslog'
 [ -e /var/log/busybox-syslog ] && LOG='/var/log/busybox-syslog'
+LOG_OWNER='root:adm'
+LOG_PERMISSIONS='640'
 DAEMON_OPTS="syslogd -n -O $LOG"
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
@@ -26,8 +28,8 @@ case "$1" in
 			while [ ! -e $LOG ]; do
 				sleep 0.1
 			done
-			chown root:adm $LOG
-			chmod 640 $LOG
+			chown ${LOG_OWNER} $LOG
+			chmod ${LOG_PERMISSIONS} $LOG
 			log_end_msg 0
 		else
 			log_end_msg 1
@@ -48,8 +50,8 @@ case "$1" in
 	'zip')
 		if [ -e "$LOG" ]; then
 			log_action_msg_pre; echo 'Zipping busybox syslogd log...'
-			[ -e "${LOG}.gz" ] && rm ${LOG}.gz
-			gzip -9 $LOG
+			[ -e "${LOG}.gz" ] && mv "${LOG}.gz" "${LOG}.$(date '+%d_%m_%Y-%H_%M_%S').gz"
+			gzip -9 "${LOG}"
 		fi
 	;;
 	*)

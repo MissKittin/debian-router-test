@@ -38,6 +38,8 @@ ${do_chown} && chown root:root ./etc/rc.local.d
 chmod 755 ./etc/rc.local.d
 ${do_chown} && chown root:root ./etc/rc.local.d/S01_rclocal_daemon_logs.rc
 chmod 644 ./etc/rc.local.d/S01_rclocal_daemon_logs.rc
+${do_chown} && chown root:root ./etc/rc.local.d/PS99_dmesg-dump.rc
+chmod 644 ./etc/rc.local.d/PS99_dmesg-dump.rc
 ${do_chown} && chown root:root ./etc/rc.local.d/README.TXT
 chmod 644 ./etc/rc.local.d/README.TXT
 ${do_chown} && chown root:root ./etc/rc.local

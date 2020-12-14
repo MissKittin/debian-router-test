@@ -3,7 +3,7 @@
 [ "${PACKAGES_DIR}" = '' ] && exit 0
 
 # Set package repo url here
-REPO_URL='https://raw.githubusercontent.com/MissKittin/debian-router/master/packages/repo'
+REPO_URL='https://raw.githubusercontent.com/MissKittin/debian-router-repo/master/packages/repo'
 WGET_OPTS='--no-check-certificate'
 
 if [ "${1}" = '--help' ] || [ "${1}" = '-h' ]; then

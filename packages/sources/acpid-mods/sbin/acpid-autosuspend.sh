@@ -5,10 +5,11 @@
 # operating mode, debug messages 22.06.2020
 # autoreload settings 25.08.2020
 # new acpid_autosuspend_activated() 31.08.2020
+# suspend command logging, reimport settings removed, ls removed, acpid_autosuspend_allowed function 08.12.2020
 
 # Settings
 echo 'define hardcoded settings'
-config_dir='/usr/local/etc/acpid-autosuspend';
+config_dir='/usr/local/etc/acpid-autosuspend'
 log_file='/var/log/acpid-autosuspend.log'
 
 # Import settings
@@ -23,7 +24,7 @@ dlog()
 }
 log()
 {
-	echo "`date '+%d.%m.%Y %H:%M:%S'` $@" >> $log_file 2>&1
+	echo "`date '+%d.%m.%Y %H:%M:%S'` $@" >> $log_file
 	dlog "log() $@"
 }
 log 'Started'
@@ -74,6 +75,44 @@ acpid_autosuspend_activated()
 	fi
 }
 
+# Allow or block suspend
+dlog 'define acpid_autosuspend_allowed function'
+acpid_autosuspend_allowed()
+{
+	# variables
+	dlog 'acpid_autosuspend_allowed(): local variables'
+	local BREAK
+	local REASON
+	local i
+
+	# flags
+	dlog 'acpid_autosuspend_allowed(): BREAK REASON flags'
+	BREAK=false
+	REASON=''
+
+	# do checklist
+	for i in ${config_dir}/checklist.d/S*.rc; do
+		if [ "${i}" = "${config_dir}/checklist.d/S*.rc" ]; then
+			log 'acpid_autosuspend_allowed queue is empty'
+			break
+		fi
+
+		dlog "checklist ${i}"
+		. $i
+		[ ! "${BREAK}" = '' ] && ${BREAK} && dlog " ${i} break" && break
+		dlog " ${i} success"
+	done
+
+	if ${BREAK}; then
+		log "suspend blocked: ${REASON}"
+		dlog "acpid_autosuspend_allowed(): return 1"
+		return 1
+	fi
+
+	dlog "acpid_autosuspend_allowed(): return 0"
+	return 0
+}
+
 # Operating mode
 if ${continuous_mode}; then
 	dlog 'acpid_autosuspend_activated() -> redefined continuous mode'
@@ -99,15 +138,10 @@ fi
 
 # infinity loop
 dlog 'activated=false ONESHOT_CONFIG_IMPORTED=false'
-activated=false
+activated=false # now only for logging
 ONESHOT_CONFIG_IMPORTED=false
 dlog '------------------------------------------'; dlog 'while true'
 while true; do
-	# flags
-	dlog 'BREAK REASON flags'
-	BREAK=false
-	REASON=''
-
 	# include oneshot config
 	dlog '# include oneshot config (before if ! $ONESHOT_CONFIG_IMPORTED)'
 	if ! $ONESHOT_CONFIG_IMPORTED; then
@@ -136,6 +170,7 @@ while true; do
 
 	# check time
 	#if acpid_autosuspend_activated || $activated; then
+	dlog "acpid_autosuspend_activated ${activate_at_hour} ${activate_at_min} ${deactivate_at_hour} ${deactivate_at_min} $(date '+%H %M') -> ?"
 	if acpid_autosuspend_activated ${activate_at_hour} ${activate_at_min} ${deactivate_at_hour} ${deactivate_at_min} $(date '+%H %M'); then
 		#dlog 'if acpid_autosuspend_activated || $activated -> true'
 		dlog "acpid_autosuspend_activated ${activate_at_hour} ${activate_at_min} ${deactivate_at_hour} ${deactivate_at_min} $(date '+%H %M') -> true"
@@ -146,24 +181,20 @@ while true; do
 			$activated || log 'daemon activated'
 			activated=true
 
-			# do checklist
-			ls ${config_dir}/checklist.d/S*.rc > /dev/null 2>&1 && for i in ${config_dir}/checklist.d/S*.rc; do
-				dlog "checklist ${i}"
-				. $i
-				[ ! "${BREAK}" = '' ] && ${BREAK} && dlog " ${i} break" && break
-				dlog " ${i} success"
-			done
+			### This block moved to acpid_autosuspend_allowed() [flags, checklist]
 
 			# block or suspend
-			if ${BREAK}; then
-				log "suspend blocked: ${REASON}"
-			else
+			dlog 'if acpid_autosuspend_allowed -> ?'
+			if acpid_autosuspend_allowed; then
+				dlog 'if acpid_autosuspend_allowed -> false'
 				log 'suspending...'
 				dlog "suspend_command=${suspend_command}"
-				$suspend_command
+				$suspend_command >> $log_file 2>&1
 				log 'woke up'
 				dlog 'sleep 600'
 				sleep 600 # 10 mins
+			else
+				dlog 'if acpid_autosuspend_allowed -> false'
 			fi
 
 			# check if i have to shutdown now
@@ -185,20 +216,13 @@ while true; do
 				dlog 'activated=false'
 			fi
 		fi
+	else
+		dlog "acpid_autosuspend_activated ${activate_at_hour} ${activate_at_min} ${deactivate_at_hour} ${deactivate_at_min} $(date '+%H %M') -> false"
 	fi
 
 	# wait
 	dlog 'sleep 60'
 	sleep 60
-
-	# re-import settings
-	#if [ -e /tmp/.acpid-autosuspend-reload_settings ]; then
-	#	dlog 'if [ -e /tmp/.acpid-autosuspend-reload_settings ] -> true'
-	#	log 'settings refresh triggered'
-	#	ONESHOT_CONFIG_IMPORTED=false
-	#	. ${config_dir}/config.rc
-	#	rm /tmp/.acpid-autosuspend-reload_settings
-	#fi
 done
 
 exit 0

@@ -1,15 +1,22 @@
 # Remount all relatime filesystems with noatime,nodiratime options
+# This script should be started as last
 
+sleep 10 # wait for other tasks
+
+# Remount all relatimes as noatimes
 remount()
 {
 	mount -o remount,noatime,nodiratime $3
 }
-
 mount | while read line; do
 	echo "${line}" | grep 'relatime' > /dev/null 2>&1 && \
 		remount ${line}
 done
 unset line; unset remount
 
-# Optimize SSD
-echo 'deadline' > /sys/block/sda/queue/scheduler
+# Optimize SSDs
+for disk in /sys/block/*; do
+	[ "${disk}" = '/sys/block/*' ] && break
+	[ "$(cat "${disk}/queue/rotational")" = '0' ] && echo 'deadline' > "${disk}/queue/scheduler"
+done
+unset disk

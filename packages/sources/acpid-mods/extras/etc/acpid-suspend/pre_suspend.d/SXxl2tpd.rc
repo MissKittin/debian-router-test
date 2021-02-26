@@ -1,6 +1,8 @@
 XL2TPD__ENABLED=false
 if /etc/init.d/xl2tpd status > /dev/null 2>&1; then
 	log 'stopping xl2tpd'
-	/etc/init.d/xl2tpd stop
+	/etc/init.d/xl2tpd stop 2>&1 | while read outputLine; do
+		log " :: ${outputLine}"
+	done
 	XL2TPD__ENABLED=true
 fi

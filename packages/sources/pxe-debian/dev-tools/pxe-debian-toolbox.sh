@@ -1,6 +1,6 @@
 #!/bin/sh
 # PXE Debian build toolbox
-# 08.10.2020
+# 08.10.2020, 15.01.2021
 
 cd "$(dirname "$(readlink -f "${0}")")"
 
@@ -56,6 +56,34 @@ case ${1} in
 		rm ./etc/resolv.conf
 		echo 'debian' > ./etc/hostname
 		rm -r -f ./run/*
+	;;
+	'unpack-rootfs')
+		if ! command -v cpio > /dev/null 2>&1; then
+			echo 'cpio utility not installed'
+			exit 1
+		fi
+		if ! command -v unsquashfs > /dev/null 2>&1; then
+			echo 'unsquashfs utility not installed'
+			exit 1
+		fi
+		if [ -e './rootfs' ]; then
+			echo 'rootfs directory already exists'
+			exit 1
+		fi
+		if [ ! -e './rootfs.img' ]; then
+			echo 'rootfs.img not found'
+			exit 1
+		fi
+
+		[ -e './rootfs-unpack' ] && rm -r -f ./rootfs-unpack
+		mkdir ./rootfs-unpack
+		cd ./rootfs-unpack
+		cat ../rootfs.img | cpio -id
+		unsquashfs ./img/rootfs.sqs
+		mv ./squashfs-root ../rootfs
+		cd ..
+		rm -r -f ./rootfs-unpack
+		rm ./rootfs.img
 	;;
 	'install-packages')
 		cd ./rootfs || exit 1
@@ -319,7 +347,7 @@ case ${1} in
 	;;
 	'make-syslinux-config')
 		cd ./img || exit 1
-		[ ! "${path_prefix}" = '' ] && path_prefix="${2}/"
+		[ ! "${2}" = '' ] && path_prefix="${2}/"
 
 		# create empty
 		echo -n '' > ./menu.cfg
@@ -355,8 +383,7 @@ case ${1} in
 				echo "	KERNEL ${path_prefix}pxe-debian/${bootoption}/vmlinuz" >> ./menu.cfg
 				echo "	APPEND initrd=${path_prefix}pxe-debian/initrd.img,${path_prefix}pxe-debian/initrd-bin.img,${path_prefix}pxe-debian/${bootoption}/modules.img,${path_prefix}pxe-debian/rootfs.img quiet loglevel=0 nomodeset" >> ./menu.cfg
 				echo '	TEXT HELP' >> ./menu.cfg
-				echo '#			384MB RAM required, 1GB recommended' >> ./menu.cfg
-				echo '			1GB RAM recommended' >> ./menu.cfg
+				echo '			      1GB RAM recommended' >> ./menu.cfg
 				echo '	ENDTEXT' >> ./menu.cfg
 				echo '' >> ./menu.cfg
 
@@ -366,8 +393,7 @@ case ${1} in
 				echo "	KERNEL ${path_prefix}pxe-debian/${bootoption}/vmlinuz" >> ./menu.cfg
 				echo "	APPEND initrd=${path_prefix}pxe-debian/initrd.img,${path_prefix}pxe-debian/initrd-bin.img,${path_prefix}pxe-debian/${bootoption}/modules-slim.img,${path_prefix}pxe-debian/rootfs.img quiet loglevel=0 nomodeset" >> ./menu.cfg
 				echo '	TEXT HELP' >> ./menu.cfg
-				echo '#			384MB RAM required, 1GB recommended' >> ./menu.cfg
-				echo '			1GB RAM recommended' >> ./menu.cfg
+				echo '			      1GB RAM recommended' >> ./menu.cfg
 				echo '	ENDTEXT' >> ./menu.cfg
 				echo '' >> ./menu.cfg
 			fi
@@ -379,13 +405,12 @@ case ${1} in
 		echo '#	KERNEL menu.c32' >> ./menu.cfg
 		echo '#	APPEND pxelinux.cfg/default' >> ./menu.cfg
 		echo '#	TEXT HELP' >> ./menu.cfg
-		echo '##			384MB RAM required, 1GB recommended' >> ./menu.cfg
-		echo '#			1GB RAM recommended' >> ./menu.cfg
+		echo '#			      1GB RAM recommended' >> ./menu.cfg
 		echo '#	ENDTEXT' >> ./menu.cfg
 	;;
 	'make-syslinux-autoboot')
 		cd ./img || exit 1
-		[ ! "${path_prefix}" = '' ] && path_prefix="${3}/"
+		[ ! "${3}" = '' ] && path_prefix="${3}/"
 		if [ "${2}" = '' ]; then
 			echo 'make-syslinux-autoboot kernel [path/from/syslinux/to/files]'
 			exit 1
@@ -465,6 +490,7 @@ case ${1} in
 		echo 'Available commands:'
 		echo ' bootstrap ARCH'
 		echo ' bootstrap-clear'
+		echo ' unpack-rootfs'
 		echo ' install-packages'
 		echo ' strip [noapt]'
 		echo ' install-pxe-debian-package /path/to/package'

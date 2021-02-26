@@ -1,10 +1,5 @@
 #!/bin/sh
 #################### Config ################################
-#CONTAINER_NAME='plain-squash'
-#DESTINATION=$(dirname $0)
-#SHELL_PROMPT="${CONTAINER_NAME}"'> '
-#CONTAINER_ROOT='.container'
-
 config_rc_path="$(dirname "$(readlink -f "${0}")")/.config.rc"
 if [ ! -e "${config_rc_path}" ]; then
 	echo "error: ${config_rc_path} not found"
@@ -15,17 +10,19 @@ unset config_rc_path
 ############################################################
 
 #################### Check environment #####################
-if [ ! "`whoami`" = 'root' ]; then
+if [ ! "$(whoami)" = 'root' ]; then
 	echo 'No superuser'
 	exit 1
 fi
-if [ ! -e ${DESTINATION}/${CONTAINER_ROOT} ]; then
+if [ ! -e "${DESTINATION}/${CONTAINER_ROOT}" ]; then
 	echo 'Wrong configuration'
 	exit 1
 fi
-if ! mountpoint -q ${DESTINATION}/${CONTAINER_ROOT}/mnt > /dev/null 2>&1; then
-	echo 'Container stopped'
-	exit 1
+if "${CONTAINER_ON_RAM}"; then
+	if ! mountpoint -q "${DESTINATION}/${CONTAINER_ROOT}/mnt" > /dev/null 2>&1; then
+		echo 'Container stopped'
+		exit 1
+	fi
 fi
 ############################################################
 

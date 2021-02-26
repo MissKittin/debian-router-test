@@ -38,8 +38,6 @@ ${do_chown} && chown root:root ./phpmailer
 chmod 755 ./phpmailer
 ${do_chown} && chown root:root ./phpmailer/.htaccess
 chmod 644 ./phpmailer/.htaccess
-${do_chown} && chown root:root ./phpmailer/README.txt
-chmod 644 ./phpmailer/README.txt
 ${do_chown} && chown root:root ./phpmailer/settings.php
 chmod 644 ./phpmailer/settings.php
 ${do_chown} && chown root:root ./phpmailer/index.php

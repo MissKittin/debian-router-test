@@ -4,7 +4,7 @@
 
 # Settings
 functions='/usr/local/etc/acpid-choice.rc'
-indicator='/tmp/.acpid-choice-indicator'
+indicator='/var/run/.acpid-choice-indicator'
 beep='beep'
 beep_length='60'
 beep_frequency='440'

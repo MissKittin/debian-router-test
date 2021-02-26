@@ -1,5 +1,5 @@
 # Do not suspend if is locked by user
-if [ -e /tmp/.acpid-autosuspend-temporary_disabled ]; then
+if [ -e '/var/run/.acpid-autosuspend.templock' ]; then
 	BREAK=true
-	[ "${REASON}" = '' ] && REASON='disabled by user'
+	[ "${REASON}" = '' ] && REASON='locked by user'
 fi

@@ -1,0 +1,23 @@
+echo start >> /.debug.txt
+	echo -n Waiting for network...
+	PING_HOST='http://ftp.debian.org/'
+	while ! wget -q --tries=10 --timeout=20 --spider $PING_HOST; do
+		sleep 1
+		echo sleep >> /.debug.txt
+		echo -n .
+	done
+	echo .
+echo update >> /.debug.txt
+	echo Updating apt database...
+	apt-get update >> /.debug.txt
+echo install >> /.debug.txt
+	echo Installing packages...
+	apt-get install -y miredo >> /.debug.txt 2>&1
+if mountpoint -q /var/cache/apt/archives; then
+	echo noclean >> /.debug.txt
+else
+	echo clean >> /.debug.txt
+		echo Cleaning apt...
+		apt-get clean
+fi
+echo stop >> /.debug.txt

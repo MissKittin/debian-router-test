@@ -1,0 +1,34 @@
+on commit {
+	# isc-dhcp-ddns
+
+	set ddnsDomain=".lan";
+
+	set clientNum=binary-to-ascii(10, 8, ".", leased-address);
+	set clientHost=pick-first-value(host-decl-name, option fqdn.hostname, option host-name, "none");
+	set clientMac=concat(
+		suffix(concat("0", binary-to-ascii(16, 8, "", substring(hardware,1,1))),2), ":",
+		suffix(concat("0", binary-to-ascii(16, 8, "", substring(hardware,2,1))),2), ":",
+		suffix(concat("0", binary-to-ascii(16, 8, "", substring(hardware,3,1))),2), ":",
+		suffix(concat("0", binary-to-ascii(16, 8, "", substring(hardware,4,1))),2), ":",
+		suffix(concat("0", binary-to-ascii(16, 8, "", substring(hardware,5,1))),2), ":",
+		suffix(concat("0", binary-to-ascii(16, 8, "", substring(hardware,6,1))),2)
+	);
+
+	execute(
+		"/usr/local/sbin/isc-dhcp-ddns4.sh",
+		"action=commit",
+		"ddns_hosts_file=/var/run/.isc-dhcp-ddns4.hosts",
+		"lan_domain=",ddnsDomain,
+		"ip=",clientNum,
+		"mac=",clientMac,
+		"hostname=",clientHost
+	);
+	execute(
+		"/usr/local/sbin/isc-dhcp-ddns6.sh",
+		"action=commit",
+		"ddns_hosts_file=/var/run/.isc-dhcp-ddns6.hosts",
+		"lan_domain=",ddnsDomain,
+		"mac=",clientMac,
+		"hostname=",clientHost
+	);
+}

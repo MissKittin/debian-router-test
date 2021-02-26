@@ -18,3 +18,6 @@ Go to `/usr/local/etc/init-parallel`
 init-parallel saves logs in `/tmp/.init-parallel` directory by default.  
 The rcdown.local script also compresses the entire directory.  
 <del>Due to non-standard location in the rcS/rc2 queue, the rcdown.local script checks and corrects the init-parallel prefix.</del>
+
+### Deprecated files
+* etc/rcdown.local.d/Sx_init-parallel-queue.rc

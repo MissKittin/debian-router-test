@@ -4,13 +4,13 @@
 #  ! this and rcdown.local.d/*_aptlists2ram.rc must be enabled
 # Ram-only mode: the same as standard mode, but without syncing at shutdown
 #  rcdown.local.d/*_aptlists2ram.rc can be disabled
-#  you can purge all files in /run/aptlists2ram without "lock" file and "partial" directory
+#  you can purge all files in /var/run/aptlists2ram without "lock" file and "partial" directory
 
 if ! mountpoint -q /var/lib/apt/lists; then
-	mkdir /run/aptlists2ram
-	mount --bind /var/lib/apt/lists /run/aptlists2ram
+	mkdir /var/run/aptlists2ram
+	mount --bind /var/lib/apt/lists /var/run/aptlists2ram
 	mount -t tmpfs -o nosuid,noexec,nodev,mode=0755 aptlists2ram /var/lib/apt/lists
-	cp -rfp /run/aptlists2ram -T /var/lib/apt/lists
+	cp -rfp /var/run/aptlists2ram -T /var/lib/apt/lists
 	if [ ! -e /var/lib/apt/lists/lock ]; then
 		touch /var/lib/apt/lists/lock
 		chmod 644 /var/lib/apt/lists/lock

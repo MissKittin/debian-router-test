@@ -1,4 +1,6 @@
 if $DNSMASQ__ENABLED; then
 	log 'starting dnsmasq'
-	/etc/init.d/dnsmasq start
+	/etc/init.d/dnsmasq start 2>&1 | while read outputLine; do
+		log " :: ${outputLine}"
+	done
 fi

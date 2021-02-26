@@ -1,0 +1,14 @@
+# Check ipv6 connection
+#  CHECK_IP6_TEST_ADDRESS in config.rc required
+#  PUBLIC_IP4_TEST_ADDRESS in config.rc required
+
+if [ -e './lib/shell/check-ipv6.rc' ]; then
+	IP6_NO_CASE='true'
+	IP6_FUNCTION_OPTS='check-ipv6 on-dashboard'
+
+	. './lib/shell/check-ipv6.rc'
+	echo "${newline}"
+
+	unset IP6_NO_CASE
+	unset IP6_FUNCTION_OPTS
+fi

@@ -21,7 +21,7 @@ if [ -e "$(dirname "${0}")/extras-status.sh" ]; then
 fi
 
 # Check if installed
-if [ ! -e /boot/backupos ] || [ ! -e /usr/local/sbin/boot_to_backupos.sh ]; then
+if [ ! -e /boot/backupos ] || [ ! -e /usr/local/sbin/backupos.sh ]; then
 	echo 'Not installed'
 	exit 1
 fi
@@ -42,8 +42,8 @@ echo -n '[rm] /boot/backupos'
 	rm /boot/backupos > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Uninstall - /usr/local/sbin
-echo -n '[rm] /usr/local/sbin/boot_to_backupos.sh'
-	rm /usr/local/sbin/boot_to_backupos.sh > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+echo -n '[rm] /usr/local/sbin/backupos.sh'
+	rm /usr/local/sbin/backupos.sh > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Notification
 echo ''

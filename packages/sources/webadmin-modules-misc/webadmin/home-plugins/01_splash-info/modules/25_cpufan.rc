@@ -1,0 +1,16 @@
+# Check if cpu fan is running
+#  HWMON_DRIVER in config.rc required
+#  HWMON_DEVICE in config.rc required
+#  read_file from shared functions required
+
+if [ -e "/sys/class/hwmon/${HWMON_DRIVER}/${HWMON_DEVICE}_input" ]; then
+	echo -n 'CPU fan: '
+
+	if [ "$(read_file "/sys/class/hwmon/${HWMON_DRIVER}/${HWMON_DEVICE}_input" '-n')" = '0' ]; then
+		echo "stopped${newline}"
+	else
+		echo "running${newline}"
+	fi
+
+	echo "${newline}"
+fi

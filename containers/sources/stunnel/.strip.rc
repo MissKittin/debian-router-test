@@ -1,0 +1,28 @@
+# etc
+rm ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/init.d/.depend.boot
+rm ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/init.d/.depend.start
+rm ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/init.d/.depend.stop
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/logrotate.d
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/ppp
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/rc*.d
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/.pwd.lock
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/group-
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/gshadow-
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/passwd-
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/shadow-
+
+# usr
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/usr/share
+
+# var
+if mountpoint -q ${DESTINATION}/${CONTAINER_ROOT}/mnt/var/cache/apt/archives; then
+	rm ${DESTINATION}/${CONTAINER_ROOT}/diff/var/cache/apt/pkgcache.bin > /dev/null 2>&1
+	rm ${DESTINATION}/${CONTAINER_ROOT}/diff/var/cache/apt/srcpkgcache.bin > /dev/null 2>&1
+else
+	rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/cache
+fi
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/lib/apt
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/lib/dpkg
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/log/apt
+rm ${DESTINATION}/${CONTAINER_ROOT}/diff/var/log/dpkg.log
+rm ${DESTINATION}/${CONTAINER_ROOT}/diff/var/log/lastlog

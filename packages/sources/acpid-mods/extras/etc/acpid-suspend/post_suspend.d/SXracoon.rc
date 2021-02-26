@@ -1,4 +1,6 @@
 if $RACOON__ENABLED; then
 	log 'starting racoon'
-	/etc/init.d/racoon start
+	/etc/init.d/racoon start 2>&1 | while read outputLine; do
+		log " :: ${outputLine}"
+	done
 fi

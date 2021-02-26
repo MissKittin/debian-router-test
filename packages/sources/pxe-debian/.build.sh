@@ -44,6 +44,8 @@ ${do_chown} && chown root:root ./dev-tools/initrd/init
 chmod 755 ./dev-tools/initrd/init
 ${do_chown} && chown root:root ./dev-tools/.load-modules.sh
 chmod 755 ./dev-tools/.load-modules.sh
+${do_chown} && chown root:root ./dev-tools/pxe-debian-toolbox.completion
+chmod 644 ./dev-tools/pxe-debian-toolbox.completion
 ${do_chown} && chown root:root ./dev-tools/pxe-debian-toolbox.sh
 chmod 755 ./dev-tools/pxe-debian-toolbox.sh
 ${do_chown} && chown root:root ./autoconfig

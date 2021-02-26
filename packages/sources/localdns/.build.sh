@@ -36,26 +36,26 @@ ${do_chown} && chown root:root ./extras/etc
 chmod 755 ./extras/etc
 ${do_chown} && chown root:root ./extras/etc/dnsmasq.d
 chmod 755 ./extras/etc/dnsmasq.d
-${do_chown} && chown root:root ./extras/etc/dnsmasq.d/dns.conf
-chmod 644 ./extras/etc/dnsmasq.d/dns.conf
+${do_chown} && chown root:root ./extras/etc/dnsmasq.d/localdns.conf
+chmod 644 ./extras/etc/dnsmasq.d/localdns.conf
 ${do_chown} && chown root:root ./VERSION.txt
 chmod 644 ./VERSION.txt
 ${do_chown} && chown root:root ./extras-uninstall.sh
 chmod 755 ./extras-uninstall.sh
 ${do_chown} && chown root:root ./etc
 chmod 755 ./etc
-${do_chown} && chown root:root ./etc/hosts.d
-chmod 755 ./etc/hosts.d
-${do_chown} && chown root:root ./etc/hosts.d/reservations
-chmod 644 ./etc/hosts.d/reservations
-${do_chown} && chown root:root ./etc/hosts.d/blacklist
-chmod 644 ./etc/hosts.d/blacklist
-${do_chown} && chown root:root ./etc/hosts.d/servername.lan
-chmod 644 ./etc/hosts.d/servername.lan
+${do_chown} && chown root:root ./etc/localdns.d
+chmod 755 ./etc/localdns.d
+${do_chown} && chown root:root ./etc/localdns.d/reservations
+chmod 644 ./etc/localdns.d/reservations
+${do_chown} && chown root:root ./etc/localdns.d/blacklist
+chmod 644 ./etc/localdns.d/blacklist
+${do_chown} && chown root:root ./etc/localdns.d/servername.lan
+chmod 644 ./etc/localdns.d/servername.lan
 ${do_chown} && chown root:root ./etc/init.d
 chmod 755 ./etc/init.d
-${do_chown} && chown root:root ./etc/init.d/dc_dnsmasq-hosts-build
-chmod 755 ./etc/init.d/dc_dnsmasq-hosts-build
+${do_chown} && chown root:root ./etc/init.d/localdns.sh
+chmod 755 ./etc/init.d/localdns.sh
 ${do_chown} && chown root:root ./extras-install.sh
 chmod 755 ./extras-install.sh
 ${do_chown} && chown root:root ./CHANGELOG.txt
@@ -70,8 +70,8 @@ ${do_chown} && chown root:root ./README.md
 chmod 644 ./README.md
 ${do_chown} && chown root:root ./sbin
 chmod 751 ./sbin
-${do_chown} && chown root:root ./sbin/generate-dns-hosts.sh
-chmod 750 ./sbin/generate-dns-hosts.sh
+${do_chown} && chown root:root ./sbin/localdns.sh
+chmod 750 ./sbin/localdns.sh
 ${do_chown} && chown root:root ./install.sh
 chmod 755 ./install.sh
 

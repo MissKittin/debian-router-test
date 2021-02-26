@@ -1,0 +1,42 @@
+#!/bin/sh
+# Init parallel tweak for sysvinit - for rc0.d and rc6.d
+# 13.01.2021 initial version
+# !!! NOT READY - USE AT YOUR OWN RISK!
+
+# Settings
+config_dir='/usr/local/etc/init-parallel'
+log_dir='/var/run/init-parallel'
+
+# Configuration
+. "${config_dir}/config.rc"
+
+# Confirm
+[ "${runlevel}" = '' ] && exit 1
+PATH='/sbin:/bin:/usr/sbin:/usr/bin'
+
+# Helper
+print_S1() { echo -n "${1}"; }
+
+# Logs
+if [ -e "${log_dir}" ]; then
+	echo -n '' # "syntax error" workaround
+else
+	mkdir -p "${log_dir}"
+	chown root:adm "${log_dir}"
+	chmod 750 "${log_dir}"
+fi
+mkdir "${log_dir}/rc${runlevel}.d"
+
+# Do!
+for daemon in ${config_dir}/rc${runlevel}.d/K*; do
+	[ "${daemon}" = "${config_dir}/rc${runlevel}.d/K*" ] && break
+
+	LOG="${log_dir}/rc${runlevel}.d/$(basename ${daemon}).log"
+	"${daemon}" 'stop' > "${LOG}" 2>&1 &
+done
+wait
+
+# Move logs for debugging
+[ ! "${debug_move_logs_to}" = '' ] && mv "${log_dir}" "${debug_move_logs_to}${log_dir}"
+
+exit 0

@@ -31,34 +31,38 @@ fi
 echo ''
 
 # Install - /usr/local/etc/notify-daemon
-if cd /usr/local/etc/notify-daemon/events.rc.d > /dev/null 2>&1; then
-	for i in firewall.rc firewall6.rc default_gateway.rc routing.rc; do
-		echo -n "[ln] extras/etc/notify-daemon/events.rc.d/${i} /usr/local/etc/notify-daemon/events.rc.d"
-			if [ -e "/usr/local/etc/notify-daemon/events.rc.d/${i}" ]; then
-				echo ' [EXISTS]'
-			else
-				ln -s ${PACKAGE_DIR}/extras/etc/notify-daemon/events.rc.d/${i} . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
-			fi
-	done
-else
-	echo 'notify-daemon is not installed'
-fi
+#if cd /usr/local/etc/notify-daemon/events.rc.d > /dev/null 2>&1; then
+#	for i in firewall.rc firewall6.rc default_gateway.rc routing.rc; do
+#		echo -n "[ln] extras/etc/notify-daemon/events.rc.d/${i} /usr/local/etc/notify-daemon/events.rc.d"
+#			if [ -e "/usr/local/etc/notify-daemon/events.rc.d/${i}" ]; then
+#				echo ' [EXISTS]'
+#			else
+#				ln -s ${PACKAGE_DIR}/extras/etc/notify-daemon/events.rc.d/${i} . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+#			fi
+#	done
+#else
+#	echo 'notify-daemon is not installed'
+#fi
 
 # Install - /usr/local/share/webadmin
 if cd /usr/local/share/webadmin/lib/shell > /dev/null 2>&1; then
-	echo -n '[ln] webadmin/lib/shell/list-iptables-settings.rc /usr/local/share/webadmin/lib/shell'
-		if [ -e '/usr/local/share/webadmin/lib/shell/list-iptables-settings.rc' ]; then
-			echo ' [EXISTS]'
-		else
-			ln -s ${PACKAGE_DIR}/webadmin/lib/shell/list-iptables-settings.rc . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
-		fi
+	for lib in list-interfaces.rc net-routing-list.rc; do
+		echo -n "[ln] webadmin/lib/shell/${lib} /usr/local/share/webadmin/lib/shell"
+			if [ -e "/usr/local/share/webadmin/lib/shell/${lib}" ]; then
+				echo ' [EXISTS]'
+			else
+				ln -s ${PACKAGE_DIR}/webadmin/lib/shell/${lib} . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+			fi
+	done
 	cd ../..
-	echo -n '[ln] webadmin/net-forwarding /usr/local/share/webadmin'
-		if [ -e '/usr/local/share/webadmin/net-forwarding' ]; then
-			echo ' [EXISTS]'
-		else
-			ln -s ${PACKAGE_DIR}/webadmin/net-forwarding . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
-		fi
+	for module in net-ifaces net-routing; do
+		echo -n "[ln] webadmin/${module} /usr/local/share/webadmin"
+			if [ -e "/usr/local/share/webadmin/${module}" ]; then
+				echo ' [EXISTS]'
+			else
+				ln -s ${PACKAGE_DIR}/webadmin/${module} . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+			fi
+	done
 else
 	echo 'webadmin is not installed'
 	echo '"webadmin/lib/shell" directory not exists'

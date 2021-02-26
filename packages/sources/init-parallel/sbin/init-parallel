@@ -7,7 +7,7 @@
 
 # Settings
 config_dir='/usr/local/etc/init-parallel'
-log_dir='/var/run/init-parallel'
+log_dir='/var/run/.init-parallel'
 
 # Configuration
 . ${config_dir}/config.rc
@@ -25,7 +25,7 @@ fi
 
 # Confirm
 [ "${runlevel}" = '' ] && exit 1
-PATH=/sbin:/bin:/usr/sbin:/usr/bin
+PATH='/sbin:/bin:/usr/sbin:/usr/bin'
 
 # Helper
 print_S1() { echo -n "${1}"; }

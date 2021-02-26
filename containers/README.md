@@ -24,7 +24,12 @@ Keep your system tidy
 4) tar the root tree and gzip it
 5) copy tarball to the container directory and change name to `.config.tar.gz`
 
-### webadmin module
+## webadmin module
 (uses scripts from `.bin` directory)
 1) `cd .webadmin`
 2) `./install.sh`
+
+## Warning
+**This is not a security feature - process with root privileges can escape from the container.**  
+**Run trusted binaries only in this containers.**  
+**For true contenerization use docker or lxc.**

@@ -208,8 +208,8 @@ ${do_chown} && chown root:root ./README.md
 chmod 644 ./README.md
 ${do_chown} && chown root:root ./sbin
 chmod 751 ./sbin
-${do_chown} && chown root:root ./sbin/boot_to_backupos.sh
-chmod 755 ./sbin/boot_to_backupos.sh
+${do_chown} && chown root:root ./sbin/backupos.sh
+chmod 755 ./sbin/backupos.sh
 ${do_chown} && chown root:root ./install.sh
 chmod 755 ./install.sh
 

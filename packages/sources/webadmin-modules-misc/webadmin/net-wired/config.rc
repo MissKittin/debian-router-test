@@ -1,0 +1,5 @@
+# Configure - WAN interface name
+WAN='eth0'
+
+# or if firewall package is installed, import firewall.sh config
+#. $(firewall.sh where-are-you)/networks.rc

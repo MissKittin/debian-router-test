@@ -1,2 +1,4 @@
 log 'starting networking'
-/etc/init.d/networking start
+/etc/init.d/networking start 2>&1 | while read outputLine; do
+	log " :: ${outputLine}"
+done

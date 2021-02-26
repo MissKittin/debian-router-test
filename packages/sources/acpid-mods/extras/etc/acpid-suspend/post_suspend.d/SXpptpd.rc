@@ -1,4 +1,6 @@
 if $PPTPD__ENABLED; then
 	log 'starting pptpd'
-	/etc/init.d/pptpd start
+	/etc/init.d/pptpd start 2>&1 | while read outputLine; do
+		log " :: ${outputLine}"
+	done
 fi

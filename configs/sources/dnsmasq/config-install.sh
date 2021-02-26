@@ -20,6 +20,12 @@ if [ ! -e /usr/sbin/dnsmasq ]; then
 	exit 1
 fi
 
+# Check environment
+if [ -e /usr/local/etc/dnsmasq.d ]; then
+	echo 'directory /usr/local/etc/dnsmasq.d not exists'
+	exit 1
+fi
+
 # Check if installed
 if [ -e '/usr/local/etc/dnsmasq.d' ] || [ -e '/etc/dnsmasq.d/dns-cache.conf' ] || [ -e '/etc/dnsmasq.d/pxe.conf' ] || [ -e '/etc/dnsmasq.d/security.conf' ]; then
 	echo 'Already installed'
@@ -38,10 +44,12 @@ if [ ! "$1" = '--force' ]; then
 fi
 echo ''
 
-# Install - /usr/local/etc
-cd /usr/local/etc
-echo -n '[ln] etc/dnsmasq.d /usr/local/etc'
-	ln -s ${PACKAGE_DIR}/etc/dnsmasq.d . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+# Install - /usr/local/etc/dnsmasq.d
+cd /usr/local/etc/dnsmasq.d
+for i in dns-cache.conf pxe.conf security.conf; do
+	echo -n "[ln] ${i} /usr/local/etc/dnsmasq.d"
+		ln -s ${PACKAGE_DIR}/etc/dnsmasq.d/${i} . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+done
 
 # Install - /etc/dnsmasq.d
 if cd /etc/dnsmasq.d > /dev/null 2>&1; then

@@ -1,2 +1,4 @@
 log 'stopping networking'
-/etc/init.d/networking stop
+/etc/init.d/networking stop 2>&1 | while read outputLine; do
+	log " :: ${outputLine}"
+done

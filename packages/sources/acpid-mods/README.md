@@ -36,3 +36,4 @@ Webadmin power management modules for acpid-autosuspend and acpid-suspend.
 ## Deprecated files
 * etc/rc.local.d/PKx_acpid-autosuspend.rc
 * sbin/acpid-choice.sh.old
+* sbin/acpid-autosuspend.sh.old

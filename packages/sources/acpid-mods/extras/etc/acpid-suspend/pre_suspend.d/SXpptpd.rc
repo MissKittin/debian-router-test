@@ -1,6 +1,8 @@
 PPTPD__ENABLED=false
 if /etc/init.d/pptpd status > /dev/null 2>&1; then
 	log 'stopping pptpd'
-	/etc/init.d/pptpd stop
+	/etc/init.d/pptpd stop 2>&1 | while read outputLine; do
+		log " :: ${outputLine}"
+	done
 	PPTPD__ENABLED=true
 fi

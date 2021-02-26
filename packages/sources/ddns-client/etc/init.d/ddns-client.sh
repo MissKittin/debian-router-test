@@ -11,7 +11,7 @@
 # Options
 PIDFILE='/var/run/ddns-client.pid'
 DAEMON='/usr/local/bin/ddns-client.sh'
-[ "${2}" = '' ] && LOG='/tmp/.ddns-client.log' || LOG="${2}"
+[ "${2}" = '' ] && LOG='/var/tmp/.ddns-client.log' || LOG="${2}"
 DAEMON_OPTS="$LOG"
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
@@ -27,7 +27,11 @@ fi
 case "$1" in
 	'start')
 		log_daemon_msg 'Starting ddns client' 'ddns-client'
-		start-stop-daemon --start --chuid nobody:nogroup --quiet --background --make-pidfile --pidfile $PIDFILE --exec $DAEMON -- $DAEMON_OPTS && log_end_msg 0 || log_end_msg 1
+		if ${0} status > /dev/null 2>&1; then
+			log_end_msg 1
+		else
+			start-stop-daemon --start --chuid nobody:nogroup --quiet --background --make-pidfile --pidfile $PIDFILE --exec $DAEMON -- $DAEMON_OPTS && log_end_msg 0 || log_end_msg 1
+		fi
 	;;
 	'stop')
 		log_daemon_msg 'Stopping ddns client' 'ddns-client'

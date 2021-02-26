@@ -3,7 +3,7 @@
 # uninstall script
 
 # Settings
-PACKAGE_NAME='webadmin' # /usr/local/share/${PACKAGE_DIR}/${PACKAGE_NAME}
+PACKAGE_NAME='webadmin'
 
 # Check root
 if [ ! "$(whoami)" = 'root' ]; then
@@ -21,7 +21,7 @@ if [ -e "$(dirname "${0}")/extras-status.sh" ]; then
 fi
 
 # Check if installed
-if [ ! -e /usr/local/sbin/webadmin.sh ] || [ ! -e /usr/local/share/webadmin ] || [ ! -e /usr/local/etc/rc.local.d/P*_webadmin.rc ] || [ ! -e /usr/local/etc/sudoers.d/webadmin ] || [ ! -e /etc/sudoers.d/webadmin ]; then
+if [ ! -e /etc/init.d/webadmin ] || [ ! -e /usr/local/etc/default/webadmin ] || [ ! -e /usr/local/etc/init.d/webadmin ] || [ ! -e /usr/local/etc/webadmin.php.ini ] || [ ! -e /usr/local/share/webadmin ] || [ ! -e /etc/sudoers.d/webadmin ]; then
 	echo 'Not installed'
 	exit 1
 fi
@@ -37,13 +37,25 @@ read answer
 [ "${answer}" = 'y' ] || exit 0
 echo ''
 
+# Uninstall - /usr/local/etc
+echo -n '[rm] /usr/local/etc/webadmin.php.ini'
+	rm /usr/local/etc/webadmin.php.ini > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+
 # Uninstall - /usr/local/etc/rc.local.d
-echo -n '[rm] /usr/local/etc/rc.local.d/webadmin.rc'
-	rm /usr/local/etc/rc.local.d/P*_webadmin.rc > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+#echo -n '[rm] /usr/local/etc/rc.local.d/webadmin.rc'
+#	rm /usr/local/etc/rc.local.d/P*_webadmin.rc > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+
+# Uninstall - /usr/local/etc/default
+echo -n '[rm] /usr/local/etc/default/webadmin'
+	rm /usr/local/etc/default/webadmin > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+
+# Uninstall - /usr/local/etc/init.d
+echo -n '[rm] /usr/local/etc/init.d/webadmin'
+	rm /usr/local/etc/init.d/webadmin > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Uninstall - /usr/local/sbin
-echo -n '[rm] /usr/local/sbin/webadmin.sh'
-	rm /usr/local/sbin/webadmin.sh > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+#echo -n '[rm] /usr/local/sbin/webadmin.sh'
+#	rm /usr/local/sbin/webadmin.sh > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Uninstall - /usr/local/share
 echo -n '[rm] /usr/local/share/webadmin'
@@ -61,10 +73,17 @@ echo -n '[rm] /usr/local/etc/sudoers.d/webadmin'
 echo -n '[rm] /etc/authbind/byport/80'
 	rm /etc/authbind/byport/80 > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
+# Uninstall - /etc/init.d/webadmin
+echo -n '[rm] /etc/init.d/webadmin'
+	rm /etc/init.d/webadmin > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+
 # Uninstall - /etc/sudoers.d/webadmin
 echo -n '[rm] /etc/sudoers.d/webadmin'
 	rm /etc/sudoers.d/webadmin > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
+# Notification
+echo ''
+echo ' ! Remove insserved /etc/init.d/webadmin from /etc/rc*.d'
 
 echo ''
 exit 0

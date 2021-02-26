@@ -80,20 +80,10 @@ ${do_chown} && chown root:root ./extras/etc/rc.local.d/PKx_correct-wake-on-lan.r
 chmod 644 ./extras/etc/rc.local.d/PKx_correct-wake-on-lan.rc
 ${do_chown} && chown root:root ./extras/etc/rc.local.d/PKx_cpufreq.rc
 chmod 644 ./extras/etc/rc.local.d/PKx_cpufreq.rc
-${do_chown} && chown root:root ./extras/etc/dnsmasq.d
-chmod 755 ./extras/etc/dnsmasq.d
-${do_chown} && chown root:root ./extras/etc/dnsmasq.d/ddns.conf
-chmod 644 ./extras/etc/dnsmasq.d/ddns.conf
 ${do_chown} && chown root:root ./VERSION.txt
 chmod 644 ./VERSION.txt
 ${do_chown} && chown root:root ./extras-uninstall.sh
 chmod 755 ./extras-uninstall.sh
-${do_chown} && chown root:root ./etc
-chmod 755 ./etc
-${do_chown} && chown root:root ./etc/motd
-chmod 644 ./etc/motd
-${do_chown} && chown root:root ./etc/issue
-chmod 644 ./etc/issue
 ${do_chown} && chown root:root ./extras-install.sh
 chmod 755 ./extras-install.sh
 ${do_chown} && chown root:root ./CHANGELOG.txt
@@ -110,8 +100,6 @@ ${do_chown} && chown root:root ./sbin
 chmod 751 ./sbin
 ${do_chown} && chown root:root ./sbin/set-zram.sh
 chmod 750 ./sbin/set-zram.sh
-${do_chown} && chown root:root ./sbin/generate-ddns-hosts.sh
-chmod 750 ./sbin/generate-ddns-hosts.sh
 ${do_chown} && chown root:root ./sbin/system-autoupdate.sh
 chmod 640 ./sbin/system-autoupdate.sh
 ${do_chown} && chown root:root ./sbin/correct-wake-on-lan.sh
@@ -122,6 +110,10 @@ ${do_chown} && chown root:root ./sbin/ntpdate-daemon.sh
 chmod 640 ./sbin/ntpdate-daemon.sh
 ${do_chown} && chown root:root ./install.sh
 chmod 755 ./install.sh
+
+mkdir ./etc
+echo '' > ./etc/issue
+echo '' > ./etc/motd
 
 chmod 644 ./.build.sh
 echo ''

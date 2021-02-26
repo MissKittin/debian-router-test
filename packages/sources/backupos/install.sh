@@ -13,7 +13,7 @@ if [ ! "$(whoami)" = 'root' ]; then
 fi
 
 # Check if installed
-if [ -e /boot/backupos ] || [ -e /usr/local/sbin/boot_to_backupos.sh ]; then
+if [ -e /boot/backupos ] || [ -e /usr/local/sbin/backupos.sh ]; then
 	echo 'Already installed'
 	exit 1
 fi
@@ -37,8 +37,8 @@ echo -n '[ln] boot/backupos /boot'
 
 # Install - /usr/local/sbin
 cd /usr/local/sbin
-echo -n '[ln] sbin/boot_to_backupos.sh /usr/local/sbin'
-	ln -s ${PACKAGE_DIR}/sbin/boot_to_backupos.sh . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+echo -n '[ln] sbin/backupos.sh /usr/local/sbin'
+	ln -s ${PACKAGE_DIR}/sbin/backupos.sh . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Notification
 echo ''

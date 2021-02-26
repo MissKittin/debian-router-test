@@ -1,16 +1,16 @@
-<?php include($system['location_php'] . '/lib/login/login.php'); ?>
+<?php include $system['location_php'] . '/lib/login/login.php'; ?>
 <?php chdir($system['location_php']); ?>
 <?php $shell_sh_location=$system['location_php'] . '/sys-containers/shell.sh'; ?>
 <!DOCTYPE html>
 <html>
 	<head>
 		<title>Containers</title>
-		<?php include($system['location_php'] . '/lib/htmlheaders.php'); ?>
+		<?php include $system['location_php'] . '/lib/htmlheaders.php'; ?>
 	</head>
 	<body>
-		<?php include($system['location_php'] . '/lib/header.php'); ?>
+		<?php include $system['location_php'] . '/lib/header.php'; ?>
 		<div id="system_body">
-			<?php include($system['location_php'] . '/lib/menu/menu.php'); ?>
+			<?php include $system['location_php'] . '/lib/menu/menu.php'; ?>
 			<div id="system_content">
 				<h1>Containers</h1>
 				<h3>Stats</h3>

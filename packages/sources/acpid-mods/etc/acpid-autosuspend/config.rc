@@ -1,29 +1,44 @@
-# autosuspend daemon config
+# autosuspend daemon v2 config
 # achtung! activate_at_min is delayed 1 minute
-# calendar is disabled if oneshot config is present
 
-# on/off switch
-daemon_enabled=true
+### Core settings
+
+# Script PATH variable
+PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
 # log file
-log_file="${1}"
+log_file='/var/run/.acpid-autosuspend.log'
+[ ! "${config_first_import}" = '' ] && [ -e '/var/log/acpid-autosuspend.log' ] && log_file='/var/log/acpid-autosuspend.log'
+log_to_syslog='false'
 
-# Operating mode
-continuous_mode=false
+# debugging
+enable_debug_log='false'
+#debug_log_file='' # log to stdout if commented or empty (debug log file may not contain some information)
 
-# Clock
-activate_at_hour=03
-activate_at_min=30
-deactivate_at_hour=06
-deactivate_at_min=30
+# operating mode
+continuous_mode='false'
 
-# Oneshot suspend file
-oneshot_file='/tmp/.acpid-autosuspend-oneshot.rc'
+# clock
+activate_at_hour='03'
+activate_at_min='30'
+deactivate_at_hour='06'
+deactivate_at_min='30'
+
+# suspend command
+suspend_command='/usr/local/sbin/acpid-suspend.sh'
+
+### Extensions
+
+# cache
+enable_cache='true'
+cache_dir='/var/run/.acpid-autosuspend.cache'
+
+# oneshot-config
+enable_oneshot_config='true'
+oneshot_file='/var/run/.acpid-autosuspend-oneshot.rc'
 oneshot_file_owner='root'
 oneshot_file_mode='644'
 
-# Suspend command
-suspend_command='/usr/local/sbin/acpid-suspend.sh'
-
-# Import programmed calendar
-[ -e "${config_dir}/calendar.rc" ] && . ${config_dir}/calendar.rc
+# calendar
+enable_calendar='true'
+calendar_file="${config_dir}/calendar.rc"

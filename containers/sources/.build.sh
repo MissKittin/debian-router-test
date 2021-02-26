@@ -16,6 +16,10 @@ find -type f -name '*.sh' | while read script; do
 	${do_chown} && chown root:root ${script}
 	chmod 755 ${script}
 done
+find -type f -name '.autoboot.example' | while read script; do
+	${do_chown} && chown root:root ${script}
+	chmod 755 ${script}
+done
 
 chmod 644 .build.sh
 exit 0

@@ -1,0 +1,41 @@
+# etc
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/apache2
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/init
+rm ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/init.d/.depend.boot
+rm ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/init.d/.depend.start
+rm ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/init.d/.depend.stop
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/logrotate.d
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/rc0.d
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/rc1.d
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/rc2.d
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/rc3.d
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/rc4.d
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/rc5.d
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/rc6.d
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/systemd
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/ufw
+
+# lib
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/lib/systemd
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/usr/lib/tmpfiles.d
+
+# share
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/usr/share/bug
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/usr/share/doc
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/usr/share/lintian
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/usr/share/man
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/usr/share/nginx/html
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/usr/share/php
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/usr/share/vim
+
+# var
+if ! mountpoint -q /var/cache/apt/archives; then
+	rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/cache
+fi
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/lib/apt
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/lib/dpkg
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/lib/systemd
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/lib/ucf
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/log/apt
+rm ${DESTINATION}/${CONTAINER_ROOT}/diff/var/log/dpkg.log
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/www

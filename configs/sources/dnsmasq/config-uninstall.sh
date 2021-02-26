@@ -29,9 +29,11 @@ if [ ! "$1" = '--force' ]; then
 fi
 echo ''
 
-# Uninstall - /usr/local/etc
-echo -n '[rm] /usr/local/etc/dnsmasq.d'
-	rm /usr/local/etc/dnsmasq.d > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+# Uninstall - /usr/local/etc/dnsmasq.d
+for i in dns-cache.conf pxe.conf security.conf; do
+	echo -n "[rm] /usr/local/etc/dnsmasq.d/${i}"
+		rm /usr/local/etc/dnsmasq.d/${i} > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+done
 
 # Uninstall - /etc/dnsmasq.d
 for i in dns-cache.conf pxe.conf security.conf; do

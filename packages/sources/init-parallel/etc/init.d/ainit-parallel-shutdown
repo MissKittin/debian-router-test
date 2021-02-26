@@ -1,0 +1,24 @@
+#!/bin/sh
+# !!! NOT READY - USE AT YOUR OWN RISK!
+
+### BEGIN INIT INFO
+# Provides: init-parallel-single
+# Required-Start:       $all
+# Required-Stop:
+# Default-Start:        0 6
+# Default-Stop:
+# Short-Description:    Running shutdown scripts in parallel
+# Description:          Running shutdown scripts in parallel
+### END INIT INFO
+
+PATH='/sbin:/bin:/usr/sbin:/usr/bin'
+
+. /lib/lsb/init-functions
+
+case "$1" in
+	'stop')
+		log_action_msg_pre; echo 'Starting init parallel'
+		/usr/local/sbin/init-parallel-shutdown > /dev/null 2>&1
+	;;
+esac
+exit 0

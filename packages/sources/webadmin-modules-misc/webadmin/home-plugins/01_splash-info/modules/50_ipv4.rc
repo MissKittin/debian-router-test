@@ -1,0 +1,14 @@
+# Check public ipv4 address
+#  CHECK_IP4_TEST_ADDRESS in config.rc required
+#  PUBLIC_IP4_TEST_ADDRESS in config.rc required
+
+if [ -e './lib/shell/public-ipv4.rc' ]; then
+	IP4_NO_CASE='true'
+	IP4_FUNCTION_OPTS='check-internet on-dashboard'
+
+	. './lib/shell/public-ipv4.rc'
+	echo "${newline}"
+
+	unset IP4_NO_CASE
+	unset IP4_FUNCTION_OPTS
+fi

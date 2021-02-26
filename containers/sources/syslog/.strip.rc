@@ -1,0 +1,19 @@
+# etc
+rm ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/init.d/.* > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/rc*.d
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/systemd
+
+# lib, usr/share
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/lib
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/usr/share
+
+# var
+if mountpoint -q ${DESTINATION}/${CONTAINER_ROOT}/mnt/var/cache/apt/archives; then
+	rm ${DESTINATION}/${CONTAINER_ROOT}/diff/var/cache/apt/pkgcache.bin > /dev/null 2>&1
+	rm ${DESTINATION}/${CONTAINER_ROOT}/diff/var/cache/apt/srcpkgcache.bin > /dev/null 2>&1
+else
+	rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/cache
+fi
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/lib
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/log/apt
+rm ${DESTINATION}/${CONTAINER_ROOT}/diff/var/log/dpkg.log

@@ -1,6 +1,8 @@
 HOSTAPD__ENABLED=false
 if /etc/init.d/hostapd status > /dev/null 2>&1; then
 	log 'stopping hostapd'
-	/etc/init.d/hostapd stop
+	/etc/init.d/hostapd stop 2>&1 | while read outputLine; do
+		log " :: ${outputLine}"
+	done
 	HOSTAPD__ENABLED=true
 fi

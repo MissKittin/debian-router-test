@@ -1,6 +1,8 @@
 RACOON__ENABLED=false
 if /etc/init.d/racoon status > /dev/null 2>&1; then
 	log 'stopping racoon'
-	/etc/init.d/racoon stop
+	/etc/init.d/racoon stop 2>&1 | while read outputLine; do
+		log " :: ${outputLine}"
+	done
 	RACOON__ENABLED=true
 fi

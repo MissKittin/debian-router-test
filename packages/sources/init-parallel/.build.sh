@@ -50,14 +50,10 @@ ${do_chown} && chown root:root ./etc/init-parallel/config.rc
 chmod 644 ./etc/init-parallel/config.rc
 ${do_chown} && chown root:root ./etc/init-parallel/rcS.d
 chmod 755 ./etc/init-parallel/rcS.d
-${do_chown} && chown root:root ./etc/init-parallel/rcS.d/PLACEHOLDER
-chmod 644 ./etc/init-parallel/rcS.d/PLACEHOLDER
 ${do_chown} && chown root:root ./etc/init-parallel/TEMPLATE
 chmod 644 ./etc/init-parallel/TEMPLATE
 ${do_chown} && chown root:root ./etc/init-parallel/rc2.d
 chmod 755 ./etc/init-parallel/rc2.d
-${do_chown} && chown root:root ./etc/init-parallel/rc2.d/PLACEHOLDER
-chmod 644 ./etc/init-parallel/rc2.d/PLACEHOLDER
 ${do_chown} && chown root:root ./etc/init-parallel/README
 chmod 644 ./etc/init-parallel/README
 ${do_chown} && chown root:root ./etc/rcdown.local.d
@@ -68,6 +64,8 @@ ${do_chown} && chown root:root ./etc/init.d
 chmod 755 ./etc/init.d
 ${do_chown} && chown root:root ./etc/init.d/ainit-parallel
 chmod 755 ./etc/init.d/ainit-parallel
+${do_chown} && chown root:root ./etc/init.d/ainit-parallel-shutdown
+chmod 644 ./etc/init.d/ainit-parallel-shutdown
 ${do_chown} && chown root:root ./etc/init.d/ainit-parallel-single
 chmod 755 ./etc/init.d/ainit-parallel-single
 ${do_chown} && chown root:root ./extras-install.sh
@@ -91,12 +89,14 @@ chmod 644 ./README.md
 ${do_chown} && chown root:root ./sbin
 chmod 751 ./sbin
 ${do_chown} && chown root:root ./sbin/init-parallel
-chmod 755 ./sbin/init-parallel
+chmod 750 ./sbin/init-parallel
+${do_chown} && chown root:root ./sbin/init-parallel-shutdown
+chmod 640 ./sbin/init-parallel-shutdown
 ${do_chown} && chown root:root ./install.sh
 chmod 755 ./install.sh
 
-rm ./etc/init-parallel/rc2.d/PLACEHOLDER
-rm ./etc/init-parallel/rcS.d/PLACEHOLDER
+mkdir ./etc/init-parallel/rc2.d
+mkdir ./etc/init-parallel/rcS.d
 
 chmod 644 ./.build.sh
 echo ''

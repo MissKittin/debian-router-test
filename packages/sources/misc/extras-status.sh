@@ -12,26 +12,6 @@ echo ''
 echo " ${PACKAGE_NAME} - extras"
 echo ''
 
-# /usr/local/etc/dnsmasq.d
-echo -n '/usr/local/etc/dnsmasq.d/ddns.conf'
-	if [ -L /usr/local/etc/dnsmasq.d/ddns.conf ] && [ -e /usr/local/etc/dnsmasq.d/ddns.conf ]; then
-		installed=true
-		echo ' [ OK ]'
-	else
-		broken=true
-		echo ' [NOT INSTALLED]'
-	fi
-
-# /etc/dnsmasq.d
-echo -n '/etc/dnsmasq.d/ddns.conf'
-	if [ -L /etc/dnsmasq.d/ddns.conf ] && [ -e /etc/dnsmasq.d/ddns.conf ]; then
-		installed=true
-		echo ' [ OK ]'
-	else
-		broken=true
-		echo ' [NOT INSTALLED]'
-	fi
-
 # /usr/local/etc/notify-daemon
 for i in apt-update.rc dpkg_rubbish.rc obsolete-kernels.rc ssh.rc smart.rc; do
 	echo -n "/usr/local/etc/notify-daemon/events.rc.d/${i}"
@@ -55,7 +35,7 @@ for i in cpu.rc; do
 done
 
 # /usr/local/share/rc.local.d
-for i in cpufreq.rc zz-fs-ssd-tweaks.rc set-sensors.rc zram.rc; do
+for i in cpufreq.rc dmesg-dump.rc zz-fs-ssd-tweaks.rc set-sensors.rc zram.rc; do
 	echo -n "/usr/local/etc/rc.local.d/${i}"
 		if [ -L /usr/local/etc/rc.local.d/P*_${i} ] && [ -e /usr/local/etc/rc.local.d/P*_${i} ]; then
 			installed=true

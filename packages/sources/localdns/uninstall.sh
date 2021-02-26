@@ -21,7 +21,7 @@ if [ -e "$(dirname "${0}")/extras-status.sh" ]; then
 fi
 
 # Check if installed
-if [ ! -e /usr/local/etc/hosts.d ] || [ ! -e /usr/local/etc/init.d/dc_dnsmasq-hosts-build ] || [ ! -e /etc/init.d/dc_dnsmasq-hosts-build ] || [ ! -e /usr/local/sbin/generate-dns-hosts.sh ]; then
+if [ ! -e /usr/local/etc/localdns.d ] || [ ! -e /usr/local/etc/init.d/localdns.sh ] || [ ! -e /etc/init.d/localdns.sh ] || [ ! -e /usr/local/sbin/localdns.sh ]; then
 	echo 'Not installed'
 	exit 1
 fi
@@ -38,24 +38,24 @@ read answer
 echo ''
 
 # Uninstall - /usr/local/etc
-echo -n '[rm] /usr/local/etc/hosts.d'
-	rm /usr/local/etc/hosts.d > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+echo -n '[rm] /usr/local/etc/localdns.d'
+	rm /usr/local/etc/localdns.d > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Uninstall - /usr/local/etc/init.d
-echo -n '[rm] etc/init.d/dc_dnsmasq-hosts-build /usr/local/etc/init.d'
-	rm /usr/local/etc/init.d/dc_dnsmasq-hosts-build > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+echo -n '[rm] etc/init.d/localdns.sh /usr/local/etc/init.d'
+	rm /usr/local/etc/init.d/localdns.sh > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Uninstall - /etc/init.d
-echo -n '[rm] /etc/init.d/dc_dnsmasq-hosts-build'
-	rm /etc/init.d/dc_dnsmasq-hosts-build > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+echo -n '[rm] /etc/init.d/localdns.sh'
+	rm /etc/init.d/localdns.sh > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Uninstall - /usr/local/sbin
-echo -n '[rm] /usr/local/sbin/generate-dns-hosts.sh'
-	rm /usr/local/sbin/generate-dns-hosts.sh > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+echo -n '[rm] /usr/local/sbin/localdns.sh'
+	rm /usr/local/sbin/localdns.sh > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Notification
 echo ''
-echo ' ! Remove insserved /etc/init.d/dc_dnsmasq-hosts-build from /etc/rc*.d'
+echo ' ! Remove insserved /etc/init.d/localdns.sh from /etc/rc*.d'
 
 echo ''
 exit 0

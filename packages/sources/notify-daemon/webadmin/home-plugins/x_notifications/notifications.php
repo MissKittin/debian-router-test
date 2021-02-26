@@ -1,4 +1,4 @@
-<?php if(!function_exists('prevent_direct')) include($system['location_php'] . '/lib/prevent-direct.php'); prevent_direct('notifications.php');?>
+<?php if(!function_exists('prevent_direct')) include $system['location_php'] . '/lib/prevent-direct.php'; prevent_direct('notifications.php');?>
 <?php
 	function hide_scrollbars()
 	{

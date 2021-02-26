@@ -22,9 +22,9 @@ echo -n '/boot/backupos'
 		echo ' [Broken]'
 	fi
 
-# /usr/local/sbin/boot_to_backupos.sh
-echo -n '/usr/local/sbin/boot_to_backupos.sh'
-	if [ -L /usr/local/sbin/boot_to_backupos.sh ] && [ -e /usr/local/sbin/boot_to_backupos.sh ]; then
+# /usr/local/sbin/backupos.sh
+echo -n '/usr/local/sbin/backupos.sh'
+	if [ -L /usr/local/sbin/backupos.sh ] && [ -e /usr/local/sbin/backupos.sh ]; then
 		installed=true
 		echo ' [ OK ]'
 	else

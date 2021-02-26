@@ -48,20 +48,44 @@ ${do_chown} && chown root:root ./extras/etc/notify-daemon/events.rc.d/default_ga
 chmod 644 ./extras/etc/notify-daemon/events.rc.d/default_gateway.rc
 ${do_chown} && chown root:root ./webadmin
 chmod 755 ./webadmin
+${do_chown} && chown root:root ./webadmin/net-forwarding
+chmod 755 ./webadmin/net-forwarding
+${do_chown} && chown root:root ./webadmin/net-forwarding/description.php
+chmod 644 ./webadmin/net-forwarding/description.php
+${do_chown} && chown root:root ./webadmin/net-forwarding/shell.sh
+chmod 755 ./webadmin/net-forwarding/shell.sh
+${do_chown} && chown root:root ./webadmin/net-forwarding/DEPRECATED.TXT
+chmod 644 ./webadmin/net-forwarding/DEPRECATED.TXT
+${do_chown} && chown root:root ./webadmin/net-forwarding/index.php
+chmod 644 ./webadmin/net-forwarding/index.php
+${do_chown} && chown root:root ./webadmin/net-routing
+chmod 755 ./webadmin/net-routing
+${do_chown} && chown root:root ./webadmin/net-routing/description.php
+chmod 644 ./webadmin/net-routing/description.php
+${do_chown} && chown root:root ./webadmin/net-routing/shell.sh
+chmod 755 ./webadmin/net-routing/shell.sh
+${do_chown} && chown root:root ./webadmin/net-routing/index.php
+chmod 644 ./webadmin/net-routing/index.php
+${do_chown} && chown root:root ./webadmin/net-ifaces
+chmod 755 ./webadmin/net-ifaces
+${do_chown} && chown root:root ./webadmin/net-ifaces/info.php
+chmod 644 ./webadmin/net-ifaces/info.php
+${do_chown} && chown root:root ./webadmin/net-ifaces/description.php
+chmod 644 ./webadmin/net-ifaces/description.php
+${do_chown} && chown root:root ./webadmin/net-ifaces/shell.sh
+chmod 755 ./webadmin/net-ifaces/shell.sh
+${do_chown} && chown root:root ./webadmin/net-ifaces/index.php
+chmod 644 ./webadmin/net-ifaces/index.php
 ${do_chown} && chown root:root ./webadmin/lib
 chmod 755 ./webadmin/lib
 ${do_chown} && chown root:root ./webadmin/lib/shell
 chmod 755 ./webadmin/lib/shell
 ${do_chown} && chown root:root ./webadmin/lib/shell/list-iptables-settings.rc
 chmod 644 ./webadmin/lib/shell/list-iptables-settings.rc
-${do_chown} && chown root:root ./webadmin/net-forwarding
-chmod 755 ./webadmin/net-forwarding
-${do_chown} && chown root:root ./webadmin/net-forwarding/description.php
-chmod 644 ./webadmin/net-forwarding/description.php
-${do_chown} && chown root:root ./webadmin/net-forwarding/index.php
-chmod 644 ./webadmin/net-forwarding/index.php
-${do_chown} && chown root:root ./webadmin/net-forwarding/shell.sh
-chmod 755 ./webadmin/net-forwarding/shell.sh
+${do_chown} && chown root:root ./webadmin/lib/shell/net-routing-list.rc
+chmod 644 ./webadmin/lib/shell/net-routing-list.rc
+${do_chown} && chown root:root ./webadmin/lib/shell/list-interfaces.rc
+chmod 644 ./webadmin/lib/shell/list-interfaces.rc
 ${do_chown} && chown root:root ./VERSION.txt
 chmod 644 ./VERSION.txt
 ${do_chown} && chown root:root ./extras-uninstall.sh

@@ -7,6 +7,7 @@ ADDR='0.0.0.0'
 PORT='80'
 ROUTER_SCRIPT="$HOME/router.php"
 PHP_COMMAND='/usr/bin/php'
+PHP_ARGS='-c /usr/local/etc/webadmin.php.ini'
 LOG='/tmp/.webadmin.log'
 PID='/tmp/.webadmin.pid'
 
@@ -56,7 +57,7 @@ while true; do
 		while [ ! -w $PID ]; do sleep 1; done
 	fi
 
-	env - $PHP_COMMAND -S $ADDR:$PORT -t $HOME $ROUTER_SCRIPT >> $LOG 2>&1 &
+	env - $PHP_COMMAND $PHP_ARGS -S $ADDR:$PORT -t $HOME $ROUTER_SCRIPT >> $LOG 2>&1 &
 
 	echo -n "$!" > $PID
 	log "PHP server PID is $(cat $PID)"

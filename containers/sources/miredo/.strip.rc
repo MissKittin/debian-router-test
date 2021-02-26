@@ -1,0 +1,19 @@
+# etc
+rm ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/init.d/.* > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/network
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/rc*.d
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/systemd
+rm ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/.pwd.lock
+
+# home, lib, usr/share
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/home
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/lib
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/usr/share
+
+# var
+if ! mountpoint -q /var/cache/apt/archives; then
+	rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/cache/apt
+fi
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/cache/debconf
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/lib
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/log

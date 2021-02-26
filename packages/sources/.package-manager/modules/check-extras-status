@@ -9,13 +9,13 @@ for i in ${PACKAGES_DIR}/*; do
 		$i/extras-status.sh > /dev/null 2>&1
 		retVal=$?
 		if [ "$retVal" = '2' ]; then
-			echo -n ' [partially installed]        '
+			echo -n ' [partially installed] '
 			echo "$i" | sed -e 's\'"${PACKAGES_DIR}"'/\\g'
 		elif [ "$retVal" = '0' ]; then
-			echo -n ' [installed]     '
+			echo -n ' [installed]           '
 			echo "$i" | sed -e 's\'"${PACKAGES_DIR}"'/\\g'
 		else
-			echo -n ' [not installed] '
+			echo -n ' [not installed]       '
 			echo "$i" | sed -e 's\'"${PACKAGES_DIR}"'/\\g'
 		fi
 		unset retVal

@@ -1,17 +1,17 @@
 # Sync apt lists stored on ramdisk
-if mountpoint -q /var/lib/apt/lists; then
-	mount -o remount,rw /run/aptlists2ram
-	cp -rfup /var/lib/apt/lists -T /run/aptlists2ram
-	oldpwd=$(pwd)
-	cd /run/aptlists2ram; find | sed 1d | while read line; do
-		line=$(echo $line | cut -c2-)
+if mountpoint -q '/var/lib/apt/lists'; then
+	mount -o remount,rw '/var/run/aptlists2ram'
+	cp -rfup '/var/lib/apt/lists' -T '/var/run/aptlists2ram'
+	oldpwd="$(pwd)"
+	cd '/var/run/aptlists2ram'; find | sed 1d | while read line; do
+		line="$(echo $line | cut -c2-)"
 		if [ ! -e "/var/lib/apt/lists${line}" ]; then
-			rm -r -f "/run/aptlists2ram${line}" > /dev/null 2>&1
+			rm -r -f "/var/run/aptlists2ram${line}" > /dev/null 2>&1
 		fi
 	done
-	cd $oldpwd
+	cd "${oldpwd}"
 	unset oldpwd; unset line
-	#umount /var/lib/apt/lists
-	#umount /run/aptlists2ram
-	#rmdir /run/aptlists2ram
+	#umount '/var/lib/apt/lists'
+	#umount '/var/run/aptlists2ram'
+	#rmdir '/var/run/aptlists2ram'
 fi

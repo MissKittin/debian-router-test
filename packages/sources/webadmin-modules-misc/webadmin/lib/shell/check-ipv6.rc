@@ -1,0 +1,46 @@
+# Check IPv6 connection library
+# Command stack: ping6, wget, grep, timeout
+
+# Define CHECK_IP6_TEST_ADDRESS before importing
+# Define PUBLIC_IP6_TEST_ADDRESS before importing (optional)
+
+#check_ipv6__check_ipv6()
+#{
+#	if timeout 1 ping6 -c 1 -W 1 ${CHECK_IP6_TEST_ADDRESS} > /dev/null 2>&1; thenz
+#		[ "$2" = 'on-dashboard' ] && echo 'IPv6 Internet connection: yes<br>' || echo 'IPv6 Internet connection: yes'
+#	else
+#		[ "$2" = 'on-dashboard' ] && echo 'IPv6 Internet connection: no<br>' || echo 'IPv6 Internet connection: no'
+#	fi
+#}
+check_ipv6__check_ipv6()
+{
+	if timeout 1 ping6 -c 1 -W 1 ${CHECK_IP6_TEST_ADDRESS} > /dev/null 2>&1; then
+		if [ ! "${PUBLIC_IP6_TEST_ADDRESS}" = '' ]; then
+			local ip="$(timeout 2 wget -6 -q -O- --timeout=1 --no-check-certificate ${PUBLIC_IP6_TEST_ADDRESS})"
+			if echo -n "${ip}" | grep "^\([0-9a-fA-F]\{0,4\}:\)\{1,7\}[0-9a-fA-F]\{0,4\}$" > /dev/null 2>&1; then
+				#[ "${2}" = 'on-dashboard' ] && \
+				#	echo "IPv6 Internet connection: yes, public IP: ${ip}<br>" || \
+					echo "IPv6 Internet connection: yes<br>Public IPv6: ${ip}"
+			fi
+		else
+			#[ "${2}" = 'on-dashboard' ] && \
+			#	echo 'IPv6 Internet connection: yes<br>' || \
+				echo 'IPv6 Internet connection: yes'
+		fi
+	else
+		#[ "${2}" = 'on-dashboard' ] && \
+		#	echo 'IPv6 Internet connection: no<br>' || \
+			echo 'IPv6 Internet connection: no'
+	fi
+}
+
+if [ "${IP6_NO_CASE}" = '' ]; then
+	case $1 in
+		'check-ipv6')
+			check_ipv6__check_ipv6 ${@}
+		;;
+	esac
+else
+	check_ipv6__check_ipv6 ${IP6_FUNCTION_OPTS}
+	unset check_ipv6__check_ipv6
+fi

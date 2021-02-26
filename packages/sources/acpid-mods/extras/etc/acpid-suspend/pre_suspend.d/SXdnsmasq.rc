@@ -1,6 +1,8 @@
 DNSMASQ__ENABLED=false
 if /etc/init.d/dnsmasq status > /dev/null 2>&1; then
 	log 'stopping dnsmasq'
-	/etc/init.d/dnsmasq stop
+	/etc/init.d/dnsmasq stop 2>&1 | while read outputLine; do
+		log " :: ${outputLine}"
+	done
 	DNSMASQ__ENABLED=true
 fi

@@ -31,12 +31,12 @@ fi
 echo ''
 
 # Uninstall - /usr/local/etc/dnsmasq.d
-echo -n '[rm] /usr/local/etc/dnsmasq.d/dns.conf'
-	rm /usr/local/etc/dnsmasq.d/dns.conf > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+echo -n '[rm] /usr/local/etc/dnsmasq.d/localdns.conf'
+	rm /usr/local/etc/dnsmasq.d/localdns.conf > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Uninstall - /etc/dnsmasq.d
-echo -n '[rm] /etc/dnsmasq.d/dns.conf'
-	rm /etc/dnsmasq.d/dns.conf > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+echo -n '[rm] /etc/dnsmasq.d/localdns.conf'
+	rm /etc/dnsmasq.d/localdns.conf > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 echo ''
 exit 0

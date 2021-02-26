@@ -10,7 +10,7 @@ Extensions:
 * MAC ebtables banlist
 
 Extras:
-* Status checking rule for notify-daemon
+* Status checking rule for notify-daemon (deprecated)
 * Webadmin modules
 
 ### Configuration files
@@ -25,3 +25,9 @@ Extras:
 ### Deprecated files
 * sbin/permanently-banned.sh
 * etc/rc.local.d/PKx_permanently-banned.rc
+* extras/etc/notify-daemon/events.rc.d/firewall.rc
+* extras/etc/notify-daemon/events.rc.d/firewall6.rc
+* extras/etc/notify-daemon/events.rc.d/default_gateway.rc
+* extras/etc/notify-daemon/events.rc.d/routing.rc
+* webadmin/net-forwarding
+* webadmin/lib/shell/list-iptables-settings.rc

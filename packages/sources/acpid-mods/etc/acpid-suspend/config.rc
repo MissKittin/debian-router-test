@@ -3,7 +3,7 @@ wakeup_at='10:30'
 wakeup_enabled='true' # use rtcwake (true) or echo mem > /sys/power/state (false)
 
 # Log file
-log_file='/run/acpid-suspend.log'
+log_file='/var/run/.acpid-suspend.log'
 log_file_owner='root:adm'
 log_file_perm='640'
 [ -e '/var/log/acpid-suspend.log' ] && log_file='/var/log/acpid-suspend.log' # save log to /var/log if exists
@@ -11,5 +11,13 @@ log_file_perm='640'
 # Commands
 rtcwake='rtcwake'
 
+# Oneshot config settings
+oneshot_file='/var/run/.acpid-suspend-oneshot.rc'
+oneshot_file_owner='root'
+oneshot_file_mode='644'
+
 # Import programmed calendar
-[ -e "${conf_dir}/calendar.rc" ] && . ${conf_dir}/calendar.rc
+[ "${config_first_import}" = '' ] && [ -e "${config_dir}/calendar.rc" ] && . "${config_dir}/calendar.rc"
+
+# Import oneshot config file (this must be last)
+[ "${config_first_import}" = '' ] && [ -e "${oneshot_file}" ] && [ "$(stat -c %U ${oneshot_file})" = "${oneshot_file_owner}" ] && [ "$(stat -c %a ${oneshot_file})" = "${oneshot_file_mode}" ] && . "${oneshot_file}" && log 'oneshot-config: config imported' && rm "${oneshot_file}"

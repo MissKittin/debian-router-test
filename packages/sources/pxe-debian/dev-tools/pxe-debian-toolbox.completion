@@ -1,0 +1,1 @@
+complete -W "bootstrap bootstrap-clear unpack-rootfs install-packages strip install-pxe-debian-package setup-boot-queue mkinitrd mkinitrd-bin mksquashfs-rootfs mksquashfs-kernel make-pxe-directory make-syslinux-config make-syslinux-autoboot make-grub2-debug-config make-tarball" ./pxe-debian-toolbox.sh

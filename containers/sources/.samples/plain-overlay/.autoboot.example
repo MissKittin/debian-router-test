@@ -1,0 +1,17 @@
+#!/bin/sh
+# Rename this file to .autoboot
+# and chmod 755 .autoboot
+# to start container on OS boot
+# You can edit this file
+# or rewrite to any language
+
+case "${1}" in
+	'start')
+		exec "$(dirname ${0})/start.sh" strip
+	;;
+	'stop')
+		exec "$(dirname ${0})/stop.sh"
+	;;
+esac
+
+exit 1

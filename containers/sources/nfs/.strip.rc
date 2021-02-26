@@ -1,0 +1,39 @@
+# etc
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/init > /dev/null 2>&1
+rm ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/init.d/.depend.* > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/insserv.conf.d > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/rc0.d > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/rc1.d > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/rc2.d > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/rc3.d > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/rc4.d > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/rc5.d > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/rc6.d > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/rcS.d > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/systemd > /dev/null 2>&1
+rm ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/.pwd.lock > /dev/null 2>&1
+rm ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/passwd- > /dev/null 2>&1
+rm ${DESTINATION}/${CONTAINER_ROOT}/diff/etc/shadow- > /dev/null 2>&1
+
+# lib
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/lib/systemd > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/usr/lib/systemd > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/usr/lib/tmpfiles.d > /dev/null 2>&1
+
+# share
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/usr/share/bug > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/usr/share/doc > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/usr/share/lintian > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/usr/share/man > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/usr/share/nfs-common > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/usr/share/nfs-kernel-server > /dev/null 2>&1
+
+# var
+if ! mountpoint -q /var/cache/apt/archives; then
+	rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/cache > /dev/null 2>&1
+fi
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/lib/apt > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/lib/dpkg > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/lib/systemd > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/lib/ucf > /dev/null 2>&1
+rm -r -f ${DESTINATION}/${CONTAINER_ROOT}/diff/var/log > /dev/null 2>&1

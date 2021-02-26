@@ -1,0 +1,7 @@
+# This is a comment
+${DESTINATION}/.in-container-dir-bind
+	${DESTINATION}/${CONTAINER_ROOT}/mnt/destination-directory
+
+# This is an another comment
+/path/to/source
+	${DESTINATION}/${CONTAINER_ROOT}/mnt/path/to/destination

@@ -12,15 +12,17 @@ echo ''
 echo " ${PACKAGE_NAME}"
 echo ''
 
-# /usr/local/etc
-echo -n '/usr/local/etc/dnsmasq.d'
-	if [ -L '/usr/local/etc/dnsmasq.d' ] && [ -e '/usr/local/etc/dnsmasq.d' ]; then
-		installed=true
-		echo ' [ OK ]'
-	else
-		broken=true
-		echo ' [Broken]'
-	fi
+# /usr/local/etc/dnsmasq.d
+for i in dns-cache.conf pxe.conf security.conf; do
+	echo -n "/usr/local/etc/dnsmasq.d/${i}"
+		if [ -L "/usr/local/etc/dnsmasq.d/${i}" ] && [ -e "/usr/local/etc/dnsmasq.d/${i}" ]; then
+			installed=true
+			echo ' [ OK ]'
+		else
+			broken=true
+			echo ' [Broken]'
+		fi
+done
 
 # /etc/dnsmasq.d
 for i in dns-cache.conf pxe.conf security.conf; do

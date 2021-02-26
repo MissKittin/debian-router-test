@@ -1,6 +1,8 @@
 ISC_DHCPD__ENABLED=false
 if /etc/init.d/isc-dhcp-server status > /dev/null 2>&1; then
 	log 'stopping isc-dhcp-server'
-	/etc/init.d/isc-dhcp-server stop
+	/etc/init.d/isc-dhcp-server stop 2>&1 | while read outputLine; do
+		log " :: ${outputLine}"
+	done
 	ISC_DHCPD__ENABLED=true
 fi

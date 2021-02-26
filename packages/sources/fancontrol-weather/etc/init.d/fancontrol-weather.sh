@@ -11,7 +11,8 @@
 # Options
 PIDFILE='/var/run/fancontrol-weather.pid'
 DAEMON='/usr/local/sbin/fancontrol-weather.sh'
-[ "${2}" = '' ] && LOG='/tmp/.fancontrol-weather.log' || LOG="${2}"
+LOG='/var/run/.fancontrol-weather.log'
+[ ! "${2}" = '' ] && LOG="${2}"
 DAEMON_OPTS="$LOG"
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin

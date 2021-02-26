@@ -30,22 +30,6 @@ if [ ! "$1" = '--force' ]; then
 fi
 echo ''
 
-# Install - /usr/local/etc/dnsmasq.d
-if cd /usr/local/etc/dnsmasq.d > /dev/null 2>&1; then
-	echo -n '[ln] extras/etc/dnsmasq.d/ddns.conf /usr/local/etc/dnsmasq.d'
-		ln -s ${PACKAGE_DIR}/extras/etc/dnsmasq.d/ddns.conf . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
-
-	# Install - /etc/dnsmasq.d
-	if cd /etc/dnsmasq.d > /dev/null 2>&1; then
-		echo -n '[ln] /usr/local/etc/dnsmasq.d/ddns.conf /etc/dnsmasq.d'
-			ln -s /usr/local/etc/dnsmasq.d/ddns.conf . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
-	else
-		echo 'Install dnsmasq'
-	fi
-else
-	echo 'Create /usr/local/etc/dnsmasq.d directory'
-fi
-
 # Install - /usr/local/etc/notify-daemon
 if cd /usr/local/etc/notify-daemon/events.rc.d > /dev/null 2>&1; then
 	for i in apt-update.rc dpkg_rubbish.rc obsolete-kernels.rc ssh.rc smart.rc; do
@@ -75,7 +59,7 @@ if cd /usr/local/etc/rc.local.d > /dev/null 2>&1; then
 		echo -n "[ln] extras/etc/rc.local.d/${i} /usr/local/etc/rc.local.d"
 			ln -s ${PACKAGE_DIR}/extras/etc/rc.local.d/PKx_${i} . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 	done
-	for i in PK99_zz-fs-ssd-tweaks.rc; do
+	for i in PK99_dmesg-dump.rc PK99_zz-fs-ssd-tweaks.rc; do
 		echo -n "[ln] extras/etc/rc.local.d/${i} /usr/local/etc/rc.local.d"
 			ln -s ${PACKAGE_DIR}/extras/etc/rc.local.d/${i} . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 	done

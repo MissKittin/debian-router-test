@@ -1,0 +1,139 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          webadmin
+# Required-Start:
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:
+# Short-Description: Start php daemon for webadmin
+### END INIT INFO
+PATH='/sbin:/bin:/usr/sbin:/usr/bin'
+
+# temp directories
+temp_dir='/var/run/webadmin'
+sessions_dir="${temp_dir}/sessions"
+
+# php config
+php_ini='/usr/local/etc/webadmin.php.ini'
+document_root='/usr/local/share/webadmin'
+ip_address='0.0.0.0'
+port='80'
+router_file="${document_root}/router.php"
+
+# start-stop-daemon config
+PIDFILE="${temp_dir}/webadmin.pid"
+LOG="${temp_dir}/php.log"
+DAEMON_NAME='webadmin'
+DAEMON='/usr/bin/php'
+DAEMON_USER='nobody:nogroup'
+DAEMON_OPTS="
+	-c ${temp_dir}/php.ini
+	-d session.save_path="${sessions_dir}"
+	-S ${ip_address}:${port}
+	-t ${document_root}
+	${router_file}
+"
+
+# precaching config
+PRECACHING_FILE='/lib/opcache.php'
+PRECACHING_LOG="${temp_dir}/webadmin-preload.log"
+
+# use stunnel
+USE_STUNNEL='false'
+
+# start php via authbind
+START_DAEMON_VIA_AUTHBIND='false'
+
+# user-defined config
+[ -e '/usr/local/etc/default/webadmin' ] && . '/usr/local/etc/default/webadmin'
+
+# start php via authbind (if defined in settings)
+if "${START_DAEMON_VIA_AUTHBIND}"; then
+	DAEMON='/usr/bin/authbind'
+	DAEMON_OPTS="/usr/bin/php ${DAEMON_OPTS}"
+fi
+
+. /lib/lsb/init-functions
+
+case "${1}" in
+	'start')
+		log_daemon_msg 'Starting PHP server' "${DAEMON_NAME}"
+		if ${0} status > /dev/null 2>&1; then
+			log_end_msg 1
+		else
+			if [ ! -e "${temp_dir}" ]; then
+				mkdir -p "${temp_dir}"
+				chmod 711 "${temp_dir}"
+			fi
+			if [ ! -e "${sessions_dir}" ]; then
+				mkdir -p "${sessions_dir}"
+				chown "${DAEMON_USER}" "${sessions_dir}"
+				chmod 700 "${sessions_dir}"
+			fi
+			if [ ! -e "${LOG}" ]; then
+				echo -n '' > "${LOG}"
+				chown root:adm "${LOG}"
+				chmod 640 "${LOG}"
+			else
+				echo '' >> "${LOG}"
+			fi
+			if [ ! -e "${temp_dir}/php.ini" ]; then
+				cat "$(php -r 'echo php_ini_loaded_file();')" | grep -v ';' | grep -v '^$' > "${temp_dir}/php.ini"
+				echo '' >> "${temp_dir}/php.ini"
+				cat "${php_ini}" | grep -v ';' | grep -v '^$' >> "${temp_dir}/php.ini"
+			fi
+			if "${USE_STUNNEL}"; then # use stunnel (if defined in settings)
+				chown "${STUNNEL_USER}:adm" "${LOG}"
+				chmod 640 "${LOG}"
+				if [ ! -e "${STUNNEL_PID_DIR}" ]; then
+					mkdir "${STUNNEL_PID_DIR}"
+					chown "${STUNNEL_USER}:root" "${STUNNEL_PID_DIR}"
+					chmod 700 "${STUNNEL_PID_DIR}"
+				fi
+			fi
+
+			echo "$(date '+%Y-%m-%d %H:%M:%S') Starting PHP server" >> "${LOG}"
+			"${START_DAEMON_VIA_AUTHBIND}" && echo "$(date '+%Y-%m-%d %H:%M:%S') Running daemon via authbind" >> "${LOG}"
+
+			env - PATH='' /sbin/start-stop-daemon --start --chuid $DAEMON_USER --quiet --background --make-pidfile --pidfile $PIDFILE --exec /usr/bin/env HOME='' $DAEMON --no-close -- $DAEMON_OPTS >> $LOG 2>&1 && log_end_msg 0 || log_end_msg 1
+
+			if [ -e "${document_root}${PRECACHING_FILE}" ]; then
+				log_daemon_msg 'Precaching scripts' "${DAEMON_NAME}"
+				echo "$(date '+%Y-%m-%d %H:%M:%S') Starting precaching script" >> "${LOG}"
+				sleep 1
+				wget -O- -q "http://127.0.0.1:${port}${PRECACHING_FILE}?compile&autocompile" >> ${PRECACHING_LOG} 2>&1 && log_end_msg 0 || log_end_msg 1
+				echo "$(date '+%Y-%m-%d %H:%M:%S') Precaching script ended" >> "${LOG}"
+
+				[ -e "${PRECACHING_LOG}.gz" ] && rm "${PRECACHING_LOG}.gz"
+				gzip -9 "${PRECACHING_LOG}"
+				chmod 600 "${PRECACHING_LOG}.gz"
+				chown root:adm "${PRECACHING_LOG}.gz"
+			fi
+		fi
+	;;
+	'stop')
+		log_daemon_msg 'Stopping PHP server' "${DAEMON_NAME}"
+		if [ -e $PIDFILE ]; then
+			if start-stop-daemon --stop --quiet --pidfile $PIDFILE; then
+				log_end_msg $?
+				rm $PIDFILE
+				echo "$(date '+%Y-%m-%d %H:%M:%S') PHP server stopped" >> "${LOG}"
+			fi
+		else
+			log_end_msg 1
+		fi
+	;;
+	'restart')
+		${0} stop
+		${0} start
+	;;
+	'status')
+		status_of_proc -p $PIDFILE $DAEMON $DAEMON_NAME && exit 0 || exit $?
+	;;
+	*)
+		echo 'start-php-server.sh start|stop|restart|status'
+		exit 1
+	;;
+esac
+
+exit 0

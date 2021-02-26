@@ -1,0 +1,25 @@
+echo start >> /.debug.txt
+	echo -n Waiting for network...
+	PING_HOST='http://ftp.debian.org/'
+	while ! wget -q --tries=10 --timeout=20 --spider $PING_HOST; do
+		sleep 1
+		echo sleep >> /.debug.txt
+		echo -n .
+	done
+	echo .
+echo update >> /.debug.txt
+	echo Updating apt database...
+	apt-get update >> /.debug.txt
+echo install >> /.debug.txt
+	echo Installing packages...
+	apt-get install -y php7.0-fpm >> /.debug.txt 2>&1
+	apt-get install -y nginx-light >> /.debug.txt 2>&1
+	ls /etc/php/7.0/mods-available/* > /dev/null 2>&1 || for mod in /etc/php/7.0/mods-available/*; do mod="${mod##*/}"; phpenmod "${mod%.*}"; done; unset mod
+if mountpoint -q /var/cache/apt/archives; then
+	echo noclean >> /.debug.txt
+else
+	echo clean >> /.debug.txt
+		echo Cleaning apt...
+		apt-get clean
+fi
+echo stop >> /.debug.txt

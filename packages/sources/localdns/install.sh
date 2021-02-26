@@ -28,7 +28,7 @@ if [ ! -e /usr/sbin/dnsmasq ]; then
 fi
 
 # Check if installed
-if [ -e /usr/local/etc/hosts.d ] || [ -e /usr/local/etc/init.d/dc_dnsmasq-hosts-build ] || [ -e /etc/init.d/dc_dnsmasq-hosts-build ] || [ -e /usr/local/sbin/generate-dns-hosts.sh ]; then
+if [ -e /usr/local/etc/localdns.d ] || [ -e /usr/local/etc/init.d/localdns.sh ] || [ -e /etc/init.d/localdns.sh ] || [ -e /usr/local/sbin/localdns.sh ]; then
 	echo 'Already installed'
 	exit 1
 fi
@@ -47,27 +47,27 @@ echo ''
 
 # Install - /usr/local/etc
 cd /usr/local/etc
-echo -n '[ln] etc/hosts.d /usr/local/etc'
-	ln -s ${PACKAGE_DIR}/etc/hosts.d . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+echo -n '[ln] etc/localdns.d /usr/local/etc'
+	ln -s ${PACKAGE_DIR}/etc/localdns.d . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Install - /usr/local/etc/init.d
 cd /usr/local/etc/init.d
-echo -n '[ln] etc/init.d/dc_dnsmasq-hosts-build /usr/local/etc/init.d'
-	ln -s ${PACKAGE_DIR}/etc/init.d/dc_dnsmasq-hosts-build . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+echo -n '[ln] etc/init.d/localdns.sh /usr/local/etc/init.d'
+	ln -s ${PACKAGE_DIR}/etc/init.d/localdns.sh . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Install - /etc/init.d
 cd /etc/init.d/
-echo -n '[ln] /usr/local/etc/init.d/dc_dnsmasq-hosts-build /etc/init.d'
-	ln -s /usr/local/etc/init.d/dc_dnsmasq-hosts-build . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+echo -n '[ln] /usr/local/etc/init.d/localdns.sh /etc/init.d'
+	ln -s /usr/local/etc/init.d/localdns.sh . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Install - /usr/local/sbin
 cd /usr/local/sbin
-echo -n '[ln] sbin/generate-dns-hosts.sh /usr/local/sbin'
-	ln -s ${PACKAGE_DIR}/sbin/generate-dns-hosts.sh . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+echo -n '[ln] sbin/localdns.sh /usr/local/sbin'
+	ln -s ${PACKAGE_DIR}/sbin/localdns.sh . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Notification
 echo ''
-echo ' ! Insserv /etc/init.d/dc_dnsmasq-hosts-build'
+echo ' ! Insserv /etc/init.d/localdns.sh'
 
 echo ''
 exit 0

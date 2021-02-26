@@ -13,8 +13,8 @@ echo " ${PACKAGE_NAME} - extras"
 echo ''
 
 # /usr/local/etc/dnsmasq.d
-echo -n '/usr/local/etc/dnsmasq.d/dns.conf'
-	if [ -L /usr/local/etc/dnsmasq.d/dns.conf ] && [ -e /usr/local/etc/dnsmasq.d/dns.conf ]; then
+echo -n '/usr/local/etc/dnsmasq.d/localdns.conf'
+	if [ -L /usr/local/etc/dnsmasq.d/localdns.conf ] && [ -e /usr/local/etc/dnsmasq.d/localdns.conf ]; then
 		installed=true
 		echo ' [ OK ]'
 	else
@@ -23,8 +23,8 @@ echo -n '/usr/local/etc/dnsmasq.d/dns.conf'
 	fi
 
 # /etc/dnsmasq.d
-echo -n '/etc/dnsmasq.d/dns.conf'
-	if [ -L /etc/dnsmasq.d/dns.conf ] && [ -e /etc/dnsmasq.d/dns.conf ]; then
+echo -n '/etc/dnsmasq.d/localdns.conf'
+	if [ -L /etc/dnsmasq.d/localdns.conf ] && [ -e /etc/dnsmasq.d/localdns.conf ]; then
 		installed=true
 		echo ' [ OK ]'
 	else

@@ -1,0 +1,21 @@
+# Read system uptime
+remove_first_arg()
+{
+	local skip='true'
+	local i
+
+	for i in $@; do
+		"${skip}" && skip='false' || echo -n "${i} "
+	done
+}
+
+if command -v 'uptime' > /dev/null 2>&1; then
+	echo "System started: $(uptime -s)${newline}"
+
+	uptime_output="$(remove_first_arg $(uptime -p))"
+	[ "${uptime_output}" = '' ] && uptime_output='less than a minute'
+	echo "Uptime: ${uptime_output}${newline}"
+	unset uptime_output
+fi
+
+echo "${newline}"

@@ -3,23 +3,47 @@ echo
 echo ' SMB share mount'
 echo
 
-echo -n 'Address: '
-read address
-echo -n 'Share name: '
-read share
-echo -n 'User name: '
-read username
-echo -n 'Password: '
-read -s password
+# address
+mount_options=''
+echo -n 'Address: '; read address
+echo -n 'Share name: '; read share
 
-if [ ! "${address}" = '' ] && [ ! "${share}" = '' ] && [ ! "${username}" = '' ] && [ ! "${password}" = '' ]; then
-	echo ''
-	echo 'Mounting...'
-	[ -e "/mnt/${share}" ] || mkdir "/mnt/${share}"
-	modprobe md4
-	modprobe arc4
+# credentials
+echo -n 'User name: '; read username
+if [ ! "${username}" = '' ]; then
+	mount_options="-o username=${username}"
+	echo -n 'Password: '; read -s password; echo ''
+	[ ! "${password}" = '' ] && mount_options="${mount_options},password=${password}"
+fi
+
+# settings
+echo -n 'noserverino? (y/[N]) '; read noserverino
+if [ "${noserverino}" = 'y' ]; then
+	[ "${mount_options}" = '' ] && mount_options='-o noserverino' || mount_options="${mount_options},noserverino"
+fi
+
+# mount
+echo ''
+if [ ! "${address}" = '' ] && [ ! "${share}" = '' ]; then
+	[ -e "/mnt/${address}-${share}" ] || mkdir "/mnt/${address}-${share}"
+
+	echo 'Loading kernel modules...' # (try to/force) load all crypto modules
+	find /lib/modules/$(uname -r) | grep 'crypto' | while read cmod; do
+		insmod ${cmod} > /dev/null 2>&1
+	done
 	modprobe cifs
-	mount -t cifs -o username=${username},password=${password},vers=1.0,noserverino //${address}/${share} /mnt/${share} && echo "Share mounted at /mnt/${share}"
+
+	echo 'Mounting...'
+	if mount -t cifs ${mount_options} //${address}/${share} /mnt/${address}-${share}; then
+		echo "Share mounted on /mnt/${address}-${share}"
+	else
+		echo 'Mount failed!'
+		rmdir "/mnt/${address}-${share}" > /dev/null 2>&1
+		exit 1
+	fi
+else
+	echo 'No address/share name specified'
+	exit 1
 fi
 
 exit 0

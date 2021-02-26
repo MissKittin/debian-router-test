@@ -32,13 +32,13 @@ echo ''
 
 # Install - /usr/local/etc/dnsmasq.d
 if cd /usr/local/etc/dnsmasq.d > /dev/null 2>&1; then
-	echo -n '[ln] extras/etc/dnsmasq.d/dns.conf /usr/local/etc/dnsmasq.d'
-		ln -s ${PACKAGE_DIR}/extras/etc/dnsmasq.d/dns.conf . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+	echo -n '[ln] extras/etc/dnsmasq.d/localdns.conf /usr/local/etc/dnsmasq.d'
+		ln -s ${PACKAGE_DIR}/extras/etc/dnsmasq.d/localdns.conf . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 	# Install - /etc/dnsmasq.d
 	if cd /etc/dnsmasq.d > /dev/null 2>&1; then
-		echo -n '[ln] /usr/local/etc/dnsmasq.d/dns.conf /etc/dnsmasq.d'
-			ln -s /usr/local/etc/dnsmasq.d/dns.conf . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+		echo -n '[ln] /usr/local/etc/dnsmasq.d/localdns.conf /etc/dnsmasq.d'
+			ln -s /usr/local/etc/dnsmasq.d/localdns.conf . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 	else
 		echo 'Install dnsmasq'
 	fi

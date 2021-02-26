@@ -1,4 +1,6 @@
 if $ISC_DHCPD__ENABLED; then
 	log 'starting isc-dhcp-server'
-	/etc/init.d/isc-dhcp-server start
+	/etc/init.d/isc-dhcp-server start 2>&1 | while read outputLine; do
+		log " :: ${outputLine}"
+	done
 fi

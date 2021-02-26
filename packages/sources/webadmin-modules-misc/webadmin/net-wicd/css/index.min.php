@@ -1,0 +1,12 @@
+<?php if(!function_exists('prevent_direct')) include $system['location_php'] . '/lib/prevent-direct.php'; prevent_direct('index.min.php'); if(!isset($_GET['theme'])) { prevent_index(); exit(); } $session_regenerate=false; include $system['location_php'] . '/lib/login/login.php'; unset($session_regenerate); /* _webadmin */ ?>
+<?php
+	/* _webadmin *//*
+	if((!isset($_GET['theme'])) || (basename($_SERVER['SCRIPT_NAME']) === 'index.min.php')) exit();
+	*//* _webadmin */
+	header('Content-Type: text/css; X-Content-Type-Options: nosniff;'); header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 3600) . ' GMT'); header('Pragma: cache'); header('Cache-Control: max-age=3600');
+	if(!@include '../themes/' . $_GET['theme'] . '/theme.php') { prevent_index(); exit(); } /* _webadmin */
+	/* _webadmin *//*
+	if(!@include '../themes/' . $_GET['theme'] . '/theme.php') exit();
+	*//* _webadmin */
+?>
+.wicd_window{position:absolute;top:0;bottom:0;left:0;right:0;margin:auto}.wicd_titleBar{overflow:auto}.wicd_titleBarClose{display:inline;float:right}.wicd_windowButtons{position:absolute;bottom:0;right:0;padding:5px;overflow:auto}#wicd_settings{width:500px;height:500px}#wicd_settingsContent{padding:5px;height:430px;overflow:scroll;overflow-x:hidden;overflow-y:auto}#wicd_settingsSaved{width:300px;height:100px}#wicd_about{width:500px;height:500px}#wicd_aboutContent{margin-top:150px}#wicd_enterPassword{width:300px;height:100px}#wicd_enterPasswordContent{padding-top:18px;text-align:center}#wicd_networkSaved{width:300px;height:100px}#wicd_content{height:520px;width:400px}#wicd_contentHiddenClose{visibility:hidden}#wicd_contentButtons{padding:5px}#wicd_contentNetworks{padding:5px;height:80%;overflow:scroll;overflow-x:hidden;overflow-y:auto}#wicd_contentNetworksActiontext{text-align:center;vertical-align:middle;line-height:400px}.wicd_contentNetworksNetwork{height:100px;margin-bottom:5px}.wicd_contentNetworksNetworkName{margin-left:5px}.wicd_contentNetworksNetworkSignalicon{float:left}.wicd_contentNetworksNetworkSignaliconQualityImg{width:50px;margin-right:5px}#wicd_status{padding:2px}@media only screen and (max-height: 650px){#wicd_about{width:400px;height:400px}#wicd_aboutContent{margin-top:100px}#wicd_settings{width:400px;height:400px}#wicd_settingsContent{height:330px}}

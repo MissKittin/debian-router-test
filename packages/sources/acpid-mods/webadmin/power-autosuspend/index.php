@@ -1,4 +1,4 @@
-<?php include($system['location_php'] . '/lib/login/login.php'); ?>
+<?php include $system['location_php'] . '/lib/login/login.php'; ?>
 <?php chdir($system['location_php']); ?>
 <?php
 	$shell_sh_location=$system['location_php'] . '/power-autosuspend/shell.sh';
@@ -32,12 +32,12 @@
 <html>
 	<head>
 		<title>Autosuspend</title>
-		<?php include($system['location_php'] . '/lib/htmlheaders.php'); ?>
+		<?php include $system['location_php'] . '/lib/htmlheaders.php'; ?>
 	</head>
 	<body>
-		<?php include($system['location_php'] . '/lib/header.php'); ?>
+		<?php include $system['location_php'] . '/lib/header.php'; ?>
 		<div id="system_body">
-			<?php include($system['location_php'] . '/lib/menu/menu.php'); ?>
+			<?php include $system['location_php'] . '/lib/menu/menu.php'; ?>
 			<div id="system_content">
 				<h1>Automatic suspend</h1>
 				<?php
@@ -62,7 +62,7 @@
 
 				<h3>Configuration</h3>
 				<form action="power-autosuspend" method="post">
-					<input type="checkbox" name="enabled" value="enable" <?php if(($config[0] === 'true') || ($config[0] === 'tempdisabled')) echo 'checked'; ?>> <input type="time" name="activatetime" value="<?php echo $config[1]; ?>:<?php echo $config[2]; ?>" required> ─ <input type="time" name="deactivatetime" value="<?php echo $config[3]; ?>:<?php echo $config[4]; ?>" required>
+					<input style="display: none;" type="checkbox" name="enabled" value="enable" <?php if(($config[0] === 'true') || ($config[0] === 'tempdisabled')) echo 'checked'; ?>> <input type="time" name="activatetime" value="<?php echo $config[1]; ?>:<?php echo $config[2]; ?>" required> ─ <input type="time" name="deactivatetime" value="<?php echo $config[3]; ?>:<?php echo $config[4]; ?>" required>
 					<br><br>
 					<input type="submit" class="system_button" value="Set">
 					<?php if($config[0] !== 'false') { ?><?php if($config[0] === 'tempdisabled') echo '<input type="submit" class="system_button" name="tempunlock" value="Unlock">'; else echo '<input type="submit" class="system_button" name="templock" value="Lock">'; ?><?php } ?>

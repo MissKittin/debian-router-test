@@ -1,14 +1,23 @@
-### Container configuration
 # Misc
 CONTAINER_NAME='stunnel'
 DESTINATION="$(dirname $0)"
 CONTAINER_ROOT='.container'
+export PATH="${DESTINATION}/.bin:${PATH}"
+
+# Start
+REMOVE_SYSTEM_MOUNTPOINTS='proc sys'
+CONFIG_TARBALLS='.config.tar.gz'
+OVERLAYFS_MOUNT_OPTIONS='nosuid,nodev,exec,noatime,nodiratime'
 
 # Start/Stop
 MOUNT_LABEL="${CONTAINER_NAME}"
+BIND_SYSTEM_MOUNTPOINTS='dev dev/pts proc sys'
 
 # Service
 CONTAINER_SERVICES='/etc/init.d/stunnel4'
+
+# Start/Service
+CONTAINER_AUTOSTART_SERVICES="${CONTAINER_SERVICES}"
 
 # Console
 SHELL_PROMPT="${CONTAINER_NAME}"'> '

@@ -1,13 +1,23 @@
 # Program your calendar here
-#if [ "$(LANG=C date +%A)" = 'Saturday' ]; then
-#	if [ "${calendar_logged}" = '' ]; then
-#		log 'calendar: saturday rule activated: 23:00-06:30'
-#		calendar_logged=true
+# note: calendar is disabled if oneshot config is present
+
+calendar__dayName="$(LANG=C date '+%A')"
+calendar__hour="$(LANG=C date '+%H')"
+
+#if [ "${calendar__dayName}" = 'Saturday' ] && [ "${calendar__hour}" -ge '22' ]; then
+#	activate_at_hour='23'
+#	activate_at_min='00'
+#	deactivate_at_hour='06'
+#	deactivate_at_min='30'
+#
+#	if [ "${calendar__logged}" = '' ]; then
+#		log "calendar: saturday rule activated: ${activate_at_hour}:${activate_at_min}-${deactivate_at_hour}:${deactivate_at_min}"
+#		calendar__logged='true'
 #	fi
-#	activate_at_hour=23
-#	activate_at_min=00
-#	deactivate_at_hour=06
-#	deactivate_at_min=30
 #else
-#	unset calendar_logged
+#	# no calendar applied
+#	unset calendar__logged
 #fi
+
+unset calendar__day
+unset calendar__hour

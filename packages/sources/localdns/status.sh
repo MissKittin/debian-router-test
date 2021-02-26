@@ -13,8 +13,8 @@ echo " ${PACKAGE_NAME}"
 echo ''
 
 # /usr/local/etc
-echo -n '/usr/local/etc/hosts.d'
-	if [ -L /usr/local/etc/hosts.d ] && [ -e /usr/local/etc/hosts.d ]; then
+echo -n '/usr/local/etc/localdns.d'
+	if [ -L /usr/local/etc/localdns.d ] && [ -e /usr/local/etc/localdns.d ]; then
 		installed=true
 		echo ' [ OK ]'
 	else
@@ -23,8 +23,8 @@ echo -n '/usr/local/etc/hosts.d'
 	fi
 
 # /usr/local/etc/init.d
-echo -n '/usr/local/etc/init.d/dc_dnsmasq-hosts-build'
-	if [ -L /usr/local/etc/init.d/dc_dnsmasq-hosts-build ] && [ -e /usr/local/etc/init.d/dc_dnsmasq-hosts-build ]; then
+echo -n '/usr/local/etc/init.d/localdns.sh'
+	if [ -L /usr/local/etc/init.d/localdns.sh ] && [ -e /usr/local/etc/init.d/localdns.sh ]; then
 		installed=true
 		echo ' [ OK ]'
 	else
@@ -33,8 +33,8 @@ echo -n '/usr/local/etc/init.d/dc_dnsmasq-hosts-build'
 	fi
 
 # /etc/init.d
-echo -n '/etc/init.d/dc_dnsmasq-hosts-build'
-	if [ -L /etc/init.d/dc_dnsmasq-hosts-build ] && [ -e /etc/init.d/dc_dnsmasq-hosts-build ]; then
+echo -n '/etc/init.d/localdns.sh'
+	if [ -L /etc/init.d/localdns.sh ] && [ -e /etc/init.d/localdns.sh ]; then
 		installed=true
 		echo ' [ OK ]'
 	else
@@ -43,8 +43,8 @@ echo -n '/etc/init.d/dc_dnsmasq-hosts-build'
 	fi
 
 # /usr/local/sbin
-echo -n '/usr/local/sbin/generate-dns-hosts.sh'
-	if [ -L /usr/local/sbin/generate-dns-hosts.sh ] && [ -e /usr/local/sbin/generate-dns-hosts.sh ]; then
+echo -n '/usr/local/sbin/localdns.sh'
+	if [ -L /usr/local/sbin/localdns.sh ] && [ -e /usr/local/sbin/localdns.sh ]; then
 		installed=true
 		echo ' [ OK ]'
 	else

@@ -1,2 +1,4 @@
 log 'executing vbetool post'
-vbetool post
+vbetool post 2>&1 | while read outputLine; do
+	log " :: ${outputLine}"
+done

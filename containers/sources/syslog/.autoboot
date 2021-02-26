@@ -1,0 +1,25 @@
+#!/bin/sh
+# Rename this file to .autoboot
+# and chmod 755 .autoboot
+# to start container on OS boot
+# You can edit this file
+# or rewrite to any language
+
+case "${1}" in
+	'start')
+		"$(dirname ${0})/start.sh" strip
+
+		# Stop and zip busybox syslog
+		if [ -e '/etc/init.d/busybox-syslogd' ]; then
+			/etc/init.d/busybox-syslogd stop
+			logger --tag containers syslog autoboot: busybox-syslog stopped, zipping log...
+			/etc/init.d/busybox-syslogd zip
+			logger --tag containers syslog autoboot: busybox-syslog log zipped
+		fi
+	;;
+	'stop')
+		exec "$(dirname ${0})/stop.sh"
+	;;
+esac
+
+exit 1

@@ -140,8 +140,6 @@ ${do_chown} && chown root:root ./etc/acpid-suspend/calendar.rc
 chmod 644 ./etc/acpid-suspend/calendar.rc
 ${do_chown} && chown root:root ./etc/acpid-suspend/post_suspend.d
 chmod 755 ./etc/acpid-suspend/post_suspend.d
-${do_chown} && chown root:root ./etc/acpid-suspend/post_suspend.d/PLACEHOLDER
-chmod 644 ./etc/acpid-suspend/post_suspend.d/PLACEHOLDER
 ${do_chown} && chown root:root ./etc/acpid-suspend/config.rc
 chmod 644 ./etc/acpid-suspend/config.rc
 ${do_chown} && chown root:root ./etc/acpid-suspend/pre_suspend.d
@@ -170,8 +168,6 @@ ${do_chown} && chown root:root ./etc/acpid-autosuspend/checklist.d/S99temp_disab
 chmod 644 ./etc/acpid-autosuspend/checklist.d/S99temp_disabled.rc
 ${do_chown} && chown root:root ./etc/acpid-autosuspend/config.rc.d
 chmod 755 ./etc/acpid-autosuspend/config.rc.d
-${do_chown} && chown root:root ./etc/acpid-autosuspend/config.rc.d/PLACEHOLDER
-chmod 644 ./etc/acpid-autosuspend/config.rc.d/PLACEHOLDER
 ${do_chown} && chown root:root ./etc/init.d
 chmod 755 ./etc/init.d
 ${do_chown} && chown root:root ./etc/init.d/acpid-autosuspend.sh
@@ -198,12 +194,13 @@ ${do_chown} && chown root:root ./sbin/acpid-choice.sh
 chmod 750 ./sbin/acpid-choice.sh
 ${do_chown} && chown root:root ./sbin/acpid-autosuspend.sh
 chmod 750 ./sbin/acpid-autosuspend.sh
+${do_chown} && chown root:root ./sbin/acpid-autosuspend.sh.old
+chmod 640 ./sbin/acpid-autosuspend.sh.old
 ${do_chown} && chown root:root ./install.sh
 chmod 755 ./install.sh
 
-rm ./etc/acpid-autosuspend/config.rc.d/PLACEHOLDER
-rm ./etc/acpid-suspend/post_suspend.d/PLACEHOLDER
-
+mkdir ./etc/acpid-autosuspend/config.rc.d
+mkdir ./etc/acpid-suspend/post_suspend.d
 
 chmod 644 ./.build.sh
 echo ''

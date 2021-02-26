@@ -3,5 +3,9 @@ ${DESTINATION}/.ssl
 	${DESTINATION}/${CONTAINER_ROOT}/mnt/ssl
 
 # Log
-/tmp/.rclocal_daemons_logs
-	${DESTINATION}/${CONTAINER_ROOT}/mnt/tmp/.rclocal_daemons_logs
+#/tmp/.rclocal_daemons_logs
+#	${DESTINATION}/${CONTAINER_ROOT}/mnt/tmp/.rclocal_daemons_logs
+
+# Log
+/var/run/webadmin
+	${DESTINATION}/${CONTAINER_ROOT}/mnt/webadmin

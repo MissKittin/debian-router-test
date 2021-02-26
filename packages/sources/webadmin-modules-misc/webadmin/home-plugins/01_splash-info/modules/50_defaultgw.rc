@@ -1,0 +1,103 @@
+# Read info default gateway
+#  read_file from shared functions required
+
+print_S1() { echo -n "${1}"; }
+print_S2() { echo -n "${2}"; }
+#print_S3() { echo -n "${3}"; } # for gateway field
+print_S4() { echo -n "${4}"; }
+print_S10() { echo -n "${10}"; }
+
+default_gateway="$(
+	read_file '/proc/net/route' | while read line; do
+		#if [ "$(print_S3 ${line})" = '00000000' ]; then # "Gateway" field
+		if [ "$(print_S2 ${line})" = '00000000' ]; then # "Destination" field
+			print_S1 ${line}
+			break
+		fi
+	done
+)"
+if command -v 'ip' > /dev/null 2>&1 && [ ! "${default_gateway}" = '' ]; then
+	default_gateway_ip="$(
+		ip address show ${default_gateway} | while read line; do
+			case $(print_S1 ${line}) in
+				'inet')
+					print_S2 ${line%/*}; echo -n ' '
+				;;
+				'inet6')
+					if [ "$(print_S4 ${line})" = 'global' ]; then
+						print_S2 ${line%/*}; echo -n ' '
+					fi
+				;;
+			esac
+		done
+	)"
+	default_gateway_ip="${default_gateway_ip%?}"
+fi
+
+if [ "${default_gateway}" = '' ]; then
+	echo "No default gateway${newline}"
+else
+	# js unit conversion - original
+	#echo '<script>
+	#	window.addEventListener("DOMContentLoaded", function(){
+	#		function convertBytes(input)
+	#		{
+	#			if(input === "") return ""; // don"t print 0 in empty cell
+	#			if(input === 0) return 0; // don"t print unit in cell with 0
+	#
+	#			var depth=0;
+	#			while(input >= 1024)
+	#			{
+	#				input=input/1024;
+	#				depth++;
+	#			}
+	#			switch(depth)
+	#			{
+	#				case 0:
+	#					var unit="";
+	#					break;
+	#				case 1:
+	#					var unit="k";
+	#					break;
+	#				case 2:
+	#					var unit="M";
+	#					break;
+	#				case 3:
+	#					var unit="G";
+	#					break;
+	#				case 4:
+	#					var unit="T";
+	#					break;
+	#				case 5:
+	#					var unit="P"
+	#					break;
+	#				default:
+	#					var unit="?";
+	#			}
+	#			if(depth === 0) // "TypeError: input.toFixed is not a function" workaround
+	#				return input + unit;
+	#			else
+	#				return input.toFixed(1) + unit;
+	#		}
+	#
+	#		var spans=document.getElementsByClassName("splash-calculate");
+	#		for(var i=0, span; span=spans[i]; i++)
+	#			span.innerHTML=convertBytes(span.innerHTML);
+	#	});
+	#</script>'
+
+	# js unit conversion - minified (minifier: https://jscompress.com)
+	echo '<script>window.addEventListener("DOMContentLoaded",function(){for(var e,a=document.getElementsByClassName("splash-calculate"),r=0;e=a[r];r++)e.innerHTML=function(e){if(""===e)return"";if(0===e)return 0;for(var a=0;1024<=e;)e/=1024,a++;switch(a){case 0:var r="";break;case 1:r="k";break;case 2:r="M";break;case 3:r="G";break;case 4:r="T";break;case 5:r="P";break;default:r="?"}return 0===a?e+r:e.toFixed(1)+r}(e.innerHTML)});</script>'
+
+	echo "Default gateway: ${default_gateway} ${default_gateway_ip}${newline}"
+	echo -n "Link detected: "; [ "$(read_file "/sys/class/net/${default_gateway}/carrier")" = '1' ] && echo "yes${newline}" || echo "no${newline}"
+
+	read_file '/proc/net/dev' | while read line; do
+		if [ "$(print_S1 ${line})" = "${default_gateway}:" ]; then
+			echo "Received: <span class=\"splash-calculate\">$(print_S2 $line)</span>B, transmitted: <span class=\"splash-calculate\">$(print_S10 $line)</span>B${newline}"
+			break
+		fi
+	done
+fi
+
+echo "${newline}"

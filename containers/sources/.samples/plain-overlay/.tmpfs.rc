@@ -1,0 +1,3 @@
+# This is a comment, in 3rd line are mount options
+${DESTINATION}/${CONTAINER_ROOT}/mnt/sample-tmpfs-dir
+	nosuid,nodev,noexec,noatime,nodiratime

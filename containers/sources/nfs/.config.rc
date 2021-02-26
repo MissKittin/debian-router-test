@@ -1,11 +1,17 @@
-### Container configuration
 # Misc
 CONTAINER_NAME='nfs'
 DESTINATION="$(dirname $0)"
 CONTAINER_ROOT='.container'
+export PATH="${DESTINATION}/.bin:${PATH}"
+
+# Start
+#REMOVE_SYSTEM_MOUNTPOINTS=''
+CONFIG_TARBALLS='.config.tar.gz'
+OVERLAYFS_MOUNT_OPTIONS='nosuid,nodev,exec,noatime,nodiratime'
 
 # Start/Stop
 MOUNT_LABEL="${CONTAINER_NAME}"
+BIND_SYSTEM_MOUNTPOINTS='dev dev/pts proc sys'
 
 # Service
 CONTAINER_SERVICES='
@@ -13,6 +19,9 @@ CONTAINER_SERVICES='
 	/etc/init.d/nfs-common
 	/etc/init.d/nfs-kernel-server
 '
+
+# Start/Service
+CONTAINER_AUTOSTART_SERVICES="${CONTAINER_SERVICES}"
 
 # Console
 SHELL_PROMPT="${CONTAINER_NAME}"'> '

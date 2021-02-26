@@ -1,4 +1,6 @@
 if $HOSTAPD__ENABLED; then
 	log 'starting hostapd'
-	/etc/init.d/hostapd start
+	/etc/init.d/hostapd start 2>&1 | while read outputLine; do
+		log " :: ${outputLine}"
+	done
 fi

@@ -1,0 +1,10 @@
+# Set process owner and group
+DAEMON_USER='user:user'
+
+# Start daemon via authbind
+START_DAEMON_VIA_AUTHBIND='true'
+
+# Use stunnel
+USE_STUNNEL='true'
+STUNNEL_USER='user'
+STUNNEL_PID_DIR="${temp_dir}/stunnel"

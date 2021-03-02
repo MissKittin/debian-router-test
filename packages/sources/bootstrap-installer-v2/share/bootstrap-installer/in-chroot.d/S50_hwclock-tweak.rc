@@ -1,0 +1,10 @@
+# apply hwclock noadjtime tweak
+if [ ! "${hwclock_tweaks}" = '' ]; then
+	print_message 'tweaking hwclock' "${COLOR_INFO}"
+
+	mkdir -p /usr/local/etc/${installer_config_dir}default
+	cp -rfp /etc/default/hwclock /etc/default/hwclock.old
+	mv /etc/default/hwclock /usr/local/etc/${installer_config_dir}default/hwclock
+	sed -i 's/#HWCLOCKPARS=/HWCLOCKPARS="--noadjfile --utc"/g' /usr/local/etc/${installer_config_dir}default/hwclock
+	ln -s /usr/local/etc/${installer_config_dir}default/hwclock /etc/default/hwclock
+fi

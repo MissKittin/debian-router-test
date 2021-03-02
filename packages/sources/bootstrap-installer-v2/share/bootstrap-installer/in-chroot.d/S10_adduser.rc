@@ -1,0 +1,26 @@
+# Add non-privileged user (4/21)
+if [ "${username}" = '' ]; then
+	echo ''
+	echo -n 'Add new user (press enter to bypass): '
+	read username
+fi
+
+if [ "${username}" = '' ]; then
+	print_message 'username is empty - not adding user' "${COLOR_FAILED}"
+else
+	print_message 'adding non-privileged user' "${COLOR_SUCCESS}"
+	if command -v adduser > /dev/null 2>&1; then
+		adduser --gecos '' ${username}
+	else
+		print_message 'falling back to useradd' "${COLOR_FAILED}"
+		useradd ${username}
+		passwd ${username}
+		[ ! -e "/home/${username}" ] && \
+			if [ -e '/etc/skel' ]; then
+				cp -rfp /etc/skel /home/${username}
+			else
+				mkdir /home/${username}
+			fi
+		chown -R ${username}:${username} /home/${username}
+	fi
+fi

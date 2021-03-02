@@ -1,0 +1,2 @@
+# The End
+print_message 'OS has been installed' "${COLOR_SUCCESS}"

@@ -1,0 +1,9 @@
+# Edit /etc/hosts (10/21)
+if [ -e '/etc/hosts' ] && [ ! "${edit_etc_hosts}" = '' ]; then
+	print_message 'editing hosts' "${COLOR_INFO}"
+
+	cp -rfp /etc/hosts /etc/hosts.old
+	mv /etc/hosts /usr/local/etc/${installer_config_dir}hosts
+	sed -i 's/localhost/localhost '"${hostname}"'/g' /usr/local/etc/${installer_config_dir}hosts
+	ln -s /usr/local/etc/${installer_config_dir}hosts /etc/hosts
+fi

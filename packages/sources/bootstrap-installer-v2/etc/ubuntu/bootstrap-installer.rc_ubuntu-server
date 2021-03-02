@@ -1,0 +1,159 @@
+### Bootstrap installer configuration
+### config for ubuntu focal desktop
+
+#####################################
+### Initialize settings
+unset check_internet_connection
+unset fstab_use_uuid
+unset do_not_remove_resolvconf
+unset hostname
+unset root_partition
+unset root_partition_fs
+unset tmp_as_tmpfs
+unset root_home_as_tmpfs
+unset apt_install_packages
+unset bootloader_type
+unset grub_hiddenmenu
+unset init_type
+unset username
+unset username_groups
+unset use_sudo
+unset no_sudoers_links
+unset sudo_no_password
+unset desktop_env
+unset apt_mark_auto_packages
+unset dpkg_reconfigure_packages
+unset apt_purge_packages
+unset virual_consoles
+unset gdm_auto_login
+unset tty_auto_login
+unset auto_startx
+unset sysvinit_enable_legacy_bootordering
+unset systemd_tweaks_nojournal
+unset grub_cmdline_systemd_tweak
+unset initramfs_tools_tweaks
+unset hwclock_tweaks
+unset apt_no_recommends
+unset apt_no_recommends_only_on_installation
+unset edit_etc_hosts
+unset resolvconv_to_run
+unset resolvconf_nameservers
+#####################################
+
+#####################################
+### Installer settings
+
+# Check internet connection during installation
+check_internet_connection='true'
+
+# Use uuid in fstab for root
+fstab_use_uuid='true'
+
+# Do not remove /etc/resolv.conf or /run/.resolv.conf after install
+do_not_remove_resolvconf='true'
+#####################################
+
+#####################################
+### OS settings
+
+# Configure hostname (auto-generated if empty)
+#hostname=''
+
+# Force root partiton
+#root_partition=''
+
+# Root partition filesystem (required)
+root_partition_fs='ext4'
+
+# Configure /tmp and /var/tmp as tmpfs
+tmp_as_tmpfs='true'
+
+# Configure /root as tmpfs
+root_home_as_tmpfs='true'
+#####################################
+
+#####################################
+### Boot packages
+
+# Install grub bootloader
+[ -e '/sys/firmware/efi' ] && apt_install_packages="${apt_install_packages} grub-efi" || apt_install_packages="${apt_install_packages} grub-pc"
+bootloader_type='grub'
+grub_hiddenmenu='true' # press <ESC> to view menu
+
+# Install kernel
+apt_install_packages="${apt_install_packages} initramfs-tools linux-image-generic"
+
+# Install systemd [sysvinit is not supported by ubuntu]
+apt_install_packages="${apt_install_packages} systemd-sysv"
+init_type='systemd'
+#####################################
+
+#####################################
+### Users
+
+# Add non-privileged user (will ask if empty)
+#username='user'
+
+# Add non-privileged user to groups
+#username_groups="${username_groups} example-group"
+#####################################
+
+#####################################
+### sudo
+
+# Install sudo or set root password
+apt_install_packages="${apt_install_packages} sudo"
+use_sudo='true'
+
+# Use sudo without password (possible security hole if true)
+#sudo_no_password='true'
+#####################################
+
+#####################################
+### Other packages
+
+# Install dialog package (dialog package is in the universe repository)
+apt_install_packages="${apt_install_packages} dialog"
+
+# Install additional packages
+apt_install_packages="${apt_install_packages} busybox-static"
+
+# Install network packages
+apt_install_packages="${apt_install_packages} isc-dhcp-client"
+
+# Install and configure timezone support
+#apt_install_packages="${apt_install_packages} tzdata" # already installed
+dpkg_reconfigure_packages="${dpkg_reconfigure_packages} tzdata"
+#####################################
+
+#####################################
+### Tweaks
+
+# How many virtual consoles will be active (int, not changed if empty)
+virual_consoles='3'
+
+# systemd tweaks
+systemd_tweaks='true'
+#systemd_tweaks_nojournal='true' # disables journal
+grub_cmdline_systemd_tweak='true' # show boot messages
+
+# Initramfs tweaks (better compression for initrd)
+#apt_install_packages="${apt_install_packages} xz-utils" # already installed
+initramfs_tools_tweaks='true'
+
+# Enable 'noadjtime' option in hwclock configuration
+hwclock_tweaks='true'
+
+# Do not install recommended packages as default (comment this to install full ubuntu)
+apt_no_recommends='true'
+#apt_no_recommends_only_on_installation='true'
+
+# Add hostname to /etc/hosts (if exists)
+edit_etc_hosts='true'
+
+# Link /etc/resolv.conf to /run (minimize unnecessary disk writes)
+#resolvconv_to_run='true'
+
+# Set static DNS adresses
+resolvconf_nameservers='1.1.1.1 8.8.8.8'
+#####################################

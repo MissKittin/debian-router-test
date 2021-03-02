@@ -1,0 +1,26 @@
+# Change virtual consoles (15/21)
+if [ ! "${virual_consoles}" = '' ]; then
+	case "${init_type}" in
+		'systemd')
+			print_message 'configuring virtual consoles (systemd)' "${COLOR_INFO}"
+
+			mkdir -p /usr/local/etc/${installer_config_dir}systemd
+			cp -rfp /etc/systemd/logind.conf /etc/systemd/logind.conf.old
+			mv /etc/systemd/logind.conf /usr/local/etc/${installer_config_dir}systemd/logind.conf
+			ln -s /usr/local/etc/${installer_config_dir}systemd/logind.conf /etc/systemd/logind.conf
+			sed -i 's/#NAutoVTs=6/NAutoVTs='"${virual_consoles}"'/g' /usr/local/etc/${installer_config_dir}systemd/logind.conf
+			sed -i 's/#ReserveVT=6/ReserveVTs='"${virual_consoles}"'/g' /usr/local/etc/${installer_config_dir}systemd/logind.conf
+		;;
+		'sysvinit')
+			print_message 'configuring virtual consoles (sysvinit)' "${COLOR_INFO}"
+
+			cp -rfp /etc/inittab /etc/inittab.old
+			for vt in 4 5 6; do
+				sed -i 's\'"${vt}"':23:respawn:/sbin/getty\#'"${vt}"':23:respawn:/sbin/getty\g' /etc/inittab
+			done
+			unset vt
+			mv /etc/inittab /usr/local/etc/${installer_config_dir}inittab
+			ln -s /usr/local/etc/${installer_config_dir}inittab /etc/inittab
+		;;
+	esac
+fi

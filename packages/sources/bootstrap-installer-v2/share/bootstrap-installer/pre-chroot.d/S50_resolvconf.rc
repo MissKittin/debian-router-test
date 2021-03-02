@@ -1,0 +1,18 @@
+# Copy resolv.conf
+if [ -e '/etc/resolv.conf' ]; then
+	print_message 'copying resolv.conf' "${COLOR_INFO}"
+	[ -e './etc/resolv.conf' ] && rm ./etc/resolv.conf
+	cp /etc/resolv.conf ./etc/resolv.conf
+else
+	print_message 'host OS does not have /etc/resolv.conf' "${COLOR_FAIL}"
+fi
+
+# Save static adresses
+if [ ! "${resolvconf_nameservers}" = '' ]; then
+	print_message 'using static dns configuration' "${COLOR_INFO}"
+	echo -n '' > ./etc/resolv.conf
+	for nameserver in ${resolvconf_nameservers}; do
+		echo "nameserver ${nameserver}" >> ./etc/resolv.conf
+	done
+	unset nameserver
+fi

@@ -1,0 +1,12 @@
+# Better compression for initrd (17/21)
+if [ ! "${initramfs_tools_tweaks}" = '' ]; then
+	print_message 'tweaking initrd' "${COLOR_INFO}"
+
+	mkdir -p /usr/local/etc/${installer_config_dir}initramfs-tools
+	cp -rfp /etc/initramfs-tools/initramfs.conf /etc/initramfs-tools/initramfs.conf.old
+	mv /etc/initramfs-tools/initramfs.conf /usr/local/etc/${installer_config_dir}initramfs-tools/initramfs.conf
+	sed -i 's/MODULES=most/MODULES=dep/g' /usr/local/etc/${installer_config_dir}initramfs-tools/initramfs.conf
+	sed -i 's/COMPRESS=gzip/COMPRESS=xz/g' /usr/local/etc/${installer_config_dir}initramfs-tools/initramfs.conf
+	ln -s /usr/local/etc/${installer_config_dir}initramfs-tools/initramfs.conf /etc/initramfs-tools/initramfs.conf
+	update-initramfs -u
+fi

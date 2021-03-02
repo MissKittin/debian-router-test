@@ -1,0 +1,8 @@
+# Configure packages
+if [ ! "${dpkg_reconfigure_packages}" = '' ]; then
+	print_message 'configuring packages' "${COLOR_INFO}"
+	for package in ${dpkg_reconfigure_packages}; do
+		dpkg-reconfigure ${package}
+	done
+	unset package
+fi

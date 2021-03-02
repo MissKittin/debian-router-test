@@ -1,13 +1,25 @@
-# bootstrap installer
+# bootstrap installer v2
 Utility to install debian from debootstrap rootfs  
 mainly designed for the rapid creation of virtual machines.
 
 ### Warning
-**THIS PACKAGE IS DEPRECATED, USE `bootstrap-installer-v2` INSTEAD**  
 **DO NOT INSTALL THIS PACKAGE ON A RUNNING OS**
+
+### Requirements
+* **UEFI** EFI System Partition must be first on partition table and must be FAT32
+
+### Required packages on host OS
+* **ping** with IPv6 support (can be disabled in settings)
+
+### Supported firmwares
+* x86 BIOS
+* x86 UEFI
+* x64 UEFI
 
 ### Supported distros
 Tested on
+* Debian 7 Wheezy (partially supported with default configuration)
+* Debian 8 Jessie
 * Debian 9 Stretch
 * Debian 10 Buster
 * Ubuntu 20.04 Focal Fossa
@@ -17,10 +29,7 @@ Tested on
 * IceWM/ROX-filer
 * ubuntu-desktop (exclusively for ubuntu)
 
-### Required packages
-* **ping** with IPv6 support (can be disabled in settings)
-
-### How to debootstrap
+### How to make bootstrap
 1) install debootstrap utility  
 	`apt-get update`  
 	`apt-get install -y debootstrap`
@@ -28,7 +37,10 @@ Tested on
 	`mkdir ./debian`
 3) `cd ./debian`
 4) debootstrap debian (run as root)  
-	`debootstrap --variant=minbase --arch amd64 DEBIAN-CODENAME . http://deb.debian.org/debian/`
+	`debootstrap --variant=minbase --arch CPU-ARCH DEBIAN-CODENAME . REPO-URL`  
+	where `CPU-ARCH` is amd64 or i386  
+	`DEBIAN-CODENAME` is OS codename (eg. buster or focal)  
+	`REPO-URL` is `http://deb.debian.org/debian/` for debian or `http://archive.ubuntu.com/ubuntu/` for ubuntu
 5) make tarball  
 	`tar cvf ../debian.tar *`  
 	`gzip -9 ../debian.tar`
@@ -71,7 +83,7 @@ You can create scripts in `/usr/local/etc`:
 
 ### How to use
 1) partition hdd
-2) format root partition as ext4
+2) format root partition as ext4 (or selected root fs type in config)
 3) run your favourte linux distro in target computer
 4) transfer all files to target computer
 5) create mountpoint  
@@ -79,19 +91,29 @@ You can create scripts in `/usr/local/etc`:
 6) mount root partition  
 	`mount /dev/your-root-partition /debian`
 7) `cd /debian`
-8) unpack rootfs  
+8) if you have separated partitions (eg. for home or usr etc etc) make mountpoints and mount that partitions now
+9) unpack rootfs  
 	`tar xvf /path/to/debian.tar`
-9) unpack installer  
+10) unpack installer  
 	`tar xvf /path/to/installer.tar`
-10) run installer  
+11) run installer  
 	`./usr/local/sbin/bootstrap-installer.sh /dev/root-partition`  
 	bootstrap-installer will be uninstalled automatically)
-11) you can now chroot and install packages from debian-router repo
-12) umount root partition  
+12) you can now chroot and install packages from debian-router repo
+13) if you have completed step 8, umount that partitions
+14) umount root partition  
 	`cd /`  
 	`umount /debian`
-13) reboot from hdd
-14) if debian booted successfully, you can remove bootstrap installer (run as root)  
+15) reboot from hdd
+16) if debian booted successfully, you can remove bootstrap installer (run as root)  
 	`rm -r -f /usr/local/share/packages/bootstrap-installer`  
 	or if you haven't installed other packages from the debian-router repository  
-	`rm -r -f /usr/local/share/packages`
+	`rm -r -f /usr/local/share/packages`  
+	(see `How to install` step `4`)
+
+### Package preseeding
+1) create `bootstrap-installer-preseed-dump` file on new root fs and install OS
+2) prepare other machines
+3) after installation move `bootstrap-installer-preseed.tar.gz` from new rootfs to the other machines
+4) install OS on the next machine
+5) repeat step 4

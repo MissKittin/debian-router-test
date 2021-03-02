@@ -1,0 +1,11 @@
+# Remove resolv.conf
+if [ "${do_not_remove_resolvconf}" = '' ]; then
+	print_message 'removing resolv.conf' "${COLOR_SUCCESS}"
+	if [ -e './run/.resolv.conf' ]; then
+		rm ./run/.resolv.conf
+	else
+		rm ./etc/resolv.conf
+	fi
+else
+	print_message 'not removing resolv.conf' "${COLOR_FAILED}"
+fi

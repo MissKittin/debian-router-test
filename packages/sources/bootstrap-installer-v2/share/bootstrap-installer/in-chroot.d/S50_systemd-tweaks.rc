@@ -1,0 +1,51 @@
+# Remove systemd bloatware (16/21)
+if [ ! "${systemd_tweaks}" = '' ] && [ "${init_type}" = 'systemd' ]; then
+	print_message 'tweaking systemd' "${COLOR_INFO}"
+
+	# Remove timers
+	rm /etc/systemd/system/timers.target.wants/*
+	ln -s /dev/null /etc/systemd/system/systemd-tmpfiles-clean.timer
+
+	# Disable timesync
+	[ -e '/etc/systemd/system/dbus-org.freedesktop.timesync1.service' ] && rm /etc/systemd/system/dbus-org.freedesktop.timesync1.service
+	[ -e '/etc/systemd/system/sysinit.target.wants/systemd-timesyncd.service' ] && rm /etc/systemd/system/sysinit.target.wants/systemd-timesyncd.service
+
+	# Disable networkd
+	ln -s /dev/null /etc/systemd/system/systemd-networkd.service
+	ln -s /dev/null /etc/systemd/system/systemd-networkd.socket
+
+	# Do not clear tty1
+	[ ! -e '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d' ] && mkdir -p '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d'
+	echo '[Service]' > '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d/noclear.conf'
+	echo 'TTYVTDisallocate=no' >> '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d/noclear.conf'
+	[ ! -e '/etc/systemd/system/getty@tty1.service.d' ] && ln -s '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d' '/etc/systemd/system/getty@tty1.service.d'
+
+	# Disable journald
+	if [ ! "${systemd_tweaks_nojournal}" = '' ]; then
+		print_message 'disabling systemd journal' "${COLOR_INFO}"
+		ln -s /dev/null /etc/systemd/system/systemd-journald.service
+		ln -s /dev/null /etc/systemd/system/systemd-journald.socket
+		ln -s /dev/null /etc/systemd/system/systemd-journald-audit.socket
+		ln -s /dev/null /etc/systemd/system/systemd-journald-dev-log.socket
+		ln -s /dev/null /etc/systemd/system/systemd-journal-flush.service
+	fi
+
+	# Umount and do not use efivars (moved to grub.rc)
+	#if [ -e '/sys/firmware/efi' ]; then
+	#	print_message 'creating "no efivars" rc.local tweak' "${COLOR_INFO}"
+	#	echo '#!/bin/sh' > /usr/local/etc/${installer_config_dir}rc.local
+	#	echo '' >> /usr/local/etc/${installer_config_dir}rc.local
+	#	echo '# umount efivars' >> /usr/local/etc/${installer_config_dir}rc.local
+	#	echo 'umount /sys/firmware/efi/efivars' >> /usr/local/etc/${installer_config_dir}rc.local
+	#	echo 'rmmod efi_pstore' >> /usr/local/etc/${installer_config_dir}rc.local
+	#	echo 'rmmod efivars' >> /usr/local/etc/${installer_config_dir}rc.local
+	#	echo 'rmmod efivarfs' >> /usr/local/etc/${installer_config_dir}rc.local
+	#	echo 'echo '"'"'rc.local: efivars support removed'"'"' > /dev/kmsg' >> /usr/local/etc/${installer_config_dir}rc.local
+	#	echo '' >> /usr/local/etc/${installer_config_dir}rc.local
+	#	echo 'exit 0' >> /usr/local/etc/${installer_config_dir}rc.local
+
+	#	ln -s /usr/local/etc/${installer_config_dir}rc.local /etc/rc.local
+	#fi
+
+	# cmdline tweak - see grub.rc
+fi

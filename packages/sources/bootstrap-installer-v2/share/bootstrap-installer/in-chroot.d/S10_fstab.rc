@@ -1,0 +1,36 @@
+# Configure fstab (3/21)
+print_message 'generating fstab' "${COLOR_INFO}"
+
+for arg in ${@}; do
+	case ${arg} in
+		root=*)
+			part=${arg#root=}
+		;;
+	esac
+done
+unset arg
+
+if echo -n "${part}" | grep '/dev/mmcblk' > /dev/null 2>&1; then
+	# emmc
+	disk="${part::-2}"
+else
+	# scsi/sata/ata/usb
+	disk="${part::-1}"
+fi
+if [ ! "${fstab_use_uuid}" = '' ]; then # check if lsblk failed
+	part_uuid="$(lsblk -no UUID ${part})" && part="UUID=${part_uuid}" || print_message 'UUID reading failed' "${COLOR_FAILED}"
+	if [ -e '/sys/firmware/efi' ]; then
+		esp_part="${disk}1"
+		esp_part_uuid="$(lsblk -no UUID ${esp_part})" && esp_part="UUID=${esp_part_uuid}" || print_message 'ESP UUID reading failed' "${COLOR_FAILED}"
+	fi
+	unset part_uuid
+fi
+
+echo "${part} / ${root_partition_fs} auto,suid,nodev,exec,noatime,nodiratime,async 0 1" > /usr/local/etc/${installer_config_dir}fstab
+[ -e '/sys/firmware/efi' ] && echo "${esp_part} /boot/efi vfat noauto,nosuid,nodev,noexec,noatime,nodiratime,async,uid=0,gid=0,umask=137,dmask=027 0 2" >> /usr/local/etc/${installer_config_dir}fstab
+[ ! "${tmp_as_tmpfs}" = '' ] && echo 'tmp /tmp tmpfs auto,nosuid,nodev,noexec,noatime,nodiratime,mode=1777 0 0' >> /usr/local/etc/${installer_config_dir}fstab
+[ ! "${tmp_as_tmpfs}" = '' ] && echo 'tmp /var/tmp tmpfs auto,nosuid,nodev,noexec,noatime,nodiratime 0 0' >> /usr/local/etc/${installer_config_dir}fstab
+[ ! "${root_home_as_tmpfs}" = '' ] && echo 'tmp /root tmpfs auto,nosuid,nodev,noexec,noatime,nodiratime,mode=700 0 0' >> /usr/local/etc/${installer_config_dir}fstab
+
+rm /etc/fstab
+ln -s /usr/local/etc/${installer_config_dir}fstab /etc/fstab

@@ -1,0 +1,8 @@
+# Add non-privileged user to groups
+if [ ! "${username_groups}" = '' ] && [ ! "${username}" = '' ]; then
+	for group in ${username_groups}; do
+		print_message "adding ${username} to ${username_groups}" "${COLOR_INFO}"
+		usermod -a -G "${group}" "${username}"
+	done
+	unset group
+fi

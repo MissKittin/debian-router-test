@@ -1,0 +1,31 @@
+# Configure sudo or set root password (13/21)
+if [ ! "${use_sudo}" = '' ] && [ ! "${username}" = '' ]; then
+	print_message 'configuring sudo' "${COLOR_SUCCESS}"
+
+	# allow user
+	[ ! "${sudo_no_password}" = '' ] && echo "${username} ALL=NOPASSWD: ALL" > /etc/sudoers.d/${username} || echo "${username} ALL=PASSWD: ALL" > /etc/sudoers.d/${username}
+	chmod 440 /etc/sudoers.d/${username}
+
+	# tweak sudo
+	echo 'Defaults !fqdn' > /etc/sudoers.d/nodns
+	chmod 440 /etc/sudoers.d/nodns
+
+	# mount /var/lib/sudo as tmpfs
+	[ -e "/usr/local/etc/${installer_config_dir}fstab" ] && echo 'sudo /var/lib/sudo tmpfs auto,nosuid,nodev,noexec,mode=755 0 0' >> /usr/local/etc/${installer_config_dir}fstab
+
+	if [ ! "${no_sudoers_links}" = '' ]; then
+		# create dir in /usr/local/etc
+		mkdir /usr/local/etc/${installer_config_dir}sudoers.d
+
+		# allow user
+		mv /etc/sudoers.d/${username} /usr/local/etc/${installer_config_dir}sudoers.d/${username}
+		ln -s /usr/local/etc/${installer_config_dir}sudoers.d/${username} /etc/sudoers.d/${username}
+
+		# tweak sudo
+		mv /etc/sudoers.d/nodns /usr/local/etc/${installer_config_dir}sudoers.d/nodns
+		ln -s /usr/local/etc/${installer_config_dir}sudoers.d/nodns /etc/sudoers.d/nodns
+	fi
+else
+	print_message 'set root password' "${COLOR_FAILED}"
+	passwd root
+fi

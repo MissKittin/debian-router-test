@@ -1,0 +1,12 @@
+# Configure IceWM/ROX (12/21)
+if [ "${desktop_env}" = 'icewm' ] && [ ! "${username}" = '' ]; then
+	print_message 'configuring IceWM' "${COLOR_INFO}"
+
+	mkdir /home/${username}/.icewm
+	chown ${username}:${username} /home/${username}/.icewm
+	echo "rox -p $(cat /etc/hostname)" > /home/${username}/.icewm/startup
+	chown ${username}:${username} /home/${username}/.icewm/startup
+	chmod 755 /home/${username}/.icewm/startup
+	echo 'exec icewm-session' > /home/${username}/.xinitrc
+	chown ${username}:${username} /home/${username}/.xinitrc
+fi

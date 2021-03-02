@@ -1,0 +1,106 @@
+# Install packages
+
+if [ -e '/bootstrap-installer-preseed.tar.gz' ]; then
+	print_message 'unpacking apt preseed' "${COLOR_INFO}"
+	tar xf '/bootstrap-installer-preseed.tar.gz' -C /
+	rm '/bootstrap-installer-preseed.tar.gz'
+else
+	print_message 'downloading apt lists' "${COLOR_INFO}"
+	failed='0'
+	while ! apt-get update; do
+		if [ "${failed}" = '3' ]; then
+			print_message 'failed, not retrying' "${COLOR_FAILED}"
+			break
+		else
+			failed="$((failed+1))"
+			print_message 'failed, retrying' "${COLOR_FAILED}"
+			sleep 1
+		fi
+	done
+fi
+
+print_message 'upgrading system' "${COLOR_INFO}"
+failed='0'
+while ! apt-get dist-upgrade -y --force-yes; do
+	if [ "${failed}" = '3' ]; then
+		print_message 'failed, not retrying' "${COLOR_FAILED}"
+		break
+	else
+		failed="$((failed+1))"
+		print_message 'failed, retrying' "${COLOR_FAILED}"
+		sleep 1
+	fi
+done
+
+if [ ! "${apt_install_packages}" = '' ]; then
+	print_message 'installing packages' "${COLOR_INFO}"
+	for package in ${apt_install_packages}; do
+		if ! dpkg-query -s ${package} > /dev/null 2>&1; then
+			failed='0'
+			while ! DEBIAN_FRONTEND='noninteractive' apt-get install -y --force-yes ${package}; do
+				if [ "${failed}" = '3' ]; then
+					print_message 'failed, not retrying' "${COLOR_FAILED}"
+					break
+				else
+					failed="$((failed+1))"
+					print_message 'failed, retrying' "${COLOR_FAILED}"
+					sleep 1
+				fi
+			done
+		else
+			print_message "package ${package} is already installed" "${COLOR_INFO}"
+		fi
+	done
+	unset package
+fi
+
+if [ ! "${apt_mark_auto_packages}" = '' ]; then
+	print_message 'marking packages as auto installed' "${COLOR_INFO}"
+	for package in ${apt_mark_auto_packages}; do
+		apt-mark auto "${package}"
+	done
+	unset package
+fi
+
+if [ ! "${apt_purge_packages}" = '' ]; then
+	print_message 'purging packages' "${COLOR_INFO}"
+	for package in ${apt_purge_packages}; do
+		failed='0'
+		while ! apt-get purge -y ${package}; do
+			if [ "${failed}" = '3' ]; then
+				print_message 'failed, not retrying' "${COLOR_FAILED}"
+				break
+			else
+				failed="$((failed+1))"
+				print_message 'failed, retrying' "${COLOR_FAILED}"
+				sleep 1
+			fi
+		done
+	done
+	unset package
+fi
+
+print_message 'cleaning system' "${COLOR_INFO}"
+failed='0'
+while ! apt-get autoremove --purge -y; do
+	if [ "${failed}" = '3' ]; then
+		print_message 'failed, not retrying' "${COLOR_FAILED}"
+		break
+	else
+		failed="$((failed+1))"
+		print_message 'failed, retrying' "${COLOR_FAILED}"
+		sleep 1
+	fi
+done
+
+# Create apt dump
+if [ -e '/bootstrap-installer-preseed-dump' ]; then
+	print_message 'creating apt preseed' "${COLOR_INFO}"
+	tar cf '/bootstrap-installer-preseed.tar' '/var/cache/apt/archives' '/var/lib/apt/lists' '/var/lib/apt/mirrors' > /dev/null 2>&1
+	gzip -9 '/bootstrap-installer-preseed.tar'
+	rm '/bootstrap-installer-preseed-dump'
+fi
+
+# Remove downloaded packages
+print_message 'cleaning apt cache' "${COLOR_INFO}"
+apt-get clean

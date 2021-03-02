@@ -1,0 +1,8 @@
+# Remove applied apt tweaks
+if [ ! "${apt_no_recommends}" = '' ] && [ ! "${apt_no_recommends_only_on_installation}" = '' ]; then
+	print_message 'removing apt tweaks' "${COLOR_INFO}"
+	rm /etc/apt/apt.conf.d/99-no-recommends
+	rm /usr/local/etc/${installer_config_dir}apt/apt.conf.d/99-no-recommends
+	rmdir /usr/local/etc/${installer_config_dir}apt/apt.conf.d > /dev/null 2>&1
+	rmdir /usr/local/etc/${installer_config_dir}apt > /dev/null 2>&1
+fi

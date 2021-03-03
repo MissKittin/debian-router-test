@@ -1,0 +1,20 @@
+# Plaintext logging method
+if [ ! -e "${subsystem__log__file%/*}" ]; then
+	mkdir -p ${subsystem__log__file%/*}
+	debug_log "log/log.rc: ${subsystem__log__file%/*} created"
+fi
+
+log()
+{
+	local message="${2}"
+
+	# Compatibility with v1 logging method
+	if [ "${2}" = '' ]; then
+		message="${1}"
+		debug_log 'log: the message below is in v1 compatibility mode'
+	fi
+
+	echo "$(date "${subsystem__log__date_format}") ${message}" >> ${subsystem__log__file}
+	debug_log "log() ${message}"
+}
+debug_log 'log/log.rc: log() defined'

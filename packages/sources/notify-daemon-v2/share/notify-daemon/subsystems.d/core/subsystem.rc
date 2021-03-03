@@ -1,0 +1,49 @@
+# Splash
+debug_log 'notify daemon v2 :: core v1'
+
+# Settings import
+. ${subsystem}/subsystem.rc.d/default_settings.rc
+[ -e "${etc_dir}/subsystems.d/core.rc" ] && . ${etc_dir}/subsystems.d/core.rc && debug_log "subsystem.rc: ${etc_dir}/subsystems.d/core.rc imported"
+
+# 'Enable' parameter
+subsystem__daemon_enabled='null'
+
+# Args parsing
+case $1 in
+	'--help')
+		echo '  --daemon -> run in daemon mode'
+		echo '  --no-daemon -> run once'
+	;;
+esac
+for arg in $@; do
+	case ${arg} in
+		'--daemon')
+			${enabled} && subsystem__daemon_enabled='true'
+		;;
+		'--no-daemon')
+			subsystem__daemon_enabled='false'
+		;;
+	esac
+done
+unset arg
+
+# Core function
+subsystem__core()
+{
+	if [ "${subsystem__daemon_enabled}" = 'null' ]; then
+		echo ' Not enough parameters'; echo '  see --help'
+	else
+		if ${subsystem__daemon_enabled}; then # execute other subsystems main functions in loop
+			while true; do
+				debug_log ''
+				log 'info' 'subsystem__core(): new loop started, waiting...'
+				debug_log "subsystem__core(): sleep ${subsystem__core__check_every}"
+				sleep ${subsystem__core__check_every}
+				. ${share_dir}/subsystems.d/core/subsystem.rc.d/import.rc
+			done
+		else # execute once and exit
+			log 'info' 'subsystem__core(): Executed with --nodaemon parameter'
+			. ${share_dir}/subsystems.d/core/subsystem.rc.d/import.rc
+		fi
+	fi
+}

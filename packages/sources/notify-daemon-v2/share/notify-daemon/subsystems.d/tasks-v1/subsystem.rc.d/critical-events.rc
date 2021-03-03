@@ -1,0 +1,25 @@
+# Critical v1 events group execution
+task__critical_events_v1()
+{
+	local critical_event
+	local critical_checklist=''
+
+	for critical_event in ${etc_dir}/critical-events.rc.d/*.rc; do
+		if [ "${critical_event}" = "${etc_dir}/critical-events.rc.d/*.rc" ]; then
+			log 'info' 'task__critical_events_v1(): no tasks defined'
+		else
+			debug_log "task__critical_events_v1(): importing ${critical_event}"
+			. ${critical_event}
+		fi
+	done
+
+	for critical_event in ${critical_checklist}; do
+		log 'info' "task__critical_events_v1(): checking ${critical_event}"
+		if check_${critical_event}; then
+			log 'emerg' "task__critical_events_v1(): ${critical_event} returned true, sending notification"
+			send_notify_${critical_event}
+			log 'emerg' "task__critical_events_v1(): ${critical_event} executing action"
+			do_critical_${critical_event}
+		fi
+	done
+}

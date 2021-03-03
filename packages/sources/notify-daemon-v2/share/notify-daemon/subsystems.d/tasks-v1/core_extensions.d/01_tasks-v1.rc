@@ -1,0 +1,3 @@
+# tasks subsystem execution
+debug_log 'core/extensions.d/tasks-v1.rc: executing subsystem__tasks_v1'
+subsystem__tasks_v1

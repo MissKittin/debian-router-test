@@ -1,0 +1,22 @@
+# Splash
+debug_log 'notify daemon v2 :: sender v1'
+
+# Senders execution
+sender__send_notify()
+{
+	local send_method
+
+	for send_method in ${share_dir}/sender.rc.d/*.rc; do
+		if [ "${send_method}" = "${share_dir}/sender.rc.d/*.rc" ]; then
+			log 'info' 'sender__send_notify(): no send methods defined'
+		else
+			debug_log "sender__send_notify(): importing ${send_method}"
+			. ${send_method}
+		fi
+	done
+
+	for send_method in ${SENDER_METHODS}; do
+		debug_log "sender__send_notify(): executing ${send_method}"
+		${send_method} "${1}" "${2}" "${3}"
+	done
+}

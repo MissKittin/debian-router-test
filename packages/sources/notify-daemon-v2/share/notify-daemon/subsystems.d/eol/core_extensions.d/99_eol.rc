@@ -1,0 +1,7 @@
+# eol subsystem execution (daemon mode only)
+if ${subsystem__daemon_enabled}; then
+	debug_log 'core/extensions.d/eol.rc: executing subsystem__eol'
+	subsystem__eol
+else
+	debug_log 'core/extensions.d/eol.rc: daemon not enabled - not executing subsystem__eol'
+fi

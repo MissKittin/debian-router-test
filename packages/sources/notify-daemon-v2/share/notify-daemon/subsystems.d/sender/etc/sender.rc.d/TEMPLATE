@@ -1,0 +1,22 @@
+# Description
+
+# Import configuration
+. ${etc_dir}/sender.rc.cfg.d/NAME.rc
+
+sender__send_NAME()
+{
+	# $1 -> from
+	# $2 -> importance
+	# $3 -> message
+
+	if ${sender__NAME__enabled}; then
+		# If you want check first if notify was sended
+		# NN hours back (eg: 15)
+		if journal__check_log "$1" "$2" "$3" 'timeout-in-seconds'; then
+			# Shell commands here
+		else
+			log 'sender__send_NAME: disabled in settings'
+		fi
+	fi
+}
+SENDER_METHODS="${SENDER_METHODS} sender__send_NAME"

@@ -1,0 +1,9 @@
+# Extension execution
+local extension
+for extension in ${share_dir}/subsystems.d/core/extensions.d/*.rc; do
+	if [ "${extension}" = "${share_dir}/subsystems.d/core/extensions.d/*.rc" ]; then
+		debug_log 'no daemon extensions - script is empty'
+	else
+		. ${extension}
+	fi
+done

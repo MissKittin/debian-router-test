@@ -1,0 +1,12 @@
+# Description
+
+# . ${share_dir}/extensions/libtimestamp.rc # if task will use a timestamp
+
+job__NAME()
+{
+	# if notify_daemon__libtimestamp 'NAME' "${path_event_temp}/.notify-daemon_event__TIMESTAMP-NAME.timestamp" 'period-in-seconds'; then # if event will use a timestamp
+		log 'info' 'job__NAME: doing my job'
+		# Put commands here
+	# fi # if event will use a timestamp
+}
+JOBS_LIST="${JOBS_LIST} NAME"

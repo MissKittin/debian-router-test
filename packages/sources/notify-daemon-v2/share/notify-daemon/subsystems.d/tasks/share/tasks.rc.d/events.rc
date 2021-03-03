@@ -1,0 +1,24 @@
+# Standard events group execution
+task__events()
+{
+	local event
+	local EVENTS_LIST=''
+
+	for event in ${etc_dir}/tasks.rc.d/events.rc.d/*.rc; do
+		if [ "${event}" = "${etc_dir}/tasks.rc.d/events.rc.d/*.rc" ]; then
+			log 'warning' 'task__events(): no tasks defined'
+		else
+			debug_log "task__events(): importing ${event}"
+			. ${event}
+		fi
+	done
+
+	for event in ${EVENTS_LIST}; do
+		log 'info' "task__events(): checking ${event}"
+		if event__check__${event}; then
+			log 'info' "task__events(): ${event} returned true, sending notification"
+			event__send_notify__${event}
+		fi
+	done
+}
+TASKS_LIST="${TASKS_LIST} task__events"

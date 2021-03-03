@@ -1,0 +1,12 @@
+# log-plaintext extension for eol subsystem
+if ${subsystem__eol__rotate_log} && [ -e "${subsystem__log__file}" ]; then
+	debug_log 'subsystem__eol() log-plaintext.rc: log rotation enabled'
+	local rotated_log="${subsystem__log__file}-$(date '+%d_%m_%Y-%H_%M_%S')"
+	mv ${subsystem__log__file} ${rotated_log}
+	if ${subsystem__eol__compress_log}; then
+		debug_log 'subsystem__eol() log-plaintext.rc: log compression enabled'
+		[ "${subsystem__eol__compress_log_command}" = '' ] || ${subsystem__eol__compress_log_command} ${rotated_log}
+	fi
+else
+	debug_log 'subsystem__eol() log-plaintext.rc: log rotation disabled or log not exists'
+fi

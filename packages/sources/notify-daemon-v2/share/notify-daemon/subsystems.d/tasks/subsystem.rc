@@ -1,0 +1,24 @@
+# Splash
+debug_log 'notify daemon v2 :: tasks v1'
+
+# Tasks groups execution
+# this subsystem is started by daemon subsystem
+subsystem__tasks()
+{
+	local task
+	local TASKS_LIST=''
+
+	for task in ${share_dir}/tasks.rc.d/*.rc; do
+		if [ "${task}" = "${share_dir}/tasks.rc.d/*.rc" ]; then
+			log 'warning' 'subsystem__tasks(): no tasks defined'
+		else
+			debug_log "subsystem__tasks(): importing ${task}"
+			. ${task}
+		fi
+	done
+
+	for task in ${TASKS_LIST}; do
+		debug_log "subsystem__tasks(): executing ${task}"
+		${task}
+	done
+}

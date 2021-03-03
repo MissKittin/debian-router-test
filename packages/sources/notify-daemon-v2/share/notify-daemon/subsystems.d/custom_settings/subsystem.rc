@@ -1,0 +1,10 @@
+# Splash
+debug_log 'notify daemon v2 :: custom_settings v1'
+
+# Import custom settings
+for custom_settings in ${etc_dir}/subsystems.d/custom_settings.rc.d/*.rc; do
+	[ "${custom_settings}" = "${etc_dir}/subsystems.d/custom_settings.rc.d/*.rc" ] && break
+	debug_log "custom_settings: importing ${custom_settings}"
+	. ${custom_settings}
+done
+unset custom_settings

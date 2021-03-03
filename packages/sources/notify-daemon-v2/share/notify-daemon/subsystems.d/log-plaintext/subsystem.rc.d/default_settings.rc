@@ -1,0 +1,7 @@
+# Log file path
+
+subsystem__log__file='/var/run/notify-daemon/notify-daemon.log'
+subsystem__log__date_format='+%d.%m.%Y %H:%M:%S' # see date --help
+
+# Use /var/log if notify-daemon directory exists
+[ -e '/var/log/notify-daemon' ] && subsystem__log__file='/var/log/notify-daemon/notify-daemon.log'

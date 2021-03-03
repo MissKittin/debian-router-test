@@ -1,0 +1,15 @@
+# Journal's workspace & log setting
+if [ ! -e "${subsystem__journal__workspace}" ]; then
+	mkdir -p ${subsystem__journal__workspace}
+	debug_log "journal/workspace.rc: ${subsystem__journal__workspace} created"
+fi
+
+if [ ! -e "${subsystem__journal__log_file%/*}" ]; then
+	mkdir -p ${subsystem__journal__log_file%/*}
+	debug_log "journal/workspace.rc: ${subsystem__journal__log_file%/*} created"
+fi
+
+if [ ! -e "${subsystem__journal__log_file}" ]; then
+	echo -n '' > ${subsystem__journal__log_file}
+	debug_log "journal/workspace.rc: ${subsystem__journal__log_file} created"
+fi

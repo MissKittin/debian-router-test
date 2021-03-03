@@ -1,0 +1,6 @@
+# Simplest journal parser
+journal__parse_simple()
+{
+	echo "ID: ${1}, From: ${2}, Priority: ${3}, Message: ${4}"
+}
+JOURNAL_PARSERS="${JOURNAL_PARSERS} journal__parse_simple"

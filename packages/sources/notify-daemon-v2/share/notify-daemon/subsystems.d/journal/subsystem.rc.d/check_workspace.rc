@@ -1,0 +1,25 @@
+# Notify checking function - workspace search method
+# For internal use only
+journal__check_workspace()
+{
+	# ${1} -> from
+	# ${2} -> importance
+	# ${3} -> message
+
+	if [ "${1}" = '' ] || [ "${2}" = '' ] || [ "${3}" = '' ]; then
+		echo ''
+		echo ' Usage: --journal --check-workspace "from" "critical|high|medium|low" "notification content"'
+		echo ''
+		return 1
+	else
+		local notification
+
+		for notification in ${subsystem__journal__workspace}/*; do
+			[ "${notification}" = "${subsystem__journal__workspace}/*" ] && break 
+			. ${notification}
+			[ "${1}" = "${from}" ] && [ "${2}" = "${importance}" ] && [ "${3}" = "${message}" ] && return 1
+		done
+
+		return 0
+	fi
+}

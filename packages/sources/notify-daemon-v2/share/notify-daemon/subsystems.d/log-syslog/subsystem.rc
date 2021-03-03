@@ -1,0 +1,22 @@
+# Splash
+debug_log 'notify daemon v2 :: log-syslog v1'
+
+# This subsystem must be linked as log
+if [ "${subsystem##*/}" = 'log' ]; then
+	log()
+	{
+		local priority="${1}"
+		local message="${2}"
+
+		# Compatibility with v1 logging method
+		if [ "${2}" = '' ]; then
+			priority='info'
+			message="${1}"
+			debug_log 'log: the message below is in v1 compatibility mode'
+		fi
+
+		logger --priority daemon.${priority} --tag notify-daemon ${message}
+		debug_log "log() ${priority} ${message}"
+	}
+	debug_log 'log/log.rc: log() defined'
+fi

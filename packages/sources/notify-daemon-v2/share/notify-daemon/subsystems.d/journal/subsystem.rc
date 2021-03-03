@@ -1,0 +1,54 @@
+# Splash
+debug_log 'notify daemon v2 :: journal v1'
+
+# Settings importing
+. ${subsystem}/subsystem.rc.d/default_settings.rc
+[ -e "${etc_dir}/subsystems.d/journal.rc" ] && . ${etc_dir}/subsystems.d/journal.rc && debug_log "subsystem.rc: ${etc_dir}/subsystems.d/journal.rc imported"
+
+# Functions importing
+debug_log 'journal: importing functions'
+. ${subsystem}/subsystem.rc.d/workspace.rc
+. ${subsystem}/subsystem.rc.d/log.rc
+. ${subsystem}/subsystem.rc.d/parse.rc
+. ${subsystem}/subsystem.rc.d/check_workspace.rc
+. ${subsystem}/subsystem.rc.d/check_log.rc
+. ${subsystem}/subsystem.rc.d/add.rc
+. ${subsystem}/subsystem.rc.d/del.rc
+
+# Journal access
+case $1 in
+	'--journal')
+		case $2 in
+			'--add')
+				${subsystem__journal__add_internal_only} || journal__add "${3}" "${4}" "${5}"
+			;;
+			'--del')
+				journal__del "${3}"
+			;;
+			'--list')
+				journal__parse "${3}"
+			;;
+			#'--check-workspace')
+			#	journal__check_workspace "${3}" "${4}" "${5}"
+			#;;
+			#'--check-log')
+			#	journal__check_log "${3}" "${4}" "${5}" "${6}"
+			#;;
+			*)
+				echo ''
+				echo ' Notify daemon - journal'
+				${journal_add_internal_only} || echo '  --journal --add -> add notification'
+				echo '  --journal --del -> remove notifications'
+				echo '  --journal --list -> list notifications'
+				#echo '  --journal --check-workspace -> check if notification exists'
+				#echo '  --journal --check-log -> delay notification send by timeout'
+				echo ''
+				exit 0
+			;;
+		esac
+		exit 0
+	;;
+	'--help')
+		echo '  --journal -> list/remove notifications'
+	;;
+esac

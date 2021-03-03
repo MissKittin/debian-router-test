@@ -1,0 +1,6 @@
+# Journal logging function
+journal__log()
+{
+	echo "$(date '+date="%Y-%m-%d" time="%H:%M:%S"') ${@}" >> ${subsystem__journal__log_file}
+	debug_log "journal__log() ${@}"
+}

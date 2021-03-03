@@ -1,0 +1,6 @@
+# eol subsystem configuration
+subsystem__eol__enabled='false' # true/false - re-exec daemon after ${clear_environment_every}
+subsystem__eol__start_every='1000' # loops
+subsystem__eol__rotate_log='false' # requires clear_environment='true'
+subsystem__eol__compress_log='false' # requires rotate_log='true'
+subsystem__eol__compress_log_command='gzip -9'

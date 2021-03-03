@@ -1,0 +1,25 @@
+# Description
+
+critical_event__check__NAME()
+{
+	if CONDITION; then
+		log 'emerg' 'critical_event__check__NAME: exception occured'
+		return 0
+	else
+		log 'info' 'critical_event__check__NAME: exception not occured'
+		return 1
+	fi
+}
+critical_event__send_notify__NAME()
+{
+	local name='Sample critical event'
+	local message='Sample text'
+
+	journal__check_workspace "${name}" 'critical' "${message}" && sender__send_notify "${name}" 'critical' "${message}"
+}
+critical_event__do__NAME()
+{
+	log 'emerg' 'critical_event__do__NAME: what i am doing'
+	# Put shell commands here
+}
+CRITICAL_EVENTS_LIST="${CRITICAL_EVENTS_LIST} NAME"

@@ -1,0 +1,24 @@
+# Splash
+debug_log 'notify daemon v2 :: legacy tasks v1'
+
+# v1 tasks groups execution
+# this subsystem is started by daemon subsystem
+
+debug_log 'tasks-v1: importing tasks'
+. ${subsystem}/subsystem.rc.d/critical-events.rc
+. ${subsystem}/subsystem.rc.d/events.rc
+
+subsystem__tasks_v1()
+{
+	debug_log 'subsystem__tasks_v1(): executing task__critical_events_v1'
+	task__critical_events_v1
+	debug_log 'subsystem__tasks_v1(): executing task__events_v1'
+	task__events_v1
+}
+
+# Notify sending wrapper
+send_notify()
+{
+	journal__check_workspace "${1}" "${2}" "${3}" && sender__send_notify "${1}" "${2}" "${3}"
+}
+debug_log 'tasks-v1: send_notify() v1 wrapper defined'

@@ -1,0 +1,11 @@
+# Splash
+debug_log 'notify daemon v2 :: SUBSYSTEMNAME vVERSION'
+
+# Settings importing
+. ${subsystem}/subsystem.rc.d/default_settings.rc
+[ -e "${etc_dir}/subsystems.d/TEMPLATE.rc" ] && . ${etc_dir}/subsystems.d/TEMPLATE.rc && debug_log "subsystem.rc: ${etc_dir}/subsystems.d/TEMPLATE.rc imported"
+
+subsystem__TEMPLATE()
+{
+	echo 'Put your code here'
+}

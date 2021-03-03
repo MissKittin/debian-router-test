@@ -1,0 +1,5 @@
+# Description
+sender__NAME__enabled='true' # true/false
+
+sender__NAME__varA='content'
+sender__NAME__varB='content'

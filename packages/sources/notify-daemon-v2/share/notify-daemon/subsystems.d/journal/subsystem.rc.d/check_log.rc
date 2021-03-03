@@ -1,0 +1,36 @@
+# Notify checking function - log search method with delay timeout
+# For internal use only
+journal__check_log()
+{
+	# ${1} -> from
+	# ${2} -> importance
+	# ${3} -> message
+	# ${4} -> timeout (seconds)
+
+	if [ "${1}" = '' ] || [ "${2}" = '' ] || [ "${3}" = '' ] || [ "${4}" = '' ]; then
+		echo ''
+		echo ' Usage: --journal --check-log "from" "critical|high|medium|low" "notification content" "timeout_in_seconds"'
+		echo ''
+		return 1
+	else
+		local log_line
+		local date
+		local time
+		local id
+		local from
+		local importance
+		local message
+
+		if [ -e "${subsystem__journal__log_file}" ]; then
+			tac ${subsystem__journal__log_file} | while read log_line; do
+				eval ${log_line}
+				if [ "${1}" = "${from}" ] && [ "${2}" = "${importance}" ] && [ "${3}" = "${message}" ]; then
+					[ "$(($(date --date="${date} ${time}" '+%s')+${4}))" -lt "$(date '+%s')" ] && return 0 || return 1
+				fi
+			done
+			return ${?}
+		fi
+
+		return 0
+	fi
+}

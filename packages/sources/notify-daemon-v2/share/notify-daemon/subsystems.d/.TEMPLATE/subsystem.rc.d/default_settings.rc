@@ -1,0 +1,3 @@
+# Default subsystem settings
+SUBSYSTEMNAME__variable_a='value a'
+SUBSYSTEMNAME__variable_b='value b'

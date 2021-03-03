@@ -1,0 +1,27 @@
+# Notify adding function
+# Mainly for internal use
+journal__add()
+{
+	if [ "${1}" = '' ] || [ "${2}" = '' ] || [ "${3}" = '' ]; then
+		echo ''
+		echo ' Usage: --journal --add "from" "critical|high|medium|low" "notification content"'
+		echo ''
+	else
+		local new_id
+		local notification_id
+
+		new_id='0'
+		for notification_id in ${subsystem__journal__workspace}/*; do
+			[ "${notification_id}" = "${subsystem__journal__workspace}/*" ] && break 
+			[ "${notification_id##*/}" -gt "${new_id}" ] && id=${notification_id##*/}
+		done
+		new_id="$((new_id+1))"
+
+		echo "id='${new_id}'" > ${subsystem__journal__workspace}/${new_id}
+		echo "from='${1}'" >> ${subsystem__journal__workspace}/${new_id}
+		echo "importance='${2}'" >> ${subsystem__journal__workspace}/${new_id}
+		echo "message='${3}'" >> ${subsystem__journal__workspace}/${new_id}
+
+		journal__log 'id="'"$id"'" from="'"$1"'" importance="'"$2"'" message="'"$3"'"'
+	fi
+}

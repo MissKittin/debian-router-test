@@ -1,0 +1,23 @@
+# Standard v1 events group execution
+task__events_v1()
+{
+	local event
+	local checklist=''
+
+	for event in ${etc_dir}/events.rc.d/*.rc; do
+		if [ "${event}" = "${etc_dir}/events.rc.d/*.rc" ]; then
+			log 'info' 'task__events_v1(): no tasks defined'
+		else
+			debug_log "task__events_v1(): importing ${event}"
+			. ${event}
+		fi
+	done
+
+	for event in ${checklist}; do
+		log 'info' "task__events_v1(): checking ${event}"
+		if check_${event}; then
+			log 'info' "task__events_v1(): ${event} returned true, sending notification"
+			send_notify_${event}
+		fi
+	done
+}

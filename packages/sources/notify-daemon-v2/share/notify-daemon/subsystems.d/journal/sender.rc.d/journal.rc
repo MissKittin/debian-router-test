@@ -1,0 +1,7 @@
+# Journal extension for sender subsystem
+sender__send_journal()
+{
+	debug_log "sender__send_journal(): saving notification from ${1}"
+	journal__add "${1}" "${2}" "${3}"
+}
+SENDER_METHODS="${SENDER_METHODS} sender__send_journal"

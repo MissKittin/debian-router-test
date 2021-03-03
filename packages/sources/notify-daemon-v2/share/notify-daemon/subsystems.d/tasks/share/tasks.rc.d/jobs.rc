@@ -1,0 +1,21 @@
+# Stripped events group execution
+task__jobs()
+{
+	local job
+	local JOBS_LIST=''
+
+	for job in ${etc_dir}/tasks.rc.d/jobs.rc.d/*.rc; do
+		if [ "${job}" = "${etc_dir}/tasks.rc.d/jobs.rc.d/*.rc" ]; then
+			log 'warning' 'task__jobs(): no tasks defined'
+		else
+			debug_log "task__jobs(): importing ${job}"
+			. ${job}
+		fi
+	done
+
+	for job in ${JOBS_LIST}; do
+		log 'info' "task__jobs(): executing ${job}"
+		job__${job}
+	done
+}
+TASKS_LIST="${TASKS_LIST} task__jobs"

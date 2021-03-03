@@ -1,0 +1,24 @@
+# Description
+
+# . ${share_dir}/extensions/libtimestamp.rc # if event will use a timestamp
+
+event__check__NAME()
+{
+	# if notify_daemon__libtimestamp 'NAME' "${path_event_temp}/.notify-daemon_event__TIMESTAMP-NAME.timestamp" 'period-in-seconds'; then # if event will use a timestamp
+	if CONDITION; then
+		log 'info' 'event__check__NAME: exception occured'
+		return 0
+	else
+		log 'info' 'event__check__NAME: exception not occured'
+		return 1
+	fi
+}
+event__send_notify__NAME()
+{
+	local importance='low' # highest -> lowest: critical high medium low
+	local name='Sample critical event'
+	local message='Sample text'
+
+	journal__check_workspace "${name}" "${importance}" "${message}" && sender__send_notify "${name}" "${importance}" "${message}"
+}
+EVENTS_LIST="${EVENTS_LIST} NAME"

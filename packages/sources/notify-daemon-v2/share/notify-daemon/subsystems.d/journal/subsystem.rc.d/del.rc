@@ -1,0 +1,21 @@
+# Notify deletion function
+journal__del()
+{
+	if [ "${1}" = '' ] || [ "${1}" = '--help' ]; then
+		echo ''
+		echo ' usage: --journal --del [notification_id|--all]'
+		echo ''
+	elif [ "${1}" = '--all' ]; then
+		local notification
+		for notification in ${subsystem__journal__workspace}/*; do
+			[ "${notification}" = "${subsystem__journal__workspace}/*" ] && break
+			rm ${notification}
+		done
+	else
+		if [ -e "${subsystem__journal__workspace}/${1}" ]; then
+			rm ${subsystem__journal__workspace}/${1}
+		else
+			echo " Notification ID ${1} not exists"
+		fi
+	fi
+}

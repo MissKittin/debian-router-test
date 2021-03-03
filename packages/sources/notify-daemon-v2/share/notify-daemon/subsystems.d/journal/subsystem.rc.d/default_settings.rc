@@ -1,0 +1,8 @@
+# Journal settings
+
+subsystem__journal__workspace='/var/run/notify-daemon/notify-journal_notifications'
+subsystem__journal__log_file='/var/run/notify-daemon/notify-journal.log'
+subsystem__journal__add_internal_only='true'
+
+[ -e '/var/log/notify-daemon' ] && subsystem__journal__workspace='/var/log/notify-daemon/notify-journal_notifications'
+[ -e '/var/log/notify-daemon' ] && subsystem__journal__log_file='/var/log/notify-daemon/notify-journal.log'

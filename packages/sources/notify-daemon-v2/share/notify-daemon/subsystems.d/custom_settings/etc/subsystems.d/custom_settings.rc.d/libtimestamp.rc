@@ -1,0 +1,3 @@
+# libtimestamp.rc settings
+libtimestamp_path='/var/run/notify-daemon/timestamps'
+if [ ! -e "${libtimestamp_path}" ]; then mkdir -p "${libtimestamp_path}"; fi

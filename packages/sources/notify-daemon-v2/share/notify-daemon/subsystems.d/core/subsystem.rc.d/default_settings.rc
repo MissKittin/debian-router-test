@@ -1,0 +1,2 @@
+# core subsystem configuration
+subsystem__core__check_every='60' # seconds

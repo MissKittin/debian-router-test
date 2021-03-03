@@ -1,0 +1,25 @@
+# Description
+journal__parse_NAME()
+{
+	# ${1} -> ID
+	# ${2} -> from
+	# ${3} -> importance
+	# ${4} -> message
+
+	# Additional settings here
+
+	case $3 in
+		'critical')
+			# Critical format
+		;;
+		'high')
+			# High format
+		;;
+		'medium')
+			# Medium format
+		;;
+		'low')
+			# Low format
+		;;
+	esac
+}

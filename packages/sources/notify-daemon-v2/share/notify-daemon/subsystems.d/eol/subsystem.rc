@@ -1,0 +1,38 @@
+# Splash
+debug_log 'notify daemon v2 :: EoL v1'
+
+# Settings importing
+. ${subsystem}/subsystem.rc.d/default_settings.rc
+[ -e "${etc_dir}/subsystems.d/eol.rc" ] && . ${etc_dir}/subsystems.d/eol.rc && debug_log "subsystem.rc: ${etc_dir}/subsystems.d/eol.rc imported"
+
+# Main function & global indicator
+${subsystem__eol__enabled} && subsystem__eol__loop_indicator='1'
+${subsystem__eol__enabled} && subsystem__eol__script_args="${@}"
+subsystem__eol()
+{
+	if ${subsystem__eol__enabled}; then
+		debug_log 'subsystem__eol(): subsystem enabled'
+		if [ "${subsystem__eol__loop_indicator}" -ge "${subsystem__eol__start_every}" ]; then
+			debug_log "subsystem__eol(): ${subsystem__eol__start_every} loops reached"
+
+			local extension
+			for extension in ${share_dir}/subsystems.d/eol/extensions.d/*.rc; do
+				if [ "${extension}" = "${share_dir}/subsystems.d/eol/extensions.d/*.rc" ]; then
+					debug_log 'subsystem__eol(): no extensions defined'
+				else
+					. ${extension}
+				fi
+			done
+
+			log 'info' 'subsystem__eol(): re-executing'
+			debug_log ''
+			exec ${0} ${subsystem__eol__script_args}
+		else
+			log 'info' "subsystem__eol(): it was loop #${subsystem__eol__loop_indicator}"
+			subsystem__eol__loop_indicator="$((subsystem__eol__loop_indicator+1))"
+			log 'info' "subsystem__eol(): loop #${subsystem__eol__loop_indicator} started"
+		fi
+	else
+		debug_log 'subsystem__eol(): subsystem disabled in settings'
+	fi
+}

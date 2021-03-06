@@ -16,6 +16,15 @@ You can also download the tarball from repo and install it through `package-mana
 4) run `install.sh`
 5) now you can leave the `.package-manager` directory and use the `package-manager.sh` script
 
+# First start
+1) download and unpack choosen packages
+2) run `./.package-manager.sh analyze-dependencies`
+3) install debian packages from `Debian dependencies` section
+4) optionally install debian packages from `Debian recommends` section
+5) check if you have conflicted packages, remove conflicts
+6) check if you have dependent packages - install that packages first
+7) install rest of the packages
+
 # How to use
 1) enter into the package directory
 2) `chmod 755 .build.sh` (skip this step if you downloaded the tarball)

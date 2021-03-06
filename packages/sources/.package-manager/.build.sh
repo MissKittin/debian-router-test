@@ -3,6 +3,8 @@
 # build script
 do_chown='false'
 
+PACKAGE_NAME='package-manager'
+
 # Check root
 if [ ! "$(whoami)" = 'root' ]; then
 	echo "I don't have the required power"
@@ -44,6 +46,8 @@ ${do_chown} && chown root:root ./modules/remove-package
 chmod 755 ./modules/remove-package
 ${do_chown} && chown root:root ./modules/check-extras-status
 chmod 755 ./modules/check-extras-status
+${do_chown} && chown root:root ./modules/analyze-dependencies
+chmod 755 ./modules/analyze-dependencies
 ${do_chown} && chown root:root ./dev-tools
 chmod 755 ./dev-tools
 ${do_chown} && chown root:root ./dev-tools/dumpmods.sh
@@ -63,6 +67,6 @@ chmod 755 ./bin/package-manager.sh
 ${do_chown} && chown root:root ./VERSION.txt
 chmod 644 ./VERSION.txt
 
-chmod 644 ./build.sh
+chmod 644 ./.build.sh
 echo ''
 exit 0

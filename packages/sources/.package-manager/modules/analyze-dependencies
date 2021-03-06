@@ -1,0 +1,109 @@
+#!/bin/sh
+# Analyze dependencies
+# ${PACKAGES_DIR} from package-manager.sh
+[ "${PACKAGES_DIR}" = '' ] && exit 0
+
+cd "${PACKAGES_DIR}"
+echo ''
+
+remove_n_first_args() { local skip='0'; local i; for i in ${2}; do if [ "${skip}" = "${1}" ]; then echo -n "${i} "; else skip="$((skip+1))"; fi; done; }
+unique_string() { echo "${@}" | tr ' ' '\n' | sort -u | tr '\n' ' '; }
+unique_string2() { local checklist=''; local i; local x; for i in ${@}; do if $(for x in ${checklist}; do [ "${x}" = "${i}" ] && exit 1; done; exit 0); then echo "${i}"; checklist="${checklist} ${i}"; fi; done; }
+search_in_string() { local i; for i in ${2}; do [ "${1}" = "${i}" ] && return 0; done; return 1; }
+
+##########################
+DEBIAN_DEPENDENCIES=''
+for i in *; do
+	if [ -d "${i}" ]; then
+		DEBIAN_DEPENDENCIES="${DEBIAN_DEPENDENCIES} $(
+			cat "${i}/install.sh" | grep '^# Debian dependencies: ' | while read line; do
+				remove_n_first_args '3' "${line}"
+			done
+		)"
+	fi
+done
+DEBIAN_DEPENDENCIES="$(unique_string "${DEBIAN_DEPENDENCIES}")"
+
+echo 'Debian dependencies:'
+for i in ${DEBIAN_DEPENDENCIES}; do
+	echo " ${i}"
+done
+echo ''
+##########################
+
+##########################
+DEBIAN_RECOMMENDED=''
+for i in *; do
+	if [ -d "${i}" ]; then
+		DEBIAN_RECOMMENDED="${DEBIAN_RECOMMENDED} $(
+			cat "${i}/install.sh" | grep '^# Debian recommended: ' | while read line; do
+				remove_n_first_args '3' "${line}"
+			done
+		)"
+	fi
+done
+DEBIAN_RECOMMENDED="$(unique_string "${DEBIAN_RECOMMENDED}")"
+
+echo 'Debian recommended:'
+for i in ${DEBIAN_RECOMMENDED}; do
+	search_in_string "${i}" "${DEBIAN_DEPENDENCIES}" || echo " ${i}"
+done
+echo ''
+##########################
+
+##########################
+CONFLICTS=''
+for i in *; do
+	if [ -d "${i}" ]; then
+		CONFLICTS="${CONFLICTS} $(
+			cat "${i}/install.sh" | grep '^# Conflicts: ' | while read line; do
+				for x in $(remove_n_first_args '2' "${line}"); do
+					if [ -e "${x}" ]; then
+						echo -n "${i}\033[0;31m=>\033[0m${x}"
+					fi
+				done
+			done
+		)"
+	fi
+done
+CONFLICTS="$(echo "${CONFLICTS}" | tr -d ',')"
+CONFLICTS="$(unique_string2 "${CONFLICTS}")"
+
+echo 'Conflicts:'
+for i in ${CONFLICTS}; do
+	echo " ${i}"
+done
+echo ''
+##########################
+
+##########################
+DEPENDENCIES=''
+for i in *; do
+	if [ -d "${i}" ]; then
+		DEPENDENCIES="${DEPENDENCIES} $(
+			cat "${i}/install.sh" | grep '^# Dependencies: ' | while read line; do
+				remove_n_first_args '2' "${line}"
+			done
+		)"
+	fi
+done
+DEPENDENCIES="$(echo "${DEPENDENCIES}" | tr -d ',')"
+DEPENDENCIES="$(unique_string2 "${DEPENDENCIES}")"
+
+echo 'Dependencies:'
+for i in ${DEPENDENCIES}; do
+	echo " ${i}"
+done
+echo ''
+##########################
+
+##########################
+echo 'Packages:'
+for i in *; do
+	if [ -d "${i}" ]; then
+		search_in_string "${i}" "${DEPENDENCIES}" || echo " ${i}"
+	fi
+done
+##########################
+
+exit 0

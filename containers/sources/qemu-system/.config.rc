@@ -1,0 +1,24 @@
+# Misc
+CONTAINER_NAME='qemu-system'
+DESTINATION="$(dirname $0)"
+CONTAINER_ROOT='.container'
+CONTAINER_ON_RAM='true'
+
+# Start
+#REMOVE_SYSTEM_MOUNTPOINTS='dev/pts dev sys proc'
+#CONFIG_TARBALLS=''
+OVERLAYFS_MOUNT_OPTIONS='nosuid,nodev,exec,noatime,nodiratime'
+
+# Start/Stop
+MOUNT_LABEL="${CONTAINER_NAME}"
+BIND_SYSTEM_MOUNTPOINTS='dev dev/pts proc run sys'
+CONTAINER_ROOTFS_IMAGE='.rootfs.sqs'
+
+# Service
+CONTAINER_SERVICES=''
+
+# Start/Service
+CONTAINER_AUTOSTART_SERVICES="${CONTAINER_SERVICES}"
+
+# Console
+SHELL_PROMPT="${CONTAINER_NAME}"'> '

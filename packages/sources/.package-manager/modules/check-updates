@@ -1,4 +1,19 @@
 #!/bin/sh
+# How to create the repository:
+# 1) prepare place for packages that wget can access
+# 2) create `repo-test` directory
+# 3) create `repo-test.txt` file in `repo-test` directory
+#    (can be empty, some content (eg. 0) recommended)
+# 4) make directory with package name (without spaces)
+# 5) build package, copy CHANGELOG.txt and VERSION.txt from package
+# 6) rename CHANGELOG.txt to package-name-changelog.txt
+#    and VERSION.txt to package-name-version.txt (replace package-name)
+# 7) put in the package directory following files (replace package-name):
+#     package-name.tar.gz
+#     package-name-changelog.txt
+#     package-name-version.txt
+# 8) edit `REPO_URL` variable below
+
 # ${PACKAGES_DIR} from package-manager.sh
 [ "${PACKAGES_DIR}" = '' ] && exit 0
 

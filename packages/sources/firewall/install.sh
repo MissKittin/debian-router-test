@@ -3,7 +3,6 @@
 # install script
 # This script has command line tweaks
 
-# Dependencies: rc.local (not anymore)
 # Debian dependencies: iptables
 # Debian recommended: ebtables ipset
 

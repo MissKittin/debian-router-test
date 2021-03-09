@@ -13,14 +13,16 @@ echo " ${PACKAGE_NAME} - extras"
 echo ''
 
 # /usr/local/etc/notify-daemon
-echo -n '/usr/local/etc/notify-daemon/events.rc.d/webadmin-session-cleaner.rc'
-	if [ -L /usr/local/etc/notify-daemon/events.rc.d/webadmin-session-cleaner.rc ] && [ -e /usr/local/etc/notify-daemon/events.rc.d/webadmin-session-cleaner.rc ]; then
-		installed=true
-		echo ' [ OK ]'
-	else
-		broken=true
-		echo ' [NOT INSTALLED]'
-	fi
+for i in webadmin-autorestart.rc webadmin-session-cleaner.rc; do
+	echo -n "/usr/local/etc/notify-daemon/events.rc.d/${i}"
+		if [ -L /usr/local/etc/notify-daemon/events.rc.d/${i} ] && [ -e /usr/local/etc/notify-daemon/events.rc.d/${i} ]; then
+			installed=true
+			echo ' [ OK ]'
+		else
+			broken=true
+			echo ' [NOT INSTALLED]'
+		fi
+done
 echo -n '/usr/local/etc/notify-daemon/journal-manager.rc.d/www.rc'
 	if [ -L /usr/local/etc/notify-daemon/journal-manager.rc.d/www.rc ] && [ -e /usr/local/etc/notify-daemon/journal-manager.rc.d/www.rc ]; then
 		installed=true

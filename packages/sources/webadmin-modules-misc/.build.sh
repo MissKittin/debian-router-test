@@ -208,16 +208,6 @@ ${do_chown} && chown root:root ./webadmin/sys-clock/index.php
 chmod 644 ./webadmin/sys-clock/index.php
 ${do_chown} && chown root:root ./webadmin/lib
 chmod 755 ./webadmin/lib
-${do_chown} && chown root:root ./webadmin/lib/htmlheaders
-chmod 755 ./webadmin/lib/htmlheaders
-${do_chown} && chown root:root ./webadmin/lib/htmlheaders/faviconHeader.php
-chmod 644 ./webadmin/lib/htmlheaders/faviconHeader.php
-${do_chown} && chown root:root ./webadmin/lib/htmlheaders/mobileview.php
-chmod 644 ./webadmin/lib/htmlheaders/mobileview.php
-${do_chown} && chown root:root ./webadmin/lib/htmlheaders/js-warning.php
-chmod 644 ./webadmin/lib/htmlheaders/js-warning.php
-${do_chown} && chown root:root ./webadmin/lib/htmlheaders/fadeanimations.php
-chmod 644 ./webadmin/lib/htmlheaders/fadeanimations.php
 ${do_chown} && chown root:root ./webadmin/lib/shell
 chmod 755 ./webadmin/lib/shell
 ${do_chown} && chown root:root ./webadmin/lib/shell/superuser.sh
@@ -230,76 +220,12 @@ ${do_chown} && chown root:root ./webadmin/lib/shell/check-service.rc
 chmod 644 ./webadmin/lib/shell/check-service.rc
 ${do_chown} && chown root:root ./webadmin/lib/shell/check-ipv6.rc
 chmod 644 ./webadmin/lib/shell/check-ipv6.rc
-${do_chown} && chown root:root ./webadmin/lib/favicon
-chmod 755 ./webadmin/lib/favicon
-${do_chown} && chown root:root ./webadmin/lib/favicon/apple-touch-icon-72x72.png
-chmod 644 ./webadmin/lib/favicon/apple-touch-icon-72x72.png
-${do_chown} && chown root:root ./webadmin/lib/favicon/mstile-310x150.png
-chmod 644 ./webadmin/lib/favicon/mstile-310x150.png
-${do_chown} && chown root:root ./webadmin/lib/favicon/apple-touch-icon-76x76.png
-chmod 644 ./webadmin/lib/favicon/apple-touch-icon-76x76.png
-${do_chown} && chown root:root ./webadmin/lib/favicon/favicon.ico
-chmod 644 ./webadmin/lib/favicon/favicon.ico
-${do_chown} && chown root:root ./webadmin/lib/favicon/mstile-310x310.png
-chmod 644 ./webadmin/lib/favicon/mstile-310x310.png
-${do_chown} && chown root:root ./webadmin/lib/favicon/mstile-150x150.png
-chmod 644 ./webadmin/lib/favicon/mstile-150x150.png
-${do_chown} && chown root:root ./webadmin/lib/favicon/apple-touch-icon-120x120.png
-chmod 644 ./webadmin/lib/favicon/apple-touch-icon-120x120.png
-${do_chown} && chown root:root ./webadmin/lib/favicon/apple-touch-icon-114x114.png
-chmod 644 ./webadmin/lib/favicon/apple-touch-icon-114x114.png
-${do_chown} && chown root:root ./webadmin/lib/favicon/mstile-144x144.png
-chmod 644 ./webadmin/lib/favicon/mstile-144x144.png
-${do_chown} && chown root:root ./webadmin/lib/favicon/apple-touch-icon-60x60.png
-chmod 644 ./webadmin/lib/favicon/apple-touch-icon-60x60.png
-${do_chown} && chown root:root ./webadmin/lib/favicon/favicon-196x196.png
-chmod 644 ./webadmin/lib/favicon/favicon-196x196.png
-${do_chown} && chown root:root ./webadmin/lib/favicon/favicon.php
-chmod 644 ./webadmin/lib/favicon/favicon.php
-${do_chown} && chown root:root ./webadmin/lib/favicon/favicon-32x32.png
-chmod 644 ./webadmin/lib/favicon/favicon-32x32.png
-${do_chown} && chown root:root ./webadmin/lib/favicon/apple-touch-icon-144x144.png
-chmod 644 ./webadmin/lib/favicon/apple-touch-icon-144x144.png
-${do_chown} && chown root:root ./webadmin/lib/favicon/favicon-96x96.png
-chmod 644 ./webadmin/lib/favicon/favicon-96x96.png
-${do_chown} && chown root:root ./webadmin/lib/favicon/apple-touch-icon-152x152.png
-chmod 644 ./webadmin/lib/favicon/apple-touch-icon-152x152.png
-${do_chown} && chown root:root ./webadmin/lib/favicon/mstile-70x70.png
-chmod 644 ./webadmin/lib/favicon/mstile-70x70.png
-${do_chown} && chown root:root ./webadmin/lib/favicon/favicon-128.png
-chmod 644 ./webadmin/lib/favicon/favicon-128.png
-${do_chown} && chown root:root ./webadmin/lib/favicon/apple-touch-icon-57x57.png
-chmod 644 ./webadmin/lib/favicon/apple-touch-icon-57x57.png
-${do_chown} && chown root:root ./webadmin/lib/favicon/favicon-16x16.png
-chmod 644 ./webadmin/lib/favicon/favicon-16x16.png
-${do_chown} && chown root:root ./webadmin/lib/favicon/source.png
-chmod 644 ./webadmin/lib/favicon/source.png
 ${do_chown} && chown root:root ./webadmin/lib/opcache.php
 chmod 644 ./webadmin/lib/opcache.php
-${do_chown} && chown root:root ./webadmin/lib/htmlheaders_min
-chmod 755 ./webadmin/lib/htmlheaders_min
-${do_chown} && chown root:root ./webadmin/lib/htmlheaders_min/mobileview.php
-chmod 644 ./webadmin/lib/htmlheaders_min/mobileview.php
-${do_chown} && chown root:root ./webadmin/lib/htmlheaders_min/fadeanimations.php
-chmod 644 ./webadmin/lib/htmlheaders_min/fadeanimations.php
 ${do_chown} && chown root:root ./webadmin/lib/opt_htmlheaders
 chmod 755 ./webadmin/lib/opt_htmlheaders
 ${do_chown} && chown root:root ./webadmin/lib/opt_htmlheaders/jquery.php
 chmod 644 ./webadmin/lib/opt_htmlheaders/jquery.php
-${do_chown} && chown root:root ./webadmin/lib/themes
-chmod 755 ./webadmin/lib/themes
-${do_chown} && chown root:root ./webadmin/lib/themes/dark
-chmod 755 ./webadmin/lib/themes/dark
-${do_chown} && chown root:root ./webadmin/lib/themes/dark/index.min.php
-chmod 644 ./webadmin/lib/themes/dark/index.min.php
-${do_chown} && chown root:root ./webadmin/lib/themes/dark/index.full.php
-chmod 644 ./webadmin/lib/themes/dark/index.full.php
-${do_chown} && chown root:root ./webadmin/lib/themes/bright
-chmod 755 ./webadmin/lib/themes/bright
-${do_chown} && chown root:root ./webadmin/lib/themes/bright/index.min.php
-chmod 644 ./webadmin/lib/themes/bright/index.min.php
-${do_chown} && chown root:root ./webadmin/lib/themes/bright/index.full.php
-chmod 644 ./webadmin/lib/themes/bright/index.full.php
 ${do_chown} && chown root:root ./webadmin/lib/range_icons
 chmod 755 ./webadmin/lib/range_icons
 ${do_chown} && chown root:root ./webadmin/lib/range_icons/range_4.png
@@ -314,22 +240,6 @@ ${do_chown} && chown root:root ./webadmin/lib/range_icons/range_2.png
 chmod 644 ./webadmin/lib/range_icons/range_2.png
 ${do_chown} && chown root:root ./webadmin/lib/range_icons/range_0.png
 chmod 644 ./webadmin/lib/range_icons/range_0.png
-${do_chown} && chown root:root ./webadmin/lib/login
-chmod 755 ./webadmin/lib/login
-${do_chown} && chown root:root ./webadmin/lib/login/login-themes
-chmod 755 ./webadmin/lib/login/login-themes
-${do_chown} && chown root:root ./webadmin/lib/login/login-themes/material
-chmod 755 ./webadmin/lib/login/login-themes/material
-${do_chown} && chown root:root ./webadmin/lib/login/login-themes/material/reload.php
-chmod 644 ./webadmin/lib/login/login-themes/material/reload.php
-${do_chown} && chown root:root ./webadmin/lib/login/login-themes/material/form.php
-chmod 644 ./webadmin/lib/login/login-themes/material/form.php
-${do_chown} && chown root:root ./webadmin/lib/login/login-themes/material/css
-chmod 755 ./webadmin/lib/login/login-themes/material/css
-${do_chown} && chown root:root ./webadmin/lib/login/login-themes/material/css/index.min.php
-chmod 644 ./webadmin/lib/login/login-themes/material/css/index.min.php
-${do_chown} && chown root:root ./webadmin/lib/login/login-themes/material/css/index.full.php
-chmod 644 ./webadmin/lib/login/login-themes/material/css/index.full.php
 ${do_chown} && chown root:root ./webadmin/lib/console
 chmod 755 ./webadmin/lib/console
 ${do_chown} && chown root:root ./webadmin/lib/console/update-shebang.php
@@ -440,9 +350,58 @@ ${do_chown} && chown root:root ./webadmin-deprecated/sys-updates/DEPRECATED.TXT
 chmod 644 ./webadmin-deprecated/sys-updates/DEPRECATED.TXT
 ${do_chown} && chown root:root ./webadmin-deprecated/sys-updates/index.php
 chmod 644 ./webadmin-deprecated/sys-updates/index.php
+${do_chown} && chown root:root ./webadmin-extras/lib/htmlheaders
+chmod 755 ./webadmin-extras/lib/htmlheaders
+${do_chown} && chown root:root ./webadmin-extras/lib/htmlheaders/mobileview.php
+chmod 644 ./webadmin-extras/lib/htmlheaders/mobileview.php
+${do_chown} && chown root:root ./webadmin-extras/lib/htmlheaders/js-warning.php
+chmod 644 ./webadmin-extras/lib/htmlheaders/js-warning.php
+${do_chown} && chown root:root ./webadmin-extras/lib/htmlheaders/faviconHeader.php
+chmod 644 ./webadmin-extras/lib/htmlheaders/faviconHeader.php
+${do_chown} && chown root:root ./webadmin-extras/lib/favicon
+chmod 755 ./webadmin-extras/lib/favicon
+${do_chown} && chown root:root ./webadmin-extras/lib/favicon/favicon.php
+chmod 644 ./webadmin-extras/lib/favicon/favicon.php
+${do_chown} && chown root:root ./webadmin-extras/lib/htmlheaders_min
+chmod 755 ./webadmin-extras/lib/htmlheaders_min
+${do_chown} && chown root:root ./webadmin-extras/lib/htmlheaders_min/mobileview.php
+chmod 644 ./webadmin-extras/lib/htmlheaders_min/mobileview.php
+${do_chown} && chown root:root ./webadmin-extras/lib/htmlheaders/fadeanimations.php
+chmod 644 ./webadmin-extras/lib/htmlheaders/fadeanimations.php
+${do_chown} && chown root:root ./webadmin-extras/lib/htmlheaders_min/fadeanimations.php
+chmod 644 ./webadmin-extras/lib/htmlheaders_min/fadeanimations.php
+${do_chown} && chown root:root ./webadmin-extras/lib/login
+chmod 755 ./webadmin-extras/lib/login
+${do_chown} && chown root:root ./webadmin-extras/lib/login/login-themes
+chmod 755 ./webadmin-extras/lib/login/login-themes
+${do_chown} && chown root:root ./webadmin-extras/lib/login/login-themes/material
+chmod 755 ./webadmin-extras/lib/login/login-themes/material
+${do_chown} && chown root:root ./webadmin-extras/lib/login/login-themes/material/reload.php
+chmod 644 ./webadmin-extras/lib/login/login-themes/material/reload.php
+${do_chown} && chown root:root ./webadmin-extras/lib/login/login-themes/material/form.php
+chmod 644 ./webadmin-extras/lib/login/login-themes/material/form.php
+${do_chown} && chown root:root ./webadmin-extras/lib/login/login-themes/material/css
+chmod 755 ./webadmin-extras/lib/login/login-themes/material/css
+${do_chown} && chown root:root ./webadmin-extras/lib/login/login-themes/material/css/index.min.php
+chmod 644 ./webadmin-extras/lib/login/login-themes/material/css/index.min.php
+${do_chown} && chown root:root ./webadmin-extras/lib/login/login-themes/material/css/index.full.php
+chmod 644 ./webadmin-extras/lib/login/login-themes/material/css/index.full.php
+${do_chown} && chown root:root ./webadmin-extras/lib/themes
+chmod 755 ./webadmin-extras/lib/themes
+${do_chown} && chown root:root ./webadmin-extras/lib/themes/dark
+chmod 755 ./webadmin-extras/lib/themes/dark
+${do_chown} && chown root:root ./webadmin-extras/lib/themes/dark/index.min.php
+chmod 644 ./webadmin-extras/lib/themes/dark/index.min.php
+${do_chown} && chown root:root ./webadmin-extras/lib/themes/dark/index.full.php
+chmod 644 ./webadmin-extras/lib/themes/dark/index.full.php
+${do_chown} && chown root:root ./webadmin-extras/lib/themes/bright
+chmod 755 ./webadmin-extras/lib/themes/bright
+${do_chown} && chown root:root ./webadmin-extras/lib/themes/bright/index.min.php
+chmod 644 ./webadmin-extras/lib/themes/bright/index.min.php
+${do_chown} && chown root:root ./webadmin-extras/lib/themes/bright/index.full.php
+chmod 644 ./webadmin-extras/lib/themes/bright/index.full.php
 ${do_chown} && chown root:root ./.build-jquery.sh
 chmod 755 ./.build-jquery.sh
-
 ./webadmin/home-plugins/01_splash-info/mkcache.sh
 ./.build-jquery.sh
 
@@ -460,14 +419,15 @@ ln -s index.min.php ./webadmin/sys-storage/script/index.php
 ln -s ../../lib/prevent-index.php ./webadmin/login-plugins/05_check-dash/index.php
 ln -s ../../lib/prevent-index.php ./webadmin/login-plugins/01_internet-info/index.php
 ln -s ../../lib/prevent-index.php ./webadmin/login-plugins/15_check-js/index.php
-ln -s ../prevent-index.php ./webadmin/lib/favicon/index.php
+ln -s ../prevent-index.php ./webadmin-extras/lib/favicon/index.php
 ln -s ../prevent-index.php ./webadmin/lib/opt_htmlheaders/index.php
-ln -s index.min.php ./webadmin/lib/themes/dark/index.php
-ln -s index.min.php ./webadmin/lib/themes/bright/index.php
+ln -s index.min.php ./webadmin-extras/lib/themes/dark/index.php
+ln -s index.min.php ./webadmin-extras/lib/themes/bright/index.php
 ln -s ../prevent-index.php ./webadmin/lib/range_icons/index.php
-ln -s index.min.php ./webadmin/lib/login/login-themes/material/css/index.php
-ln -s ../../../prevent-index.php ./webadmin/lib/login/login-themes/material/index.php
+ln -s index.min.php ./webadmin-extras/lib/login/login-themes/material/css/index.php
+ln -s ../../../prevent-index.php ./webadmin-extras/lib/login/login-themes/material/index.php
 ln -s /usr/local/share/webadmin/lib/prevent-index.php ./webadmin/lib/prevent-index.php
+ln -s /usr/local/share/webadmin/lib/prevent-index.php ./webadmin-extras/lib/prevent-index.php
 ln -s ../config.rc ./webadmin/home-plugins/01_splash-info/modules/00_config.rc
 ln -s ../../../lib/prevent-index.php ./webadmin/home-plugins/01_splash-info/modules/index.php
 ln -s ../../lib/prevent-index.php ./webadmin/home-plugins/01_splash-info/index.php

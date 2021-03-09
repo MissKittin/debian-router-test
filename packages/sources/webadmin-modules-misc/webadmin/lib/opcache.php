@@ -68,6 +68,9 @@
 	// on-boot precaching
 	if(($_SERVER['REMOTE_ADDR'] === '127.0.0.1') && (isset($_GET['autocompile'])))
 	{
+		// log leak path
+		if(file_exists('/var/run/webadmin/webadmin-preload.log.gz')) { include $system['location_php'] . '/lib/prevent-index.php'; exit(); }
+
 		header('Content-Type: text/plain');
 		if(isset($no_opcache))
 		{

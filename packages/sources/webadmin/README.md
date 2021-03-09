@@ -5,7 +5,7 @@ This package contains server-admin-page core v3.1
 **Do not use `multi` login method in production - do not store plain password in config.**
 
 ### Extras
-* notify-daemon: php orphaned sessions cleaner
+* notify-daemon: php orphaned sessions cleaner and automatic restart when server hangs
 
 ### Configuration
 After installing packages, `cd /usr/local/share/webadmin`

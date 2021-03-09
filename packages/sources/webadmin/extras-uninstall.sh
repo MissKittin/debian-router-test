@@ -24,12 +24,14 @@ fi
 echo ''
 
 # Uninstall - /usr/local/etc/notify-daemon
-echo -n '[rm] /usr/local/etc/notify-daemon/events.rc.d/webadmin-session-cleaner.rc'
-	if [ -e '/usr/local/etc/notify-daemon/events.rc.d/webadmin-session-cleaner.rc' ]; then
-		rm /usr/local/etc/notify-daemon/events.rc.d/webadmin-session-cleaner.rc > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
-	else
-		echo ' [NOT EXISTS]'
-	fi
+for i in webadmin-autorestart.rc webadmin-session-cleaner.rc; do
+	echo -n "[rm] /usr/local/etc/notify-daemon/events.rc.d/${i}"
+		if [ -e "/usr/local/etc/notify-daemon/events.rc.d/${i}" ]; then
+			rm /usr/local/etc/notify-daemon/events.rc.d/${i} > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+		else
+			echo ' [NOT EXISTS]'
+		fi
+done
 echo -n '[rm] /usr/local/etc/notify-daemon/journal-manager.rc.d/www.rc'
 	if [ -e '/usr/local/etc/notify-daemon/journal-manager.rc.d/www.rc' ]; then
 		rm /usr/local/etc/notify-daemon/journal-manager.rc.d/www.rc > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'

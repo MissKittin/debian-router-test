@@ -44,6 +44,18 @@ FILES='
 	sys-storage
 	sys-users
 '
+FILES_EXTRAS='
+	lib/favicon
+	lib/htmlheaders/fadeanimations.php
+	lib/htmlheaders/faviconHeader.php
+	lib/htmlheaders/js-warning.php
+	lib/htmlheaders/mobileview.php
+	lib/htmlheaders_min/fadeanimations.php
+	lib/htmlheaders_min/mobileview.php
+	lib/login/login-themes/material
+	lib/themes/bright
+	lib/themes/dark
+'
 FILES_DEPRECATED='
 	net-ap
 	net-vpn
@@ -57,7 +69,7 @@ echo " ${PACKAGE_NAME}"
 echo ''
 
 # /usr/local/share/webadmin
-for i in ${FILES} ${FILES_DEPRECATED}; do
+for i in ${FILES} ${FILES_EXTRAS} ${FILES_DEPRECATED}; do
 	echo -n "/usr/local/share/webadmin/${i}"
 		if [ -L /usr/local/share/webadmin/${i} ] && [ -e /usr/local/share/webadmin/${i} ]; then
 			installed=true

@@ -118,6 +118,7 @@ case "${1}" in
 				log_end_msg $?
 				rm $PIDFILE
 				echo "$(date '+%Y-%m-%d %H:%M:%S') PHP server stopped" >> "${LOG}"
+				[ -e "${PRECACHING_LOG}.gz" ] && mv "${PRECACHING_LOG}.gz" "${PRECACHING_LOG}.gz-$(date '+%d%m%Y%H%M%S')"
 			fi
 		else
 			log_end_msg 1

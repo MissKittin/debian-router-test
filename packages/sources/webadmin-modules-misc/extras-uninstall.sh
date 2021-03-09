@@ -41,6 +41,18 @@ FILES='
 	sys-storage
 	sys-users
 '
+FILES_EXTRAS='
+	lib/favicon
+	lib/htmlheaders/fadeanimations.php
+	lib/htmlheaders/faviconHeader.php
+	lib/htmlheaders/js-warning.php
+	lib/htmlheaders/mobileview.php
+	lib/htmlheaders_min/fadeanimations.php
+	lib/htmlheaders_min/mobileview.php
+	lib/login/login-themes/material
+	lib/themes/bright
+	lib/themes/dark
+'
 FILES_DEPRECATED='
 	net-ap
 	net-vpn
@@ -68,7 +80,7 @@ echo ''
 
 # Uninstall - /usr/local/share/webadmin
 cd /usr/local/share/webadmin
-for i in ${FILES} ${FILES_DEPRECATED}; do
+for i in ${FILES} ${FILES_EXTRAS} ${FILES_DEPRECATED}; do
 	echo -n "[rm] /usr/local/share/webadmin/${i}"
 		if [ -e "/usr/local/share/webadmin/${i}" ]; then
 			rm /usr/local/share/webadmin/${i} > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'

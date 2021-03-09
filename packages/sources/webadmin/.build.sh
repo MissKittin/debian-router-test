@@ -66,6 +66,8 @@ ${do_chown} && chown root:root ./extras/etc/notify-daemon/events.rc.d
 chmod 755 ./extras/etc/notify-daemon/events.rc.d
 ${do_chown} && chown root:root ./extras/etc/notify-daemon/events.rc.d/webadmin-session-cleaner.rc
 chmod 644 ./extras/etc/notify-daemon/events.rc.d/webadmin-session-cleaner.rc
+${do_chown} && chown root:root ./extras/etc/notify-daemon/events.rc.d/webadmin-autorestart.rc
+chmod 644 ./extras/etc/notify-daemon/events.rc.d/webadmin-autorestart.rc
 ${do_chown} && chown root:root ./extras/etc/notify-daemon/journal-manager.rc.d
 chmod 755 ./extras/etc/notify-daemon/journal-manager.rc.d
 ${do_chown} && chown root:root ./extras/etc/notify-daemon/journal-manager.rc.d/www.rc

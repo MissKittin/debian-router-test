@@ -9,13 +9,6 @@ FILES='
 	home-plugins/01_splash-info
 	lib/console/check-command-stack.sh
 	lib/console/update-shebang.php
-	lib/favicon
-	lib/htmlheaders/fadeanimations.php
-	lib/htmlheaders/faviconHeader.php
-	lib/htmlheaders/js-warning.php
-	lib/htmlheaders/mobileview.php
-	lib/htmlheaders_min
-	lib/login/login-themes/material
 	lib/opt_htmlheaders
 	lib/range_icons
 	lib/shell/check-ipv6.rc
@@ -23,8 +16,6 @@ FILES='
 	lib/shell/path.rc
 	lib/shell/public-ipv4.rc
 	lib/shell/superuser.sh
-	lib/themes/bright
-	lib/themes/dark
 	lib/opcache.php
 	lib/jquery.js
 	lib/jquery-old.js
@@ -41,6 +32,18 @@ FILES='
 	sys-sensors
 	sys-storage
 	sys-users
+'
+FILES_EXTRAS='
+	lib/favicon
+	lib/htmlheaders/fadeanimations.php
+	lib/htmlheaders/faviconHeader.php
+	lib/htmlheaders/js-warning.php
+	lib/htmlheaders/mobileview.php
+	lib/htmlheaders_min/fadeanimations.php
+	lib/htmlheaders_min/mobileview.php
+	lib/login/login-themes/material
+	lib/themes/bright
+	lib/themes/dark
 '
 FILES_DEPRECATED='
 	net-ap
@@ -75,6 +78,14 @@ if cd /usr/local/share/webadmin > /dev/null 2>&1; then
 				echo ' [EXISTS]'
 			else
 				ln -s ${PACKAGE_DIR}/webadmin/${i} . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+			fi
+	done
+	for i in ${FILES_EXTRAS}; do
+		echo -n "[ln] webadmin-extras/${i} /usr/local/share/webadmin"
+			if [ -e "/usr/local/share/webadmin/${i}" ]; then
+				echo ' [EXISTS]'
+			else
+				ln -s ${PACKAGE_DIR}/webadmin-extras/${i} . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 			fi
 	done
 	if [ "${1}" = '--install-deprecated' ]; then

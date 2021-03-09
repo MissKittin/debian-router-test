@@ -32,12 +32,14 @@ echo ''
 
 # Install - /usr/local/etc/notify-daemon
 if cd /usr/local/etc/notify-daemon/events.rc.d > /dev/null 2>&1; then
-	echo -n '[ln] extras/etc/notify-daemon/events.rc.d/webadmin-session-cleaner.rc /usr/local/etc/notify-daemon/events.rc.d'
-		if [ -e '/usr/local/etc/notify-daemon/events.rc.d/webadmin-session-cleaner.rc' ]; then
-			echo ' [EXISTS]'
-		else
-			ln -s ${PACKAGE_DIR}/extras/etc/notify-daemon/events.rc.d/webadmin-session-cleaner.rc . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
-		fi
+	for i in webadmin-autorestart.rc webadmin-session-cleaner.rc; do
+		echo -n "[ln] extras/etc/notify-daemon/events.rc.d/${i} /usr/local/etc/notify-daemon/events.rc.d"
+			if [ -e "/usr/local/etc/notify-daemon/events.rc.d/${i}" ]; then
+				echo ' [EXISTS]'
+			else
+				ln -s ${PACKAGE_DIR}/extras/etc/notify-daemon/events.rc.d/${i} . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+			fi
+	done
 	cd /usr/local/etc/notify-daemon/journal-manager.rc.d
 	echo -n '[ln] extras/etc/notify-daemon/journal-manager.rc.d/www.rc /usr/local/etc/notify-daemon/journal-manager.rc.d'
 		if [ -e '/usr/local/etc/notify-daemon/journal-manager.rc.d/www.rc' ]; then

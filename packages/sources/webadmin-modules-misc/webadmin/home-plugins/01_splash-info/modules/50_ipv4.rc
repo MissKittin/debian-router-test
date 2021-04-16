@@ -6,9 +6,11 @@ if [ -e './lib/shell/public-ipv4.rc' ]; then
 	IP4_NO_CASE='true'
 	IP4_FUNCTION_OPTS='check-internet on-dashboard'
 
-	. './lib/shell/public-ipv4.rc'
-	echo "${newline}"
+	IPV4_OUTPUT="$(. './lib/shell/public-ipv4.rc')";
+	echo -n "${IPV4_OUTPUT}" | sed 's/<br>//g' | grep '<' > '/dev/null' 2>&1 && IPV4_OUTPUT='Public IPv4: HTML hack detected'
+	echo "${IPV4_OUTPUT}${newline}"
 
+	unset IPV4_OUTPUT
 	unset IP4_NO_CASE
 	unset IP4_FUNCTION_OPTS
 fi

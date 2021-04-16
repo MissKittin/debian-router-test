@@ -6,9 +6,11 @@ if [ -e './lib/shell/check-ipv6.rc' ]; then
 	IP6_NO_CASE='true'
 	IP6_FUNCTION_OPTS='check-ipv6 on-dashboard'
 
-	. './lib/shell/check-ipv6.rc'
-	echo "${newline}"
+	IP6_OUTPUT="$(. './lib/shell/check-ipv6.rc')";
+	echo -n "${IP6_OUTPUT}" | sed 's/<br>//g' | grep '<' > '/dev/null' 2>&1 && IP6_OUTPUT='Public IPv6: HTML hack detected'
+	echo "${IP6_OUTPUT}${newline}"
 
+	unset IP6_OUTPUT
 	unset IP6_NO_CASE
 	unset IP6_FUNCTION_OPTS
 fi

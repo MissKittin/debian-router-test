@@ -12,10 +12,23 @@ This package allows you to install systemd dependent packages without all that c
 **Think twice before installing this package.**  
 **You use this package at your own risk.**
 
+### How to remove systemd in running OS
+1) install package
+2) `apt-get update`
+3) upgrade systemd packages
+4) install another init
+5) if `systemd-sysv` and `systemd-shim` can be removed, purge these packages
+
+`systemd` package may have configuration files installed:
+1) **purge** `systemd`, **remove** dependent packages
+2) install `systemd`
+3) install dependent packages
+4) `apt-mark auto systemd`
+
 ### Fake packages
 * `libpam-systemd`
 * `systemd`
-* `systemd-shim`
+* `systemd-shim` (remove `share` directory and run `chmod 755 .build.sh; ./.build.sh --build-systemd-shim`)
 * `systemd-sysv`
 
 ### Users and groups
@@ -25,6 +38,7 @@ You can safely remove the following users:
 * `systemd-timesync`
 * `systemd-network`
 * `systemd-coredump`
+* `systemd-bus-proxy`
 
 and groups:
 * `systemd-journal`

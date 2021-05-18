@@ -1,3 +1,0 @@
-# fake-libpam-systemd package
-# run uninstall.sh from package directory to remove this repo
-deb [trusted=yes] file:/usr/local/share/fake-libpam-systemd ./

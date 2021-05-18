@@ -4,7 +4,8 @@
 do_chown='false'
 
 PACKAGE_NAME='fake-systemd'
-SOURCE_PACKAGES='libpam-systemd systemd systemd-shim systemd-sysv'
+SOURCE_PACKAGES='libpam-systemd systemd systemd-sysv'
+[ "${1}" = '--build-systemd-shim' ] && SOURCE_PACKAGES='libpam-systemd systemd systemd-shim systemd-sysv'
 
 # Check root
 if [ ! "$(whoami)" = 'root' ]; then
@@ -79,8 +80,8 @@ if [ ! -e './share' ]; then
 		echo 'Architecture: all' >> '../share/fake-systemd/Packages'
 		echo 'Maintainer: MissKittin@github' >> '../share/fake-systemd/Packages'
 		echo 'Installed-Size: 0' >> '../share/fake-systemd/Packages'
-		echo 'Filename: ./libpam-systemd.deb' >> '../share/fake-systemd/Packages'
-		echo 'Size: 716' >> '../share/fake-systemd/Packages'
+		echo "Filename: ./${i}.deb" >> '../share/fake-systemd/Packages'
+		echo 'Size: '"$(stat -c '%s' ../share/fake-systemd/${i}.deb)" >> '../share/fake-systemd/Packages'
 		echo 'MD5sum: '"$(print_S1 $(md5sum ../share/fake-systemd/${i}.deb))" >> '../share/fake-systemd/Packages'
 		echo 'SHA1: '"$(print_S1 $(sha1sum ../share/fake-systemd/${i}.deb))" >> '../share/fake-systemd/Packages'
 		echo 'SHA256: '"$(print_S1 $(sha256sum ../share/fake-systemd/${i}.deb))" >> '../share/fake-systemd/Packages'

@@ -7,6 +7,6 @@ Depends:
 Section: admin
 Priority: standard
 Description: Debian systemd crack
- You installed the fake-libpam-systemd package.
+ You installed the fake-systemd package.
  To remove this, run uninstall.sh from package directory
  and reinstall the package from the official repository.

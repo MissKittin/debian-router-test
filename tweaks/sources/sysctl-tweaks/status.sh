@@ -3,8 +3,8 @@ installed=false
 broken=false
 echo ''
 
-echo -n "/usr/local/etc/rc.local.d/S01_hardening.rc"
-	if [ -L ${i} ] && [ -e ${i} ]; then
+echo -n '/usr/local/etc/rc.local.d/S01_hardening.rc'
+	if [ -L '/usr/local/etc/rc.local.d/S01_hardening.rc' ] && [ -e '/usr/local/etc/rc.local.d/S01_hardening.rc' ]; then
 		echo ' [ OK ]'
 	else
 		echo ' [Broken]'

@@ -6421,6 +6421,9 @@ mkdir ./.source/rootfs/lib
 mkdir ./.source/rootfs/home
 mkdir ./.source/rootfs/dev
 mkdir ./.source/rootfs/sbin
+mkdir ./.source/rootfs/etc/modules-load.d
+
+echo -n '' > ./.source/rootfs/etc/modules-load.d/99_modules-load.rc
 
 ln -s ../../bin/env ./.source/rootfs-bin.img-1.30.0/usr/bin/env
 ln -s mnt ./.source/rootfs/media

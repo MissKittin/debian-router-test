@@ -2,42 +2,44 @@
 
 # udhcpc script edited by Tim Riker <Tim@Rikers.org>
 # modifications by Mattias Schlenker <ms@mattiasschlenker.de>
+# modified for BackupOS my MissKittin@github
 
-PATH=/bin:/sbin:/usr/bin:/usr/sbin
-export PATH
+#PATH='/bin:/sbin:/usr/bin:/usr/sbin'
+#export PATH
 
-[ -z "$1" ] && echo "Error: should be called from udhcpc" && exit 1
+[ -z "${1}" ] && echo 'Error: should be called from udhcpc' && exit 1
 
-RESOLV_CONF="/etc/resolv.conf"
-[ -n "$broadcast" ] && BROADCAST="broadcast $broadcast"
-[ -n "$subnet" ] && NETMASK="netmask $subnet"
+. '/lib/init/init-log'
 
-case "$1" in
-        deconfig)
-                ifconfig $interface 0.0.0.0
-                ;;
+[ -n "${broadcast}" ] && BROADCAST="broadcast ${broadcast}"
+[ -n "${subnet}" ] && NETMASK="netmask ${subnet}"
 
-        renew|bound)
-                ifconfig $interface $ip $BROADCAST $NETMASK
+case "${1}" in
+	'deconfig')
+		init_log "udhcpc: deconfiguring ${interface}"
+		ifconfig $interface 0.0.0.0
+	;;
+	'renew'|'bound')
+		init_log "udhcpc: configuring ${interface} ${ip} via ${router} dns ${dns}"
 
-                if [ -n "$router" ] ; then
-                        echo "deleting routers"
-                        while route del default gw 0.0.0.0 dev $interface ; do
-                                :
-                        done
+		ifconfig "${interface}" "${ip}" ${BROADCAST} ${NETMASK}
 
-                        for i in $router ; do
-                                route add default gw $i dev $interface
-                        done
-                fi
+		if [ -n "${router}" ]; then
+			while route del default gw 0.0.0.0 dev "${interface}"; do
+				:
+			done
 
-                echo -n > $RESOLV_CONF
-                [ -n "$domain" ] && echo search $domain >> $RESOLV_CONF
-                for i in $dns ; do
-                        echo adding dns $i
-                        echo nameserver $i >> $RESOLV_CONF
-                done
-                ;;
+			for i in ${router}; do
+				route add default gw "${i}" dev "${interface}"
+			done
+		fi
+
+		echo -n '' > '/etc/resolv.conf'
+		[ -n "${domain}" ] && echo "search ${domain}" >> '/etc/resolv.conf'
+		for i in ${dns}; do
+			echo "nameserver ${i}" >> '/etc/resolv.conf'
+		done
+	;;
 esac
 
 exit 0

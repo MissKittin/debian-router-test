@@ -1,0 +1,2 @@
+https://github.com/polaco1782/linux-static-binaries/raw/master/x86-i686/fsck.fat
+https://github.com/polaco1782/linux-static-binaries/raw/master/x86-i686/mkfs.fat

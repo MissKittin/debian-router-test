@@ -1,0 +1,30 @@
+if [ ! -e '/var/run/.debug.nomodprobe' ]; then
+	init_log 'modprobe: started'
+
+	#auto_detect()
+	#{
+	#	auto_detect_log() { init_log "modprobe: ${@}"; }
+	#	# this function is from android-x86 project
+	#	# https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/android-x86/android-x86-2.2-generic.iso
+	#	echo 'dev2mod() { while read dev; do case ${dev} in' > '/tmp/dev2mod.rc'
+	#		sort -r "/lib/modules/$(uname -r)/modules.alias" | \
+	#			sed -n 's/^alias  *\([^ ]*\)  *\(.*\)/\1)auto_detect_log "\2"; modprobe \2;;/p' >> '/tmp/dev2mod.rc'	
+	#	echo 'esac; done; }' >> '/tmp/dev2mod.rc'
+	#
+	#	source '/tmp/dev2mod.rc'; [ ! -e '/var/run/.debug_noroofsclean' ] && rm '/tmp/dev2mod.rc'
+	#	cat /sys/bus/*/devices/*/modalias | 'dev2mod' > '/dev/null' 2>&1
+	#	unset dev2mod
+	#	unset auto_detect_log
+	#}
+	auto_detect() { find '/sys/' -name 'modalias' -print0 | xargs -0 sort -u -z | xargs -0 modprobe -abq > '/dev/null' 2>&1; } # this function is from alpine linux
+
+	if [ -e "/lib/modules/$(uname -r)" ]; then
+		log_task 'Probing modules'
+		auto_detect
+	fi
+
+	unset auto_detect
+	init_log 'modprobe: finished'
+else
+	init_log 'modprobe: /var/run/.debug.nomodprobe exists - not loading'
+fi

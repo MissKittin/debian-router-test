@@ -1,0 +1,91 @@
+# Define menu variables
+menu_items=3
+menu_options=('Dump disk to image | Clone disk | Flash image' 'Make tarball archive' 'Back')
+
+# Create splash
+menu_splash_banner="$menu_splash_banner"' -> Backup tools'
+
+# Render menu
+menu $((menu_items-1))
+
+clear
+case ${menu_options[$menu_selected_option]} in
+	'Dump disk to image | Clone disk | Flash image')
+		echo -n 'Input file: '
+		read input
+
+		echo -n 'Output file: '
+		read output
+
+		if [ ! "${input}" = '' ] && [ ! "${output}" = '' ]; then
+			if [ -e "${output}" ]; then
+				echo ''
+				echo "Error! ${output} already exist. Press <enter>"
+				read enter
+			else
+				if [ -b "${output}" ]; then
+					echo -n 'Type: Yes, I am sure. '
+					read answer
+					[ "${answer}" = 'Yes, I am sure.' ] && answer='y' || answer='n'
+				else
+					echo -n 'Are you sure? (y/[n]) '
+					read answer
+				fi
+
+				if [ "${answer}" = 'y' ]; then
+					echo 'Copying...'
+					dd if=${input} of=${output} conv=sync,noerror bs=64K
+					echo -n 'End! Press <enter>'
+				else
+					echo -n 'Aborted! Press <enter>'
+				fi
+				read enter
+			fi
+		fi
+	;;
+	'Make tarball archive')
+		echo -n 'Source path: '
+		read source
+
+		echo -n 'Output file: '
+		read output
+
+		echo -n "cd to the ${source}? (y/[n]) "
+		read chdir
+		[ "${chdir}" = 'y' ] && echo ' Warning: hidden files will not be archived'
+
+		echo -n 'Gzip? ([y]/n) '
+		read compress
+
+		echo -n 'Additional options: '
+		read options
+
+		if [ ! "${source}" = '' ] && [ ! "${output}" = '' ]; then
+			echo -n 'Are you sure? (y/[n]) '
+			read answer
+
+			if [ "${answer}" = 'y' ]; then
+				echo 'Copying...'; echo ''
+				if [ "${compress}" = 'n' ]; then
+					if [ "${chdir}" = 'y' ]; then
+						cd "${source}"
+						tar cvf "${output}" ${options} *
+					else
+						tar cvf "${output}" ${options} "${source}"
+					fi
+				else
+					if [ "${chdir}" = 'y' ]; then
+						cd "${source}"
+						tar cvf - ${options} * | gzip -9 > "${output}"
+					else
+						tar cvf - ${options} "${source}" | gzip -9 > "${output}"
+					fi
+				fi
+				echo ''; echo -n 'End! Press <enter>'
+			else
+				echo -n 'Aborted! Press <enter>'
+			fi
+			read enter
+		fi
+	;;
+esac

@@ -1,0 +1,6 @@
+clear
+
+load-drivers
+
+echo -n 'Press <enter>'
+read enter

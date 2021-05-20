@@ -1,0 +1,50 @@
+#!/bin/sh
+
+do_load_modules()
+{
+	if ! lsmod | grep '^nfs' > '/dev/null' 2>&1; then
+		echo 'Loading kernel modules...'
+		for module in sunrcp lockd nfs_acl nfs nfsv2 nfsv3 nfsv4; do
+			modprobe "${module}" > '/dev/null' 2>&1
+		done
+	fi
+}
+do_mount()
+{
+	mount -t 'nfs' ${1} ${2} ${3} ${4}
+	return "${?}"
+}
+
+if [ ! "${1}" = '' ]; then
+	do_load_modules > '/dev/null' 2>&1
+	do_mount "${1}" "${2}" "${3}" "${4}"
+	exit "${?}"
+fi
+
+echo
+echo ' NFS share mount'
+echo
+
+echo -n 'Address: '; read address
+echo -n 'Share name: '; read share; mount_dir="$(echo -n "${share}" | tr '/' '_')"
+
+echo ''
+if [ ! "${address}" = '' ] && [ ! "${share}" = '' ]; then
+	[ -e "/mnt/${address}-${mount_dir}" ] || mkdir "/mnt/${address}-${mount_dir}"
+
+	do_load_modules
+
+	echo 'Mounting...'
+	if do_mount -o 'rw,nodev,nosuid,noexec,noatime,nodiratime,proto=tcp,nolock' "${address}:${share}" "/mnt/${address}-${mount_dir}"; then
+		echo "Share mounted on /mnt/${address}-${mount_dir}"
+	else
+		echo 'Mount failed!'
+		rmdir "/mnt/${address}-${mount_dir}" > '/dev/null' 2>&1
+		exit 1
+	fi
+else
+	echo 'No address/share name specified'
+	exit 1
+fi
+
+exit 0

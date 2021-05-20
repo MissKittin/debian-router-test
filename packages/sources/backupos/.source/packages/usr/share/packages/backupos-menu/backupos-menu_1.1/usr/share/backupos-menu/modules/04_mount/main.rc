@@ -1,0 +1,84 @@
+# Define menu variables
+menu_items=7
+menu_options=('Mount EXT4 partition' 'Mount FAT partition' 'Mount NFS share' 'Mount SMB/CIFS share' 'Mount CD-ROM' 'Attach/detach loop device' 'Back')
+
+# Create splash
+menu_splash_banner="$menu_splash_banner"' -> Mount filesystems'
+
+# Render menu
+menu $((menu_items-1))
+
+list_disks()
+{
+	if ls /dev/sd* > '/dev/null' 2>&1; then
+		echo -n 'Available devices: '
+		for i in /dev/sd[a-z][0-9]; do
+			[ "${i}" = '/dev/sd[a-z][0-9]' ] && break
+			echo -n "${i} "
+		done
+		echo ''; echo ''
+	fi
+}
+press_enter()
+{
+	echo ''
+	echo -n 'Press <enter>'
+	read enter
+}
+
+clear
+case ${menu_options[$menu_selected_option]} in
+	'Mount EXT4 partition')
+		list_disks
+		mount.ext4
+		press_enter
+	;;
+	'Mount FAT partition')
+		list_disks
+		mount.vfat
+		press_enter
+	;;
+	'Mount NFS share')
+		mount.nfs
+		press_enter
+	;;
+	'Mount SMB/CIFS share')
+		mount.cifs
+		press_enter
+	;;
+	'Mount CD-ROM')
+		mount.cdrom.iso9660
+		press_enter
+	;;
+	'Attach/detach loop device')
+		clear
+
+		echo 'Attached loop devices:'; losetup -a; echo ''
+
+		echo -n ' Loop image/device to detach: '
+		read image_device
+
+		if [ -b "${image_device}" ]; then
+			losetup -d "${image_device}"
+		elif [ "${image_device}" = '' ]; then
+			echo 'Error! No image or device specified'
+		elif [ ! -e "${image_device}" ]; then
+			echo 'Error! Image not exist'
+		else
+			echo -n ' Attach as read-only? ([y]/n) '
+			read read_only
+			[ ! "${read_only}" = 'n' ] && read_only='-r' || read_only=''
+
+			echo -n ' Offset: '
+			read offset
+			[ ! "${offset}" = '' ] && offset="-o ${offset}" || offset=''
+
+			lsmod | grep '^loop' > '/dev/null' 2>&1 || modprobe loop
+			if losetup ${read_only} ${offset} -f "${image_device}"; then
+				echo ''; echo 'Attached loop devices:'; losetup -a
+			fi
+		fi
+
+		press_enter
+	;;
+esac

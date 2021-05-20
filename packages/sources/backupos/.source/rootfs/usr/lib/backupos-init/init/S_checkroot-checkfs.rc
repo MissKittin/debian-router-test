@@ -1,0 +1,114 @@
+# This script is for normal installation only
+init_log 'checkroot-checkfs: starting'
+
+print_S1() { echo -n "${1}"; }
+print_S2() { echo -n "${2}"; }
+print_S4() { echo -n "${4}"; }
+ROOTOPTS="$(
+	if [ -e '/etc/fstab' ]; then
+		cat '/etc/fstab' | while read fstab_line; do
+			if [ "$(print_S2 ${fstab_line})" = '/' ]; then
+				print_S4 ${fstab_line}
+				break
+			fi
+		done
+	fi
+)"
+remountroot()
+{
+	if [ ! "${1}" = '' ]; then
+		init_log 'checkroot-checkfs: remounting root'
+
+		local rootopts=''
+		local rootopt
+		local remount_rw='true'
+
+		for rootopt in $(echo -n "${1}" | tr ',' ' '); do
+			case "${rootopt}" in
+				'auto') :; ;;
+				'ro'|'rw') remount_rw='false'; rootopts="${rootopts},${rootopt}"; ;;
+				*) rootopts="${rootopts},${rootopt}"; ;;
+			esac
+		done
+
+		if "${remount_rw}"; then
+			mount -o "remount,rw${rootopts}" /
+		else
+			mount -o "remount${rootopts}" /
+		fi
+	fi
+}
+
+if [ ! -e '/fastboot' ] && [ ! -e '/var/run/.fastboot' ]; then
+	log_task 'Checking file systems'
+
+	ROOTDEV="$(
+		if [ -e '/etc/fstab' ]; then
+			cat '/etc/fstab' | while read fstab_line; do
+				if [ "$(print_S2 ${fstab_line})" = '/' ]; then
+					print_S1 ${fstab_line}
+					break
+				fi
+			done
+		fi
+	)"
+	checkroot()
+	{
+		if [ ! "${1}" = '' ]; then
+			init_log "checkroot-checkfs: checking root ${1}"
+
+			case "${TERM}" in
+				'linux'|xterm*|rxvt*|konsole*) local spinner='-C 0'; ;;
+				*) local spinner=''; ;;
+			esac
+
+			fsck ${spinner} ${2} ${1}
+			return "${?}"
+		fi
+	}
+	checkfs()
+	{
+		if [ -f '/etc/fstab' ]; then
+			init_log 'checkroot-checkfs: checking non-root filesystems'
+
+			case "${TERM}" in
+				'linux'|xterm*|rxvt*|konsole*) local spinner='-C 0'; ;;
+				*) local spinner=''; ;;
+			esac
+
+			fsck -A -R -T ${spinner} ${1} /
+		fi
+	}
+
+	if [ -e '/forcefsck' ] || [ -e '/var/run/.forcefsck' ]; then
+		init_log 'checkroot-checkfs: force option enabled'
+		checkroot "${ROOTDEV}" '-f' && remountroot "${ROOTOPTS}"
+		checkfs '-f'
+
+		[ -e '/forcefsck' ] && rm '/forcefsck'
+		[ -e '/var/run/.forcefsck' ] && rm '/var/run/.forcefsck'
+	else
+		checkroot "${ROOTDEV}" && remountroot "${ROOTOPTS}"
+		checkfs
+	fi
+
+	unset ROOTDEV
+	unset checkroot
+	unset checkfs
+else
+	#log_task 'Fast boot enabled - not checking file systems'
+	init_log 'checkroot-checkfs: fast boot enabled'
+
+	remountroot "${ROOTOPTS}"
+
+	[ -e '/fastboot' ] && rm '/fastboot'
+	[ -e '/var/run/.fastboot' ] && rm '/var/run/.fastboot'
+fi
+
+unset print_S1
+unset print_S2
+unset print_S4
+unset ROOTOPTS
+unset remountroot
+
+init_log 'checkroot-checkfs: finished'

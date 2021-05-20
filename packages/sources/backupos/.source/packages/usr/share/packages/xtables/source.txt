@@ -1,0 +1,1 @@
+https://github.com/static-linux/static-binaries-i386/blob/master/iptables-1.4.21.tar.gz

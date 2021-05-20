@@ -1,0 +1,6 @@
+# This script must be executed last
+log_task 'Will now halt'
+case "${1}" in
+	'halt'|'poweroff') poweroff -f; ;;
+	'reboot') reboot -f; ;;
+esac

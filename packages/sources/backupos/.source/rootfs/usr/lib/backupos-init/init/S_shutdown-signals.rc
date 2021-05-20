@@ -1,0 +1,3 @@
+trap 'exec "${0}" halt' USR1
+trap 'exec "${0}" poweroff' USR2
+trap 'exec "${0}" reboot' TERM

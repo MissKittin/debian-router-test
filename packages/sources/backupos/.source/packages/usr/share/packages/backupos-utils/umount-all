@@ -1,0 +1,46 @@
+#!/bin/sh
+
+print_S2() { echo -n "${2}"; }
+print_S4() { echo -n "${4}"; }
+
+cat '/proc/mounts' | while read mountpoint; do
+	mountpoint="$(print_S2 ${mountpoint})"
+	case "${mountpoint}" in
+		'/' | '/dev' | '/dev/pts' | '/run' | '/run/lock' | '/run/shm' | '/proc' | '/sys' | '/sys/fs/pstore' | '/sys/kernel/config') :; ;;
+		*)
+			reserved=''
+			reserved="$(
+				cat '/etc/fstab' 2>'/dev/null' | while read fstab; do
+					if [ "$(print_S2 ${fstab})" = "${mountpoint}" ]; then
+						if print_S4 ${fstab} | grep 'auto' > '/dev/null' 2>&1; then
+							echo -n 'true'
+							break
+						fi
+					fi
+				done
+			)"
+
+			if [ ! "${reserved}" = 'true' ]; then
+				echo "Unmounting ${mountpoint}"
+				try_ind='1'
+				while :; do
+					if umount "${mountpoint}"; then
+						rmdir "${mountpoint}" > '/dev/null' 2>&1
+						break
+					else
+						echo " Error occurred during umount (${try_ind}/3)"
+					fi
+
+					if [ "${try_ind}" = '3' ]; then
+						echo 'Unmounting failed!'
+						break
+					else
+						try_ind="$((try_ind + 1))"
+					fi
+				done
+			fi
+		;;
+	esac
+done
+
+exit 0

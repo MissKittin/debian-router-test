@@ -1,0 +1,14 @@
+case "${1}" in
+	'halt'|'reboot'|'poweroff')
+		init_log 'urandom: saving random seed'
+		[ ! -e '/var/lib/urandom' ] && mkdir -p '/var/lib/urandom'
+		dd 'if=/dev/urandom' 'of=/var/lib/urandom/random-seed' 'bs=512' 'count=1' > '/dev/null' 2>&1
+	;;
+	*)
+		init_log 'urandom: initializing random number generator'
+		(
+			date '+%s.%N'
+			[ -f '/var/lib/urandom/random-seed' ] && cat '/var/lib/urandom/random-seed'
+		) > '/dev/urandom'
+	;;
+esac

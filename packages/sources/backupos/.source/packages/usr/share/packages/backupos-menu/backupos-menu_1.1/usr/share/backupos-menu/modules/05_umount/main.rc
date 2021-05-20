@@ -1,0 +1,46 @@
+clear
+
+echo -n 'Unmount all filesystems? ([y]/n) '
+read umount_all
+
+if [ "${umount_all}" = 'n' ]; then
+	echo 'Mounted filesystems:'
+	mount
+	echo ''
+
+	echo -n 'Mount point: '
+	read umount
+
+	if [ ! "${umount}" = '' ]; then
+		if mount | grep "${umount}" > '/dev/null' 2>&1; then
+			try_ind='1'
+			while :; do
+				if umount "${umount}"; then
+					rmdir "${umount}" > '/dev/null' 2>&1
+					echo 'Unmounted!'
+					break
+				else
+					echo " Error occurred during umount (${try_ind}/3)"
+				fi
+
+				if [ "${try_ind}" = '3' ]; then
+					echo 'Unmounting failed!'
+					break
+				else
+					try_ind="$((try_ind + 1))"
+				fi
+			done
+		else
+			echo "${umount} is not a mountpoint."
+		fi
+	else
+		echo 'No mount point specified'
+	fi
+else
+	echo ''
+	umount-all
+fi
+
+echo ''
+echo -n 'Press <enter>'
+read enter

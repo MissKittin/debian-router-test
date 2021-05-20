@@ -1,0 +1,10 @@
+if [ -e "/lib/modules/$(uname -r)" ] && [ -d '/etc/modules-load.d' ]; then
+	init_log 'modules-load: started'
+	for module in $(cat /etc/modules-load.d/*.rc); do
+		[ "${module}" = '/etc/modules-load.d/*.rc' ] && break
+		init_log "modprobe: modules-load.d: ${module}"
+		modprobe -q ${module} > '/dev/null' 2>&1 || init_log "modprobe: modules-load.d: ${module} load failed"
+	done
+	unset module
+	init_log 'modules-load: finished'
+fi

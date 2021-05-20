@@ -1,0 +1,79 @@
+# Menu functions
+#  required variables:
+#  splash_banner [string]
+#  menu_options [array][string]
+
+### auxiliary functions
+# Render splash
+menu_splash()
+{
+	echo -e "$menu_splash_banner"
+	echo
+}
+
+# Print menu item with/without arrow
+menu_print_option()
+{
+	[ "$menu_option_id" = "$menu_selected_option" ] && \
+		echo " -> $@" || \
+		echo "    $@"
+}
+
+menu_move_select_indicator()
+{
+	case $3 in
+		'up')
+			[ "$1" = '0' ] && \
+				echo $2 || \
+				echo $(($1-1))
+		;;
+		'down')
+			[ "$1" = "$2" ] && \
+				echo 0 || \
+				echo $(($1+1))
+		;;
+	esac
+}
+
+# Read arrows/enter key
+menu_get_key()
+{
+	read -r -sn1 key 2>/dev/null >&2
+	case $key in
+		'A')
+			echo up
+		;;
+		'B')
+			echo down
+		;;
+		'')
+			echo enter
+		;;
+	esac
+}
+### ### ###
+
+### Main function
+menu() # usage: menu how_many_options-1
+{
+	[ "$2" = 'remember_option' ] || menu_selected_option=0
+	while true; do
+		clear
+		menu_splash
+		for menu_option_id in $(seq 0 $1); do
+			menu_print_option ${menu_options[$menu_option_id]}
+		done
+		case $(menu_get_key) in
+			'enter')
+				break
+			;;
+			'up')
+				menu_selected_option=$(menu_move_select_indicator $menu_selected_option $1 up)
+			;;
+			'down')
+				menu_selected_option=$(menu_move_select_indicator $menu_selected_option $1 down)
+			;;
+		esac
+	done
+}
+### ### ###

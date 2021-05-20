@@ -1,3 +1,0 @@
-# Enable mdev
-echo -e " ${BLUE}[${SEABLUE}::${BLUE}] ${GREEN}Probing devices${NOCOLOR}"
-mdev -s

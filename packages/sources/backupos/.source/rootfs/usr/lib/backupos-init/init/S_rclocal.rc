@@ -1,0 +1,5 @@
+if [ -x '/etc/rc.local' ]; then
+	init_log 'rclocal: starting'
+	'/etc/rc.local' 'start'
+	init_log 'rclocal: finished'
+fi

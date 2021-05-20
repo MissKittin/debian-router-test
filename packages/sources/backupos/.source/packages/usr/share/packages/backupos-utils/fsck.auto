@@ -1,0 +1,18 @@
+#!/bin/sh
+# https://stackoverflow.com/questions/13565658/right-tool-to-filter-the-uuid-from-the-output-of-blkid-program-using-grep-cut/16277809
+
+for device in ${@}; do :; done
+fstype="$(blkid "${device}" | sed -n 's/.*TYPE=\"\([^\"]*\)\".*/\1/p')"
+
+case "${fstype}" in
+	'ext4'|'ext3'|'ext2') exec e2fsck ${@}; ;;
+	'vfat') exec fsck.fat ${@}; ;;
+	'')
+		echo 'Error: wrong device'
+		exit 1
+	;;
+	*)
+		echo "Error: ${fstype} is not defined in fsck.auto"
+		exit 1
+	''
+esac

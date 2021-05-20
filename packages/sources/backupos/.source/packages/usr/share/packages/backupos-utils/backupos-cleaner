@@ -1,0 +1,41 @@
+#!/bin/sh
+[ -e '/var/run/.debug.noroofsclean' ] && exit 0
+
+if [ ! "${1}" = 'background' ]; then
+	"${0}" 'background' > '/dev/null' 2>&1 &
+	exit 0
+fi
+
+sleep 5
+
+for i in '/bin/init' '/bin/linuxrc' '/bin/run-init' '/bin/runlevel' '/bin/switch-root' '/bin/rpm' '/bin/rpm2cpio' '/etc/firewall.rc' '/etc/group-' '/etc/passwd-' '/etc/shadow-' '/etc/sysctl.conf' '/lib/busybox/setup.sh' '/lib/init/init-console' '/lib/init/mkcache.sh' '/lib/init/queue-setup.sh' '/lib/init/init/K_network.rc' '/lib/init/init/K_urandom.rc' '/etc/modules-load.rc' /etc/modules-load.d/* /etc/rc.d/S* /etc/init/S*_*.rc /lib/init/init/S*_*.rc; do
+	rm "${i}"
+done
+
+for i in '/etc/init' '/etc/modules-load.d' '/etc/rc.d' '/root'; do
+	rmdir "${i}"
+done
+
+[ -f '/etc/modules.conf' ] && [ "$(cat '/etc/modules.conf' | grep -v -e '^$' | grep -v '^#' | wc -l)" = '0' ] && rm '/etc/modules.conf'
+
+sed -i -e '/^[ \t]*#/d' '/lib/init/init.bin'; sed -i '/^$/d' '/lib/init/init.bin'; sed -i -e 's/^[ \t]*//' '/lib/init/init.bin'
+cat '/lib/init/init.bin' > '/lib/init/init.bin.bak'
+echo '#!/bin/sh' > '/lib/init/init.bin'
+cat '/lib/init/init.bin.bak' >> '/lib/init/init.bin'
+rm '/lib/init/init.bin.bak' 
+
+### compress-docs
+	for i in /usr/share/doc/backupos/*.txt; do
+		[ "${i}" = '/usr/share/doc/backupos/*.txt' ] && break
+		gzip -9 "${i}" &
+	done
+	unset i
+	[ -e '/usr/share/doc/backupos/README.TXT' ] && gzip -9 '/usr/share/doc/backupos/README.TXT' &
+###
+
+### package-manager
+	rm '/usr/share/package-manager/package-installer' '/usr/share/packages/check-dependencies.sh'
+	rmdir '/usr/share/package-manager' '/usr/share/packages'
+###
+
+exit 0

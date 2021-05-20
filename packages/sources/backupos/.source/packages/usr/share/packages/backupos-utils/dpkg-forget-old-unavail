@@ -1,0 +1,119 @@
+#!/bin/sh
+
+if ! command -v 'id' > '/dev/null' 2>&1; then
+	echo 'id utility not found'
+	exit 1
+fi
+if [ ! "$(id -u)" = '0' ]; then
+	echo 'Run this as root'
+	exit 1
+fi
+
+if [ "${1}" = '-h' ] || [ "${1}" = '--help' ]; then
+	echo ''
+	echo "${0##*/} [--analyze [--list]] [--no-backup] [--no-ask]"
+	echo ''
+	echo 'Removes all blocks'
+	echo ' with "Status: purge ok not-installed"'
+	echo ' from /var/lib/dpkg/status'
+	echo 'and creates backup of status file'
+	echo ' in /var/lib/dpkg/status.bak'
+	echo ''
+	echo '--analyze   -> find packages only and exit with code'
+	echo ' --list     -> list packages only'
+	echo '--no-backup -> good luck'
+	echo '--no-ask    -> do not ask if are you sure'
+	echo ''
+	exit 0
+fi
+
+print_S2() { echo -n "${2}"; }
+remove_from_list() { local i; for i in "${2}"; do [ ! "${i}" = "${1}" ] && echo "${i} "; done; }
+find_package()
+{
+	local package
+	for package in ${2}; do
+		[ "Package: ${package}" = "${1}" ] && return 0
+	done
+	return 1
+}
+
+for util in 'cat' 'rm'; do
+	if ! command -v "${util}" > '/dev/null' 2>&1; then
+		echo "${util} utility not found"
+		exit 1
+	fi
+done
+unset util
+
+if [ ! -e '/var/lib/dpkg/status' ]; then
+	echo '/var/lib/dpkg/status not exists'
+	exit 1
+fi
+
+if [ ! "${1}" = '--analyze' ] && [ ! "${1}" = '--no-ask' ]; then
+	echo ''; echo -n ' Are you sure? (y/[n]) '; read answer; echo ''
+	[ ! "${answer}" = 'y' ] && exit 0
+fi
+
+[ ! "${1}" = '--analyze' ] && echo 'Scanning database'
+purged_packages=''; purged_packages="$(
+	cat '/var/lib/dpkg/status' | while read db_line; do
+		if [ ! "${db_line}" = '' ]; then
+			package_name="${db_line}"
+			read db_line
+			if [ "${db_line}" = 'Status: purge ok not-installed' ]; then
+				package_name="$(print_S2 ${package_name})"
+
+				[ ! "${2}" = '--list' ] && echo " found purged package ${package_name}" >&2
+				echo -n "${package_name} "
+
+				while read db_line; do
+					[ "${db_line}" = '' ] && break
+				done
+			fi
+		fi
+	done
+)"
+[ ! "${1}" = '--analyze' ] && echo ''
+
+if [ "${purged_packages}" = '' ]; then
+	[ ! "${2}" = '--list' ] && echo 'No purged packages found'
+	[ "${1}" = '--analyze' ] && exit 1
+else
+	[ "${2}" = '--list' ] && echo ${purged_packages}
+	[ "${1}" = '--analyze' ] && exit 0
+
+	if [ -e '/var/lib/dpkg/status.bak' ]; then
+		echo 'Removing old backup /var/lib/dpkg/status.bak'
+		rm '/var/lib/dpkg/status.bak'
+	fi
+	echo 'Creating backup /var/lib/dpkg/status.bak'
+	if ! cat '/var/lib/dpkg/status' > '/var/lib/dpkg/status.bak' 2>/dev/null; then
+		echo ' error creating backup'; echo ''
+		exit 1
+	fi
+	echo ''
+
+	echo '' > '/var/lib/dpkg/status'
+	cat '/var/lib/dpkg/status.bak' | while IFS= read -r db_line; do
+		if find_package "${db_line}" "${purged_packages}"; then
+			echo "Removing package $(print_S2 ${db_line})"
+			purged_packages="$(remove_from_list "$(print_S2 ${db_line})" "${purged_packages}")"
+			while read db_line; do
+				[ "${db_line}" = '' ] && break
+			done
+		else
+			echo "${db_line}" >> '/var/lib/dpkg/status'
+		fi
+	done
+
+	if [ "${1}" '--no-backup' ]; then
+		echo ''
+		echo 'Removing backup /var/lib/dpkg/status.bak'
+		rm '/var/lib/dpkg/status.bak'
+	fi
+fi
+
+echo ''
+exit 0

@@ -1,71 +1,66 @@
 #!/bin/sh
 
-# Import colors
-. /etc/init-colors
+export HOME='/run/.telnetd'
+cd "${HOME}"
 
-# Parse kernel command line
-for i in $(cat /proc/cmdline); do
-	case $i in
-		telnet_password=*)
-			passwd="${i#telnet_password=}"
-		;;
-	esac
-done
+. '/lib/init/init-functions'
 
-# Check if console is locked
-if [ -e /tmp/.telnet-locked ]; then
-	echo -e " ${BLUE}[${BRED}!!${BLUE}] ${BRED}Telnet locked${NOCOLOR}"
-	sleep 1
-	exit 0
+if [ -e "${HOME}/.telnet-logged" ]; then
+	if [ "$(pidof -o %PPID 'telnetd-login' | wc -w)" = '1' ]; then  # not closed properly
+		rm "${HOME}/.telnet-logged"
+	else
+		log_error_msg 'Already logged in'
+		sleep 1
+		exit 1
+	fi
 fi
 
-# Authentication
-if [ ! "$passwd" = '' ]; then
-	echo -n ' Password: '
+for i in $(cat '/proc/cmdline'); do
+	case "${i}" in
+		telnet_password=*) passwd="${i#telnet_password=}" ;;
+	esac
+done
+unset i
+
+if [ ! "${passwd}" = '' ]; then
+	echo ''; echo -n ' Password: '
 	read -s tpasswd
 	echo ''
-	if [ ! "$passwd" = "$tpasswd" ]; then
+	if [ ! "${passwd}" = "${tpasswd}" ]; then
 		echo -e " ${BRED}Wrong password${NOCOLOR}"
 		sleep 1
-		exit 0
+		exit 1
 	fi
 	echo ''
 fi
 unset passwd; unset tpasswd
 unset telnet_password
 
-# Lock console
-touch /tmp/.telnet-locked
+trap '[ ! "$(pidof -o %PPID 'telnetd-login' | wc -w)" -gt "1" ] && rm "${HOME}/.telnet-logged" > "/dev/null" 2>&1' HUP EXIT
+echo -n '' > "${HOME}/.telnet-logged"
 
-# telnet menu extension
-telnet_menu=false
-if [ -e /sbin/telnet-menu ]; then
-	echo -ne " ${BLUE}[${SEABLUE}??${BLUE}] ${GREEN}Menu or console? ([m]/c) ${NOCOLOR}"
+### backupos-menu extension - start
+no_console='false'
+if [ -e '/usr/sbin/backupos-menu' ]; then
+	echo -ne " ${BLUE}[${SEABLUE}??${BLUE}] ${GREEN}Menu or console? ([m]/c)${NOCOLOR} "
 	read answer
 	if [ ! "${answer}" = 'c' ]; then
-		telnet_menu=true
-		env - /sbin/telnet-menu
+		no_console='true'
+		env - '/bin/su' -c '/usr/sbin/backupos-menu'
 	fi
 fi
+### backupos-menu extension - end
 
-# Standard console
-if ! ${telnet_menu}; then
-	# Splash
-	echo -e " ${BLUE}[${SEABLUE}::${BLUE}] ${GREEN}Running shell${NOCOLOR}"
-	echo; echo -e " ${GREEN}Do not close window!${NOCOLOR}"
+if ! "${no_console}"; then
+	echo ''
+	echo -e " ${GREEN}You are logged as ${BLUE}telnetd${GREEN} user. Type ${SEABLUE}su${GREEN} for root${NOCOLOR}"
 	echo -e " ${GREEN}If you want close session, type ${SEABLUE}exit${NOCOLOR}"
-	echo -e " ${GREEN}reboot to main OS, type ${SEABLUE}boot_to_main${NOCOLOR}"
+	echo -e " ${GREEN}reboot to main OS, type ${SEABLUE}reboot-to-main${NOCOLOR}"
 	echo -e " ${GREEN}halt, type ${SEABLUE}halt${NOCOLOR}"
-	if [ -e /usr/bin/mc ]; then
-		echo; echo -e " ${GREEN}Midnight Commander: ${SEABLUE}mc${YELLOW}"
-	fi
+	if [ -e '/usr/bin/mc' ]; then echo ''; echo -e " ${GREEN}Midnight Commander: ${SEABLUE}mc${NOCOLOR}"; fi
+	echo -e "${YELLOW}"
 
-	# Shell
-	env - ENV=/etc/profile /bin/sh
+	env - TELNET='1' HOME="${HOME}" ENV='/etc/profile' '/bin/sh'
 fi
 
-# Release console
-rm /tmp/.telnet-locked
-
-# Close connection
-exit 0
+exit 0 # close connection

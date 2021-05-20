@@ -1,0 +1,7 @@
+trap ":" INT QUIT TSTP
+'/bin/stty' 'onlcr' 0>&1
+
+if [ ! "${1}" = 'init-no-message' ]; then
+	echo 'Starting...'
+	echo ''
+fi

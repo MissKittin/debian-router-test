@@ -1,0 +1,8 @@
+# This script is for rootfs installation only
+init_log 'hosts: generating /etc/hosts'
+
+echo -ne '127.0.0.1\tlocalhost '"${HOSTNAME}"'
+::1\t\tlocalhost ip6-localhost ip6-loopback '"${HOSTNAME}"'
+ff02::1\t\tip6-allnodes
+ff02::2\t\tip6-allrouters
+' >> '/etc/hosts'

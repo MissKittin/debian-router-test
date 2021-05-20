@@ -1,0 +1,2 @@
+Kernel: http://ftp.pl.debian.org/debian/pool/main/l/linux/linux-image-4.19.0-3-686-unsigned_4.19.20-1_i386.deb
+ Note: this package has been removed from the repository

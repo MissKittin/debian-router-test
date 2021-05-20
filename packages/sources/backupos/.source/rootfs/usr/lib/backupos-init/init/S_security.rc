@@ -1,0 +1,4 @@
+log_task 'Applying security settings'
+init_log 'securuty: starting'
+sysctl -p > '/dev/null' 2>&1
+chmod 400 '/proc/kallsyms' > '/dev/null' 2>&1

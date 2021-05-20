@@ -1,0 +1,103 @@
+# Define menu variables
+menu_items=5
+menu_options=('cfdisk partition tool' 'Run file system check' 'Create EXT filesystem' 'Create FAT filesystem' 'Back')
+
+# Create splash
+menu_splash_banner="$menu_splash_banner"' -> Partition tools'
+
+# Render menu
+menu $((menu_items-1))
+
+list_disks()
+{
+	if ls /dev/sd* > '/dev/null' 2>&1; then
+		echo -n 'Available devices: '
+		for i in /dev/sd[a-z][0-9]; do
+			[ "${i}" = '/dev/sd[a-z][0-9]' ] && break
+			echo -n "${i} "
+		done
+		echo ''; echo ''
+	fi
+}
+press_enter()
+{
+	echo ''
+	echo -n 'Press <enter>'
+	read enter
+}
+
+case ${menu_options[$menu_selected_option]} in
+	'cfdisk partition tool')
+		echo ''
+		list_disks
+
+		echo -n ' Hard disk device: '
+		read hdd_device
+		if [ "${hdd_device}" = '' ]; then
+			echo 'No hard disk device specified'
+			press_enter
+		else
+			cfdisk "${hdd_device}" || press_enter
+		fi
+	;;
+	'Run file system check')
+		clear
+		list_disks
+
+		echo -n ' Partition device: '
+		read part_device
+		if [ "${part_device}" = '' ]; then
+			echo ''; echo 'No partition device specified'
+		else
+			echo -n ' Custom options: '
+			read fsck_options
+			echo ''
+			fsck ${fsck_options} "${part_device}"
+		fi
+
+		press_enter
+	;;
+	'Create EXT filesystem')
+		clear
+		list_disks
+
+		echo -n ' Partition device: '
+		read part_device
+		echo -n ' EXT version (2/3/[4]): '
+		read ext_version
+		echo -n ' Custom options: '
+		read mkfs_options
+		echo ''
+
+		if [ "${part_device}" = '' ]; then
+			echo 'No partition disk device specified'
+		else
+			[ "${ext_version}" = '' ] && ext_version='4'
+			if [ "${ext_version}" = '2' ] || [ "${ext_version}" = '3' ] || [ "${ext_version}" = '4' ]; then
+				"mkfs.ext${ext_version}" ${mkfs_options} "${part_device}"
+			else
+				echo 'Wrong EXT version specified'
+			fi
+		fi
+
+		press_enter
+	;;
+	'Create FAT filesystem')
+		clear
+		list_disks
+
+		echo -n ' Partition device: '
+		read part_device
+		echo -n ' Custom options: '
+		read mkfs_options
+		echo ''
+
+		if [ "${part_device}" = '' ]; then
+			echo 'No partition disk device specified'
+		else
+			mkfs.vfat ${mkfs_options} "${part_device}"
+		fi
+
+		press_enter
+	;;
+esac

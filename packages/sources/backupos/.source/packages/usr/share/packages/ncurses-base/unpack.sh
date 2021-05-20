@@ -1,8 +1,13 @@
 #!/bin/sh
-pwd=$(pwd)
+pwd="$(pwd)"
+
 cd /
-tar xf ${pwd}/ncurses-base_6.1+20181013-2_all.tar
-rm ${pwd}/ncurses-base_6.1+20181013-2_all.tar
-rm ${pwd}/*.txt
-rm ${pwd}/unpack.sh
+tar xf "${pwd}/ncurses-base.tar"
+ln -s '/lib/terminfo' '/usr/share/terminfo' &
+
+if [ ! -e '/var/run/.debug.noroofsclean' ]; then
+	rm ${pwd}/ncurses-base* ${pwd}/*.txt "${pwd}/unpack.sh"
+	rmdir "${pwd}"
+fi
+
 exit 0

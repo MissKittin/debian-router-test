@@ -1,0 +1,9 @@
+backupos-utils
+bash
+cfdisk
+ddrescue
+dosfs-tools
+e2fs-tools
+mc
+testdisk
+xtables

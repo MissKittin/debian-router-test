@@ -1,7 +1,0 @@
-# Modprobe modules
-if [ -e "/lib/modules/$(uname -r)" ]; then
-	echo -e " ${BLUE}[${SEABLUE}::${BLUE}] ${GREEN}Probing modules${NOCOLOR}"
-	auto_detect
-	modprobe sd_mod > /dev/null 2>&1 # This must be
-	rm /tmp/dev2mod
-fi

@@ -1,0 +1,8 @@
+# This script is for normal installation only
+if [ -e '/var/run/.debug.emergency' ]; then
+	init_log 'emergency-console: starting'
+	echo ''
+	setsid cttyhack sulogin
+	echo ''
+	init_log 'emergency-console: finished'
+fi

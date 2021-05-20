@@ -1,0 +1,9 @@
+# General settings
+$iptables -P INPUT DROP
+$iptables -P FORWARD DROP
+$iptables -P OUTPUT ACCEPT
+$ip6tables -P INPUT DROP
+$ip6tables -P FORWARD DROP
+$ip6tables -P OUTPUT ACCEPT
+$iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+$ip6tables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT

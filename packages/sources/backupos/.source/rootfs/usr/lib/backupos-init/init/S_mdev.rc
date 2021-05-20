@@ -1,0 +1,27 @@
+if [ -e '/dev/mdev.log' ]; then
+	init_log 'mdev: initializing (phase 2)'
+	log_task 'Probing devices'
+	mdev -s
+	init_log 'mdev: finished (phase 2)'
+else
+	init_log 'mdev: initializing (phase 1)'
+	log_task 'with-args' 'Initialising'; echo -n ' dev'; log_task 'normalize-color'
+		#echo -n '' > '/dev/mdev.seq'
+		echo -n '' > '/dev/mdev.log'; chmod '640' '/dev/mdev.log'
+		mdev -s
+
+	if [ -e '/proc/sys/kernel/hotplug' ]; then
+		init_log 'mdev: adding to /proc/sys/kernel/hotplug'
+
+		if [ -x '/bin/mdev' ]; then mdev_path='/bin/mdev'
+		elif [ -x '/sbin/mdev' ]; then mdev_path='/sbin/mdev'
+		elif [ -x '/usr/bin/mdev' ]; then mdev_path='/usr/bin/mdev'
+		elif [ -x '/usr/sbin/mdev' ]; then mdev_path='/usr/sbin/mdev'
+		elif [ -x '/usr/local/bin/mdev' ]; then mdev_path='/usr/local/bin/mdev'
+		elif [ -x '/usr/local/sbin/mdev' ]; then mdev_path='/usr/local/sbin/mdev'; fi
+
+		echo "${mdev_path}" > '/proc/sys/kernel/hotplug'
+		unset mdev_path
+	fi
+	init_log 'mdev: initialized (phase 1)'
+fi

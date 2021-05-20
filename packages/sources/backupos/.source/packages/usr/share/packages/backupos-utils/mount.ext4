@@ -1,0 +1,44 @@
+#!/bin/sh
+
+do_load_modules()
+{
+	if ! lsmod | grep '^ext4' > '/dev/null' 2>&1; then
+		for module in ext4 crc32c; do
+			modprobe "${module}" > '/dev/null' 2>&1
+		done
+	fi
+}
+do_mount()
+{
+	mount -t 'ext4' -o 'rw,nodev,nosuid,noexec,noatime,nodiratime,async' ${1} ${2} ${3} ${4}
+	return "${?}"
+}
+
+if [ ! "${1}" = '' ]; then
+	do_load_modules > '/dev/null' 2>&1
+	do_mount "${1}" "${2}" "${3}" "${4}"
+	exit "${?}"
+fi
+
+echo -n 'Device to mount: '
+read device
+
+echo ''
+if [ ! "${device}" = '' ]; then
+	[ -e "/mnt/${device##*/}" ] || mkdir "/mnt/${device##*/}"
+
+	do_load_modules
+
+	if do_mount "${device}" "/mnt/${device##*/}"; then
+		echo "Mounted in /mnt/${device##*/}"
+	else
+		echo 'Mount failed!'
+		rmdir "/mnt/${device##*/}" > '/dev/null' 2>&1
+		exit 1
+	fi
+else
+	echo 'No device specified'
+	exit 1
+fi
+
+exit 0

@@ -1,17 +1,22 @@
 #!/bin/sh
-pwd=$(pwd)
+pwd="$(pwd)"
 
 cd /
-tar xf ${pwd}/mc-4.8.0-pre2-git30-04-2011.tar
-rm ${pwd}/mc-4.8.0-pre2-git30-04-2011.tar
-rm ${pwd}/*.txt
+tar xf "${pwd}/mc-4.8.0-pre2-git30-04-2011.tar"
 
-mkdir /opt/ncurses; mkdir /opt/ncurses/share
-ln -s /lib/terminfo /opt/ncurses/share/terminfo
-ln -s /opt/mc-4.8.0-pre2-git30-04-2011/bin/mc /usr/bin/mc
-ln -s /opt/mc-4.8.0-pre2-git30-04-2011/bin/mcdiff /usr/bin/mcdiff
-ln -s /opt/mc-4.8.0-pre2-git30-04-2011/bin/mcedit /usr/bin/mcedit
-ln -s /opt/mc-4.8.0-pre2-git30-04-2011/bin/mcview /usr/bin/mcview
+for i in 'mc' 'mcdiff' 'mcedit' 'mcview'; do
+	ln -s "/opt/mc-4.8.0-pre2-git30-04-2011/bin/${i}" "/usr/bin/${i}" &
+done
 
-rm ${pwd}/unpack.sh
+# ncurses patch
+mkdir -p '/opt/ncurses/share'; ln -s '/usr/share/terminfo' '/opt/ncurses/share/terminfo' &
+
+if [ ! -e '/var/run/.debug.noroofsclean' ]; then
+	mv "${pwd}/minimize-mc.sh" '/tmp/minimize-mc.sh'
+	'/tmp/minimize-mc.sh' > '/dev/null' 2>&1 &
+
+	rm "${pwd}/mc-4.8.0-pre2-git30-04-2011.tar" "${pwd}/dependencies.txt" "${pwd}/source.txt" "${pwd}/unpack.sh"
+	rmdir "${pwd}"
+fi
+
 exit 0

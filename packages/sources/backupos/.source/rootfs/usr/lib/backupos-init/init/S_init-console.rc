@@ -1,0 +1,6 @@
+# This script must be executed last
+init_log "${HOSTNAME} has been loaded"
+logger -p syslog.info -t init "${HOSTNAME} has been loaded" > '/dev/null' 2>&1 &
+echo -n '' > '/var/run/.coldboot.done'
+
+. '/lib/init/init-console'

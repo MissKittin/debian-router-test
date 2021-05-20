@@ -1,0 +1,109 @@
+# Define menu variables
+menu_items=5
+menu_options=('Clone disk with bad sectors' 'TestDisk' 'PhotoRec' 'Erase disk | Securely delete file' 'Back')
+
+# Create splash
+menu_splash_banner="$menu_splash_banner"' -> Recovery tools'
+
+# Render menu
+menu $((menu_items-1))
+
+case ${menu_options[$menu_selected_option]} in
+	'Clone disk with bad sectors')
+		clear
+
+		echo -n 'Input file: '
+		read input
+
+		echo -n 'Output file: '
+		read output
+		echo " log will be saved as ${output}.log"
+
+		echo -n 'Use standard ddrescue options (-f -d -r 3)? ([y]/n) '
+		read options
+		if [ "${options}" = 'n' ]; then
+			echo -n 'Print ddrescue help? (y/[n]) '
+			read options
+			if [ "${options}" = 'y' ]; then
+				echo ''
+				ddrescue --help
+				echo ''
+			fi
+			echo -n 'ddrescue options> '
+			read options
+		else
+			options='-f -d -r 3'
+		fi
+
+		if [ ! "${input}" = '' ] && [ ! "${output}" = '' ]; then
+			echo -n 'Are you sure? (y/[n]) '
+			read answer
+
+			if [ "${answer}" = 'y' ]; then
+				echo 'Copying...'
+				ddrescue ${options} "${input}" "${output}" "${output}.log"
+				echo -n 'End! Press <enter>'
+			else
+				echo -n 'Aborted! Press <enter>'
+			fi
+			read enter
+		fi
+	;;
+	'TestDisk')
+		testdisk
+	;;
+	'PhotoRec')
+		photorec
+	;;
+	'Erase disk | Securely delete file')
+		clear
+
+		echo -n ' Device or file: '
+		read device
+
+		echo -n ' How many urandom loops (default: 2): '
+		read ind_random
+		[ "${ind_random}" = '' ] && ind_random='2'
+
+		echo -n ' How many zero loops (default: 0): '
+		read ind_zero
+		[ "${ind_zero}" = '' ] && ind_zero='0'
+
+		if [ -d "${device}" ]; then
+			echo ''; echo 'Error: this is a directory'
+			echo 'Press <enter>'
+		elif [ -b "${device}" ]; then
+			echo -n ' Type: Yes, I am sure. '
+			read answer
+
+			if [ "${answer}" = 'Yes, I am sure.' ]; then
+				for i in $(seq 1 ${ind_random} 2>/dev/null); do
+					echo "Writing random data: loop ${i}"
+					dd if=/dev/urandom of=${device}
+				done
+				for i in $(seq 1 ${ind_zero} 2>/dev/null); do
+					echo "Writing zeros: loop ${i}"
+					dd if=/dev/zero of=${device}
+				done
+				echo ''; echo 'Press <enter>'
+			else
+				echo -n 'Aborted! Press <enter>'
+			fi
+		elif [ -f "${device}" ]; then
+			file_size="$(stat -c '%s' ${device})"
+			for i in $(seq 1 ${ind_random} 2>/dev/null); do
+				echo "Writing random data: loop ${i}"
+				dd if=/dev/urandom of=${device} bs=${file_size} count=1
+			done
+			for i in $(seq 1 ${ind_zero} 2>/dev/null); do
+				echo "Writing zeros: loop ${i}"
+				dd if=/dev/zero of=${device} bs=${file_size} count=1
+			done
+			echo ''; echo 'Press <enter>'
+		else
+			echo ''; echo 'Error: device or file not exist'
+			echo 'Press <enter>'
+		fi
+		read enter
+	;;
+esac

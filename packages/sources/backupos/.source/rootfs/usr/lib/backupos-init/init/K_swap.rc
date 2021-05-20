@@ -1,0 +1,12 @@
+if [ -e '/etc/fstab' ]; then
+	case "${1}" in
+		'halt'|'reboot'|'poweroff')
+			log_task 'Deactivating swap'
+			swapoff -a > '/dev/null' 2>&1
+		;;
+		*)
+			log_task 'Activating swap'
+			swapon -a > '/dev/null' 2>&1
+		;;
+	esac
+fi

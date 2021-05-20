@@ -1,0 +1,42 @@
+# This script is for normal installation only
+start_network()
+{
+	log_task 'Starting network'
+	[ ! "${1}" = 'no-lo' ] && ifconfig 'lo' '127.0.0.1' 'netmask' '255.0.0.0' 'up' &
+	[ -e '/etc/network/interfaces' ] && ifup -a
+}
+stop_network()
+{
+	log_task 'Stopping network'
+	[ -e '/etc/network/interfaces' ] && ifdown -a
+}
+restart_network()
+{
+	stop_network
+	start_network 'no-lo'
+}
+
+if [ "$$" = '1' ]; then
+	[ ! -e '/etc/network/interfaces' ] && init_log 'network: warning! /etc/network/interfaces not exists'
+	case "${1}" in
+		'halt'|'reboot'|'poweroff')
+			init_log 'network: stopping'
+			stop_network
+		;;
+		*)
+			init_log 'network: starting'
+			start_network
+		;;
+	esac
+else
+	case "${init_network}" in
+		'start') start_network; ;;
+		'stop') stop_network; ;;
+		'restart') restart_network; ;;
+		*) echo 'Unknown argument in $init_network or not set'; ;;
+	esac
+fi
+
+unset start_network
+unset stop_network
+unset restart_network

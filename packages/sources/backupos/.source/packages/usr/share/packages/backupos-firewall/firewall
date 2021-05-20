@@ -1,0 +1,15 @@
+#!/bin/sh
+PATH='/usr/sbin:/bin:/usr/bin:/sbin'
+
+iptables='iptables'
+ip6tables='ip6tables'
+modprobe='modprobe -q -b'
+
+log_daemon_msg() { echo -n "${@}"; }
+
+[ -e '/lib/init/init-functions' ] && . '/lib/init/init-functions'
+
+log_daemon_msg 'Setting up firewall'
+. '/etc/firewall.rc'
+
+exit 0

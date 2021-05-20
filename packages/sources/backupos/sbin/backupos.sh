@@ -1,7 +1,16 @@
 #!/bin/sh
-touch /.boot-to-backupos
+
 echo
 echo '====================================='
+
+echo -n ' Are you sure? (y/[n]) '
+read answer
+if [ ! "${answer}" = 'y' ]; then
+	echo '====================================='; echo ''
+	exit 1
+fi
+
+touch /.boot-to-backupos
 
 # server address dump
 nodhcp=false
@@ -26,10 +35,9 @@ for i in $(cat /boot/grub/grub.cfg | grep /boot/backupos); do
 done
 
 if $nodhcp; then
-	echo " PC address starts from ${network_ip}.${start_ip}"
+	echo " IP address starts from ${network_ip}.${start_ip}"
 	echo -n ' Try adresses: '
 	ls -l /sys/class/net | grep -v 'total' | grep -v 'virtual' | while read line; do
-		
 		echo -n "${network_ip}.${start_ip} "
 		start_ip=$((start_ip+1))
 	done

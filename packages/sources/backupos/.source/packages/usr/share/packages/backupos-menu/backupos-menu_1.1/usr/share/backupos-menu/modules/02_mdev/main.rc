@@ -1,0 +1,3 @@
+mdev -s
+echo ''; echo ' OK'
+sleep 1

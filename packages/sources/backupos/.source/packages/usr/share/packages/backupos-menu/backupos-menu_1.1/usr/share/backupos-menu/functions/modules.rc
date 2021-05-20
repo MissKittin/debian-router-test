@@ -1,0 +1,25 @@
+# Modules functions
+
+# Read modules
+modules_read()
+{
+	local module
+	for module in ${telnet_menu}/modules/*; do
+		if [ -e "${module}/menu.rc" ]; then
+			menu_options+=("$(cat ${module}/menu.rc)")
+			menu_items=$((menu_items+1))
+		fi
+	done
+}
+
+# Import module code
+modules_import()
+{
+	local module
+	for module in ${telnet_menu}/modules/*; do
+		if [ "$(cat ${module}/menu.rc)" = "${menu_options[$menu_selected_option]}" ]; then
+			. ${module}/main.rc
+			break
+		fi
+	done
+}

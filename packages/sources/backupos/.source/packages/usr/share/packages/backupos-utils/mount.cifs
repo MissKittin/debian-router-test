@@ -1,0 +1,64 @@
+#!/bin/sh
+
+do_load_modules()
+{
+	if ! lsmod | grep '^cifs' > '/dev/null' 2>&1; then
+		echo 'Loading kernel modules...' # load all crypto modules
+		find "/lib/modules/$(uname -r)" -type f -name '*.ko' | grep 'crypto' | while read cmod; do
+			cmod="${cmod##*/}"
+			modprobe "${cmod%.*}" > '/dev/null' 2>&1
+		done
+		modprobe 'cifs' > '/dev/null' 2>&1
+	fi
+}
+do_mount()
+{
+	mount -t 'cifs' ${1} ${2} ${3} ${4}
+	return "${?}"
+}
+
+if [ ! "${1}" = '' ]; then
+	do_load_modules > '/dev/null' 2>&1
+	do_mount "${1}" "${2}" "${3}" "${4}"
+	exit "${?}"
+fi
+
+
+echo
+echo ' SMB/CIFS share mount'
+echo
+
+mount_options=''
+echo -n 'Address: '; read address
+echo -n 'Share name: '; read share
+
+echo -n 'User name: '; read username
+if [ ! "${username}" = '' ]; then
+	mount_options="${mount_options},username=${username}"
+	echo -n 'Password: '; read -s password; echo ''
+	[ ! "${password}" = '' ] && mount_options="${mount_options},password=${password}"
+fi
+
+echo -n 'noserverino? (y/[N]) '; read noserverino
+[ "${noserverino}" = 'y' ] && mount_options="${mount_options},noserverino"
+
+echo ''
+if [ ! "${address}" = '' ] && [ ! "${share}" = '' ]; then
+	[ -e "/mnt/${address}-${share}" ] || mkdir "/mnt/${address}-${share}"
+
+	do_load_modules
+
+	echo 'Mounting...'
+	if do_mount -o "rw,nodev,nosuid,noexec,noatime,nodiratime,file_mode=0644,dir_mode=0755${mount_options}" "//${address}/${share}" "/mnt/${address}-${share}"; then
+		echo "Share mounted on /mnt/${address}-${share}"
+	else
+		echo 'Mount failed!'
+		rmdir "/mnt/${address}-${share}" > '/dev/null' 2>&1
+		exit 1
+	fi
+else
+	echo 'No address/share name specified'
+	exit 1
+fi
+
+exit 0

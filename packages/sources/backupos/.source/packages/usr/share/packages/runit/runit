@@ -1,0 +1,118 @@
+#!/bin/sh
+PATH='/bin:/sbin'
+
+PIDFILE='/var/run/runit.pid'
+DAEMON='/bin/runsvdir'
+DAEMON_OPTS='-P /var/service'
+DAEMON_NAME='runit'
+
+log_daemon_msg() { echo -n "${@}"; }
+log_end_msg() { if [ "${1}" = '0' ]; then echo ' [ OK ]'; else echo ' [FAIL]'; fi; }
+
+[ -e '/lib/init/init-functions' ] && . '/lib/init/init-functions'
+
+start_daemon()
+{
+	log_daemon_msg "Starting ${4}"
+	local chuid=''
+	if [ ! "${5}" = '' ]; then
+		chuid="-c ${5}"
+		[ ! "${6}" = '' ] && chuid="${chuid}:${6}"
+	fi
+	if check_daemon "${1}" "${3}" "${4}" > '/dev/null' 2>&1; then
+		log_end_msg 1
+		return 1
+	else
+		if start-stop-daemon -S -q -b --make-pidfile -p ${3} -x ${1} -- ${2}; then
+			log_end_msg 0
+			return 0
+		else
+			log_end_msg 1
+			return 1
+		fi
+	fi
+
+}
+start_daemon_log()
+{
+	start_daemon "${0} start_daemon_log" "${1} ${2}" "${3}" "${4}" "${5}" "${6}"
+	return "${?}"
+}
+stop_daemon()
+{
+	log_daemon_msg "Stopping ${3}"
+	if check_daemon "${1}" "${2}" "${3}" > '/dev/null' 2>&1; then
+		if start-stop-daemon -K -q -p ${2}; then
+			rm "${2}" > '/dev/null' 2>&1
+			log_end_msg 0
+			return 0
+		else
+			log_end_msg 1
+			return 1
+		fi
+	else
+		log_end_msg 1
+		return 1
+	fi
+}
+check_daemon()
+{
+	if [ ! -e "${2}" ] || [ ! -r "${2}" ]; then
+		echo "${3} is stopped"
+		return 1
+	elif [ "$(pidof -o %PPID ${1##*/})" = "$(cat "${2}")" ]; then
+		echo "${3} is running"
+		return 0
+	elif kill -0 $(cat "${2}") > '/dev/null' 2>&1; then
+		echo "${3} is in unknown state"
+		return 0
+	else
+		echo "${3} is stopped"
+		return 1
+	fi
+}
+if [ ! "${LOGFILE}" = '' ] && [ "${1}" = 'start_daemon_log' ]; then
+	first_arg='true'
+	args=''
+	for arg in ${@}; do
+		if "${first_arg}"; then
+			first_arg='false'
+		else
+			args="${args} ${arg}"
+		fi
+	done
+	exec ${args} >> "${LOGFILE}" 2>&1
+fi
+
+case "${1}" in
+	'start')
+		if [ "${LOGFILE}" = '' ]; then
+			start_daemon "${DAEMON}" "${DAEMON_OPTS}" "${PIDFILE}" "${DAEMON_NAME}" "${UID}" "${GID}"
+		else
+			start_daemon_log "${DAEMON}" "${DAEMON_OPTS}" "${PIDFILE}" "${DAEMON_NAME}" "${UID}" "${GID}"
+		fi
+		exit "${?}"
+	;;
+	'stop')
+		for service in /var/service/*; do
+			[ "${service}" = '/var/service/*' ] && break
+			sv down "${i##*/}" > '/dev/null' 2>&1
+		done
+		killall 'runsv' > '/dev/null' 2>&1
+		stop_daemon "${DAEMON}" "${PIDFILE}" "${DAEMON_NAME}"
+		exit "${?}"
+	;;
+	'restart')
+		"${0}" 'stop'
+		"${0}" 'start' && exit 0
+		exit 1
+	;;
+	'status')
+		check_daemon "${DAEMON}" "${PIDFILE}" "${DAEMON_NAME}"
+		exit "${?}"
+	;;
+	*)
+		echo "${0##*/} start|stop|restart|status"
+		exit 0
+	;;
+esac

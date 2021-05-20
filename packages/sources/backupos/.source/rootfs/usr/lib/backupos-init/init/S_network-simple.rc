@@ -1,0 +1,27 @@
+# This script is for rootfs installation only
+ifconfig 'lo' '127.0.0.1' 'netmask' '255.0.0.0' 'up' &
+
+if [ ! "${nodhcp}" = 'yes' ]; then
+	log_task 'Starting network'
+	for i in /sys/class/net/*; do
+		i="${i##*/}"
+		if [ ! "${i}" = 'lo' ]; then
+			init_log "network-simple: autoconfiguring ${i}"
+			ifconfig "${i}" up > '/dev/null' 2>&1
+			udhcpc -q -s '/usr/share/udhcpc/udhcpc.script' -i "${i}" -x "hostname:${HOSTNAME}" > '/dev/null' 2>&1 &
+		fi
+	done
+	[ ! "${wait_for_dhcp}" = '' ] && sleep "${wait_for_dhcp}"
+elif [ ! "${aip}" = '' ] && [ ! "${bip}" = '' ] && [ ! "${netmask}" = '' ]; then
+	log_task 'Starting network'
+	for i in /sys/class/net/*; do
+		i="${i##*/}"
+		if [ ! "${i}" = 'lo' ]; then
+			init_log "network-simple: configuring ${i} ${aip}.${bip}"
+			ifconfig "${i}" "${aip}.${bip}" netmask "${netmask}" up > '/dev/null' 2>&1 && bip="$(expr "${bip}" + 1)"
+		fi
+	done
+fi
+
+unset wait_for_dhcp
+unset i

@@ -1,0 +1,7 @@
+# ftpd4 ftpd6
+$modprobe ip_conntrack_ftp
+echo '1' > '/proc/sys/net/netfilter/nf_conntrack_helper'
+$iptables -A INPUT -p TCP --dport 20 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+$ip6tables -A INPUT -p TCP --dport 20 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+$iptables -A INPUT -p TCP --dport 21 -j ACCEPT
+$ip6tables -A INPUT -p TCP --dport 21 -j ACCEPT

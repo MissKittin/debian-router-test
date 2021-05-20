@@ -1,0 +1,27 @@
+if [ -d '/etc/rc.d' ]; then
+	initscript_log='true'
+	command -v 'init-log' > '/dev/null' 2>&1 || initscript_log='false'
+
+	case "${1}" in
+		'halt'|'reboot'|'poweroff') initscript_seq='K'; initscript_arg='stop'; ;;
+		*) initscript_seq='S'; initscript_arg='start'; ;;
+	esac
+
+	for initscript in /etc/rc.d/${initscript_seq}*; do
+		[ "${initscript}" = "/etc/rc.d/${initscript_seq}*" ] && break
+
+		if "${initscript_log}"; then
+			initscript_name="${initscript##*/}"; initscript_name="${initscript_name#???}"; init_log "sysv: ${initscript_arg} ${initscript_name}"
+		fi
+
+		if ! "${initscript}" "${initscript_arg}" 'init'; then
+			"${initscript_log}" && init_log "sysv: ${initscript_name} ${initscript_arg} failed"
+		fi
+	done
+
+	unset 'initscript_log'
+	unset 'initscript'
+	unset 'initscript_name'
+	unset 'initscript_seq'
+	unset 'initscript_arg'
+fi

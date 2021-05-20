@@ -1,0 +1,2 @@
+init_log 'busybox-suid: adding suid to /lib/busybox/su'
+chmod '+s' '/lib/busybox/su' > '/dev/null' 2>&1 &

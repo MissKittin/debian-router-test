@@ -1,3 +1,0 @@
-# Setting hostname
-echo -e " ${BLUE}[${SEABLUE}::${BLUE}] ${GREEN}Setting hostname${NOCOLOR}"
-[ "$hostname" = '' ] && hostname backupos || hostname $hostname

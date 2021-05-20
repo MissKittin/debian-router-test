@@ -1,0 +1,24 @@
+#!/bin/sh
+if [ "${1}" = '-h' ] || [ "${1}" = '--help' ]; then
+	echo 'Sync clock with NTP servers'
+	echo "${0##*/} [--save-to-rtc [/dev/rtc-device]]"
+	echo ''
+	echo '--save-to-rtc [rtc-device] -> also set the hardware clock (default /dev/rtc0)'
+	echo ''
+	echo 'The following NTP servers will be used:'
+	echo ' 0.debian.pool.ntp.org'
+	echo ' 1.debian.pool.ntp.org'
+	echo ' 2.debian.pool.ntp.org'
+	echo ' 3.debian.pool.ntp.org'
+	exit 0
+fi
+
+'/bin/ntpd' -d -n -q -p '0.debian.pool.ntp.org' -p '1.debian.pool.ntp.org' -p '2.debian.pool.ntp.org' -p '3.debian.pool.ntp.org'
+ntp_exit_code="${?}"
+
+if [ "${1}" = '--save-to-rtc' ]; then
+	echo ''; echo 'Setting hardware clock'
+	[ "${2}" = '' ] && hwclock -w -f '/dev/rtc0' || hwclock -w -f "${2}"
+fi
+
+exit "${ntp_exit_code}"

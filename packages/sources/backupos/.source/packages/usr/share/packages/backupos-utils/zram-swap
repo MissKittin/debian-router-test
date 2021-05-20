@@ -1,0 +1,24 @@
+#!/bin/sh
+
+print_S2() { echo -n "${2}"; }
+
+#cores="$(nproc --all)"
+cores="$(grep -c '^processor' '/proc/cpuinfo')"
+modprobe zram num_devices=${cores}
+
+totalmem=$(print_S2 $(free | grep -e '^Mem:'))
+mem="$(((${totalmem}/${cores})*1024))"
+
+core='0'
+while [ "${core}" -lt "${cores}" ]; do
+	echo "${mem}" > "/sys/block/zram${core}/disksize"
+	mkswap "/dev/zram${core}"
+	swapon -p 5 "/dev/zram${core}"
+	echo "/dev/zram${core} swap swap auto,defaults,pri=5 0 0" >> '/etc/fstab'
+	core="$((core+1))"
+done
+
+echo -n '100' > '/proc/sys/vm/swappiness'
+
+rm "${0}" > '/dev/null' 2>&1 || exit 1
+exit 0

@@ -1,0 +1,4 @@
+https://github.com/polaco1782/linux-static-binaries/raw/master/x86-i686/e2fsck
+https://github.com/polaco1782/linux-static-binaries/raw/master/x86-i686/mke2fs
+https://github.com/polaco1782/linux-static-binaries/raw/master/x86-i686/resize2fs
+https://github.com/polaco1782/linux-static-binaries/raw/master/x86-i686/tune2fs

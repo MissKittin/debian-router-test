@@ -1,0 +1,48 @@
+log_task 'with-args' 'Mounting'
+	echo -n ' dev'
+		mountpoint -q '/dev' || mount -t 'devtmpfs' -o 'rw,noexec,nosuid,dev,noatime,nodiratime' 'dev' '/dev'
+		[ ! -e '/dev/stdin' ] && ln -sf '/proc/self/fd/0' '/dev/stdin'
+		[ ! -e '/dev/stdout' ] && ln -sf '/proc/self/fd/1' '/dev/stdout'
+		[ ! -e '/dev/stderr' ] && ln -sf '/proc/self/fd/2' '/dev/stderr'
+	if ! mountpoint -q '/dev/pts'; then
+		echo -n ' pts'
+			mkdir '/dev/pts'
+			mount -t 'devpts' -o 'rw,noexec,nosuid,dev,noatime,nodiratime' 'devpts' '/dev/pts'
+	fi
+
+	if ! mountpoint -q '/run'; then
+		echo -n ' run'
+			mount -t 'tmpfs' -o 'rw,nosuid,nodev,noexec,noatime,nodiratime,mode=0755' 'run' '/run'
+	fi
+	echo -n ' lock'
+		mkdir '/run/lock'
+		chmod '1777' '/run/lock'
+	echo -n ' shm'
+		mkdir '/run/shm'
+		ln -s '/run/shm' '/dev/shm'
+		mount -t 'tmpfs' -o 'rw,nosuid,nodev,noexec,noatime,nodiratime,mode=1777' 'tmpfs' '/run/shm'
+
+	if ! mountpoint -q '/proc'; then
+		echo -n ' proc'
+			mount -t 'proc' 'proc' '/proc'
+			mount -o 'remount,hidepid=2' '/proc'
+	fi
+
+	if ! mountpoint -q '/sys'; then
+		echo -n ' sys'
+			mount -t 'sysfs' 'sysfs' '/sys'
+	fi
+	if [ -e '/sys/fs/pstore' ] && ! mountpoint -q '/sys/fs/pstore'; then
+		echo -n ' pstore'
+			mount -t 'pstore' 'pstore' '/sys/fs/pstore'
+	fi
+	if [ -e '/sys/kernel/config' ] && ! mountpoint -q '/sys/kernel/config'; then
+		echo -n ' config'
+			mount -t 'configfs' 'config' '/sys/kernel/config'
+	fi
+
+	if [ "$(stat -f -c '%T' /)" = 'tmpfs' ]; then
+		echo -n ' rootfs'
+			mount -o 'remount,rw,exec,suid,nodev,noatime,nodiratime' /
+	fi
+log_task 'normalize-color'

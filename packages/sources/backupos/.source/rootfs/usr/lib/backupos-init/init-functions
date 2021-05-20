@@ -1,0 +1,27 @@
+. '/lib/init/colors'
+
+log_daemon_msg() { echo -e " ${BLUE}[${SEABLUE}::${BLUE}] ${GREEN}${1}${NOCOLOR}"; }
+log_error_msg() { echo -e " ${BLUE}[${BRED}!!${BLUE}] ${BRED}${1}${NOCOLOR}"; }
+log_end_msg()
+{
+	echo -ne "${LINE_UP}"
+	case "${1}" in
+		''|'0') echo -e " ${BLUE}[${GREEN}OK${BLUE}]${NOCOLOR}"; ;;
+		*) echo -e " ${BLUE}[${BRED}!!${BLUE}]${NOCOLOR}"; ;;
+	esac
+}
+log_task()
+{
+	case "${1}" in
+		'with-args') echo -ne " ${BLUE}[${SEABLUE}::${BLUE}] ${GREEN}${2}${NOCOLOR}${WHITE}"; ;;
+		'normalize-color') echo -e "${NOCOLOR}"; ;;
+		*) echo -e " ${BLUE}[${SEABLUE}::${BLUE}] ${GREEN}${1}${NOCOLOR}"; ;;
+	esac
+}
+
+case "${TERM}" in
+	'linux'|xterm*|rxvt*|konsole*) :; ;;
+	*)
+		log_daemon_msg() { echo -ne " [::] ${1}"; }
+	;;
+esac

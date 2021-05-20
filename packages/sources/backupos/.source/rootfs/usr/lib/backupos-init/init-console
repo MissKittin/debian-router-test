@@ -1,0 +1,4 @@
+while :; do
+	'/bin/getty' -H "${HOSTNAME}" '38400' 'tty1' 'linux' &
+	wait "${!}"
+done

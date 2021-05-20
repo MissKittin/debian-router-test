@@ -1,0 +1,40 @@
+#!/bin/sh
+
+if [ "${1}" = '-h' ] || [ "${1}" = '--help' ]; then
+	echo 'Prints root tmpfs usage'
+	echo "${0##*/} [-k | -M | -G]"
+	exit 0
+fi
+
+for util in 'stat' 'awk'; do
+	if ! command -v "${util}" > '/dev/null' 2>&1; then
+		echo "${util} not found"
+		exit 1
+	fi
+done
+unset util
+
+case "${1}" in
+	'-k') divider='1024'; unit='kB'; ;;
+	'-M') divider='1048576'; unit='MB'; ;;
+	'-G') divider='1073741824'; unit='GB'; ;;
+	*) divider='1'; unit='B'; ;;
+esac
+
+block_size="$(stat -f -c '%S' /)"
+total_blocks="$(stat -f -c '%b' /)"
+free_blocks="$(stat -f -c '%f' /)"
+
+total_space="$(awk 'BEGIN {print ('"${total_blocks}"'*'"${block_size}"')/'"${divider}"'}')"
+used_space="$(awk 'BEGIN {print (('"${total_blocks}"'*'"${block_size}"')-('"${free_blocks}"'*'"${block_size}"'))/'"${divider}"'}')"
+free_space="$(awk 'BEGIN {print '"${total_space}"'-'"${used_space}"'}')"
+used_space_percentage="$(awk 'BEGIN {print ('"${used_space}"'*100)/'"${total_space}"'}')"
+free_space_percentage="$(awk 'BEGIN {print ('"${free_space}"'*100)/'"${total_space}"'}')"
+
+echo "Total space: ${total_space} ${unit}"
+echo "Used space: ${used_space} ${unit} "
+echo "Used space % (~): ${used_space_percentage}"
+echo "Free space (~): ${free_space} ${unit}"
+echo "Free space % (~): ${free_space_percentage}"
+
+exit 0

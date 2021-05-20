@@ -1,0 +1,7 @@
+# This script is for BackupOS only
+chmod '1777' '/tmp'
+ln -s '/run/.resolv.conf' '/etc/resolv.conf'
+ln -s '/proc/mounts' '/etc/mtab'
+ln -s '../run/lock' '/var/lock'
+ln -s '../run' '/var/run'
+ln -s '../tmp' '/var/tmp'

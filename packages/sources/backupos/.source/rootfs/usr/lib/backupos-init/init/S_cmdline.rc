@@ -1,0 +1,18 @@
+for x in $(cat /proc/cmdline); do
+	case "${x}" in
+		'emergency'|'single'|'S') echo -n '' > '/var/run/.debug.emergency'; ;;
+		'debug_norootfsclean') echo -n '' > '/var/run/.debug.noroofsclean'; ;;
+		'debug_no_modprobe') echo -n '' > '/var/run/.debug.nomodprobe'; ;;
+		hostname=*) HOSTNAME="${x#hostname=}"; ;;
+
+		'fastboot') echo -n '' > '/var/run/.fastboot'; ;;
+		'forcefsck') echo -n '' > '/var/run/.forcefsck'; ;;
+
+		'nodhcp') nodhcp='yes' ;;
+		wait_for_dhcp=*) wait_for_dhcp="${x#wait_for_dhcp=}"; ;;
+		network_ip=*) aip="${x#network_ip=}"; ;;
+		start_ip=*) bip="${x#start_ip=}"; ;;
+		netmask=*) netmask="${x#netmask=}"; ;;
+	esac
+done
+unset x

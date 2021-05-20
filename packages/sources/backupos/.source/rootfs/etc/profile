@@ -1,20 +1,28 @@
-. /etc/init-colors
-
-export HOME='/home'
-export PS1="${GREEN}\H${BLUE}:${GREEN}\w${BLUE}#${NOCOLOR} "
 export TERM='linux'
-
-init_colors_unset=true
-. /etc/init-colors
-unset init_colors_unset
-
-alias halt="poweroff -f"
-alias reboot="reboot -f"
+. '/lib/init/colors'
 
 PATH=''
-for i in /usr/local/bin /usr/local/sbin /usr/bin /usr/sbin /bin /sbin; do
-	[ -e ${i} ] && export PATH="${PATH}:${i}"
-done
+if [ "$(/bin/id -u)" = '0' ]; then
+	export PS1="${GREEN}\H${BLUE}:${GREEN}\w${BLUE}#${NOCOLOR} "
+	for i in '/usr/local/bin' '/usr/local/sbin' '/usr/bin' '/usr/sbin' '/bin' '/sbin'; do
+		if [ -d "${i}" ]; then
+			[ "${PATH}" = '' ] && PATH="${i}" || PATH="${PATH}:${i}"
+		fi
+	done
+else
+	export PS1="${GREEN}\u${BLUE}@${GREEN}\H${BLUE}:${GREEN}\w${BLUE}\$${NOCOLOR} "
+	for i in '/usr/local/bin' '/usr/bin' '/bin'; do
+		if [ -d "${i}" ]; then
+			[ "${PATH}" = '' ] && PATH="${i}" || PATH="${PATH}:${i}"
+		fi
+	done
+fi
+export PATH
 unset i
 
-[ -e $HOME ] || mkdir -p $HOME; cd $HOME
+init_colors_unset='true'; . '/lib/init/colors'; unset init_colors_unset
+
+if [ "${HOME}" = '' ]; then
+	export HOME='/home'
+	cd "${HOME}" > '/dev/null' 2>&1
+fi

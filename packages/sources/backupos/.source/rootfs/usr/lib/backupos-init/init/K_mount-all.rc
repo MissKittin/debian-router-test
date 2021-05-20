@@ -1,0 +1,14 @@
+case "${1}" in
+	'halt'|'reboot'|'poweroff')
+		log_task 'Unmounting all filesystems'
+		sync
+		mount -n -o 'remount,ro' / > '/dev/null' 2>&1
+		umount -a > '/dev/null' 2>&1
+	;;
+	*)
+		if [ -e '/etc/fstab' ]; then
+			log_task 'Mounting all filesystems'
+			mount -a > '/dev/null' 2>&1
+		fi
+	;;
+esac

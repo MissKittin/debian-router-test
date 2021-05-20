@@ -1,0 +1,15 @@
+if [ "${HOSTNAME}" = '' ] || [ "${HOSTNAME}" = '(none)' ]; then
+	[ -e '/etc/hostname' ] && HOSTNAME="$(cat '/etc/hostname')" || init_log 'hostname: no /etc/hostname and no HOSTNAME variable specified'
+	[ "${HOSTNAME}" = '' ] && HOSTNAME='(none)'
+fi
+
+log_task 'with-args' 'Setting hostname to'; echo -n " ${HOSTNAME}"; log_task 'normalize-color'
+init_log "hostname: setting hostname to ${HOSTNAME}"
+echo -n "${HOSTNAME}" > '/proc/sys/kernel/hostname'
+if [ -e '/etc/hostname' ]; then
+	[ ! "$(cat '/etc/hostname')" = "${HOSTNAME}" ] && echo "${HOSTNAME}" > '/etc/hostname' && init_log 'hostname: /etc/hostname updated'
+else
+	echo "${HOSTNAME}" > '/etc/hostname'
+	init_log 'hostname: /etc/hostname created'
+fi
+export HOSTNAME

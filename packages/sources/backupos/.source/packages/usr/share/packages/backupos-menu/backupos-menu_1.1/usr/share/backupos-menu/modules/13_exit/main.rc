@@ -1,0 +1,8 @@
+echo ''
+echo -n 'Are you sure? (y/[n]) '
+read answer
+
+if [ "${answer}" = 'y' ]; then
+	clear
+	exit 0
+fi

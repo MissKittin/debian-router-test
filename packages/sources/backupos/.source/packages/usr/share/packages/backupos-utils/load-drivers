@@ -1,0 +1,57 @@
+#!/bin/sh
+
+if [ "${1}" = '' ]; then
+	clear
+echo '
+ [1] ATA HDD
+ [2] ATA CD-ROM
+ [3] USB mass storage
+
+ [0] All above
+'
+
+	echo -n 'Options (eg. 1 3): '
+	read options
+	echo ''
+elif [ "${1}" = '--help' ] || [ "${1}" = '-h' ]; then
+echo '
+'"${0##*/}"' driver-name1 driver-name2
+
+Drivers:
+	ata-hdd
+	ata-cdrom
+	usb-storage
+
+	init-modprobe
+	all
+
+'"${0##*/}"' without arguments displays menu
+'
+	exit 0
+else
+	options=''
+	for option in ${@}; do
+		case "${option}" in
+			'ata-hdd') options="${options} 1"; ;;
+			'ata-cdrom') options="${options} 2"; ;;
+			'usb-storage') options="${options} 3"; ;;
+			'all') options="${options} 0"; ;;
+			'init-modprobe') options='init-modprobe'; ;;
+			*) options="${options} null"; ;;
+		esac
+	done
+fi
+
+[ "${options}" = '0' ] && options='1 2 3'
+for option in ${options}; do
+	case "${option}" in
+		'1') echo 'Loading ATA HDD driver...'; modprobe 'sd_mod'; ;;
+		'2') echo 'Loading ATA CD-ROM driver...'; modprobe 'sr_mod'; ;;
+		'3') echo 'Loading USB storage driver...'; modprobe 'usb_storage'; ;;
+		'init-modprobe') find '/sys/' -name 'modalias' -print0 | xargs -0 sort -u -z | xargs -0 modprobe -abq; ;;
+		*) echo 'Wrong option'; ;;
+	esac
+done
+
+[ "${1}" = '' ] && echo ''
+exit 0

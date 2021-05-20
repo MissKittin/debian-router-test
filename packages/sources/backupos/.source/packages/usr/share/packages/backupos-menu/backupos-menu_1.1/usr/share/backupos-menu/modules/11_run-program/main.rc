@@ -1,0 +1,23 @@
+# Define menu variables
+menu_items=5
+menu_options=('Midnight Commander' 'ash' 'bash' 'Back')
+
+# Create splash
+menu_splash_banner="$menu_splash_banner"' -> Run program'
+
+# Render menu
+menu $((menu_items-1))
+
+case ${menu_options[$menu_selected_option]} in
+	'Midnight Commander')
+		mc
+	;;
+	'ash')
+		clear
+		env - ENV='/etc/profile' '/bin/sh'
+	;;
+	'bash')
+		clear
+		env - '/bin/bash' -l
+	;;
+esac

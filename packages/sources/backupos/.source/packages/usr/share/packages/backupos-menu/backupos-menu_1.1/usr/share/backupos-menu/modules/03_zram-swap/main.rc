@@ -1,0 +1,8 @@
+if ! command -v 'zram-swap' > '/dev/null' 2>&1; then
+	echo ''; echo ' Compressed swap already enabled'
+	rm -r -f "${module}" > '/dev/null' 2>&1
+else
+	zram-swap && rm -r -f "${module}" > '/dev/null' 2>&1
+fi
+
+sleep 1

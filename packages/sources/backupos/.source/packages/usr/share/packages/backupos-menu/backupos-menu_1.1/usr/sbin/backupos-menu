@@ -1,0 +1,25 @@
+#!/bin/bash
+telnet_menu='/usr/share/backupos-menu'
+
+PATH=''
+for i in '/usr/local/bin' '/usr/local/sbin' '/usr/bin' '/usr/sbin' '/bin' '/sbin'; do
+	[ -d "${i}" ] && PATH="${PATH}:${i}"
+done
+export PATH
+unset i
+
+. "${telnet_menu}/functions/menu.rc"
+. "${telnet_menu}/functions/modules.rc"
+
+while :; do
+	menu_splash_banner='BackupOS'
+
+	menu_items=0
+	menu_options=()
+
+	modules_read
+	menu $((menu_items-1))
+	modules_import
+done
+
+exit 0

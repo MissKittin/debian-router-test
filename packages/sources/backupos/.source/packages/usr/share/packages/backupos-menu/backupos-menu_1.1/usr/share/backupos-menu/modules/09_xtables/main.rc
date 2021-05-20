@@ -1,0 +1,92 @@
+# Define menu variables
+menu_items=8
+menu_options=('Firewall status' 'Allow TCP port' 'Allow UDP port' 'Remove allowed TCP port' 'Remove allowed UDP port' 'Set INPUT policy to accept (disable firewall)' 'Set INPUT policy to drop (enable firewall)' 'Back')
+
+# Create splash
+menu_splash_banner="$menu_splash_banner"' -> Firewall'
+
+# Render menu
+menu $((menu_items-1))
+
+press_enter()
+{
+	echo ''
+	echo -n 'Press <enter>'
+	read enter
+}
+
+echo ''
+case ${menu_options[$menu_selected_option]} in
+	'Firewall status')
+		clear
+		echo -n ' View details? (y/[n]) '
+		read details
+		echo ''
+		if [ "${details}" = 'y' ]; then
+			echo '-> IPv4'
+			iptables -L -v -n
+			echo ''; echo '-> IPv6'
+			ip6tables -L -v -n
+		else
+			echo '-> IPv4'
+			iptables -L
+			echo ''; echo '-> IPv6'
+			ip6tables -L
+		fi
+		press_enter
+	;;
+	'Allow TCP port')
+		echo -n ' Which port? '
+		read dport
+		if [ "${dport}" = '' ]; then
+			echo 'No port specified'
+		else
+			iptables -A INPUT -p TCP --dport ${dport} -j ACCEPT
+			ip6tables -A INPUT -p TCP --dport ${dport} -j ACCEPT
+		fi
+		press_enter
+	;;
+	'Allow UDP port')
+		echo -n ' Which port? '
+		read dport
+		if [ "${dport}" = '' ]; then
+			echo 'No port specified'
+		else
+			iptables -A INPUT -p UDP --dport ${dport} -j ACCEPT
+			ip6tables -A INPUT -p UDP --dport ${dport} -j ACCEPT
+		fi
+		press_enter
+	;;
+	'Remove allowed TCP port')
+		echo -n ' Which port? '
+		read dport
+		if [ "${dport}" = '' ]; then
+			echo 'No port specified'
+		else
+			iptables -D INPUT -p TCP --dport ${dport} -j ACCEPT
+			ip6tables -D INPUT -p TCP --dport ${dport} -j ACCEPT
+		fi
+		press_enter
+	;;
+	'Remove allowed UDP port')
+		echo -n ' Which port? '
+		read dport
+		if [ "${dport}" = '' ]; then
+			echo 'No port specified'
+		else
+			iptables -D INPUT -p UDP --dport ${dport} -j ACCEPT
+			ip6tables -D INPUT -p UDP --dport ${dport} -j ACCEPT
+		fi
+		press_enter
+	;;
+	'Set INPUT policy to accept (disable firewall)')
+		iptables -P INPUT ACCEPT
+		ip6tables -P INPUT ACCEPT
+		press_enter
+	;;
+	'Set INPUT policy to drop (enable firewall)')
+		iptables -P INPUT DROP
+		ip6tables -P INPUT DROP
+		press_enter
+	;;
+esac

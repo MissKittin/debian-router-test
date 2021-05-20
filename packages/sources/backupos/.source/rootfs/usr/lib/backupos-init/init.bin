@@ -1,0 +1,28 @@
+#!/bin/sh
+# Link this file to /sbin/init
+
+if [ ! "$$" = '1' ]; then
+	echo 'Error: not PID 1'
+	exit 1
+fi
+
+case "${1}" in
+	'halt'|'reboot'|'poweroff')
+		if [ -e '/etc/init/cache/init-cache.K' ]; then
+			. '/etc/init/cache/init-cache.K'
+		else
+			for init_module in /etc/init/K*_*.rc; do
+				. "${init_module}"
+			done
+		fi
+	;;
+	*)
+		if [ -e '/etc/init/cache/init-cache.S' ]; then
+			. '/etc/init/cache/init-cache.S'
+		else
+			for init_module in /etc/init/S*_*.rc; do
+				. "${init_module}"
+			done
+		fi
+	;;
+esac

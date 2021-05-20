@@ -1,0 +1,36 @@
+# Define menu variables
+menu_items=4
+menu_options=('Reboot' 'Reboot from HDD' 'Power off' 'Back')
+
+# Create splash
+menu_splash_banner="$menu_splash_banner"' -> Shut down'
+
+# Render menu
+menu $((menu_items-1))
+
+echo ''
+echo -n 'Are you sure? (y/[n]) '
+read answer
+
+if [ "${answer}" = 'y' ]; then
+	case ${menu_options[$menu_selected_option]} in
+		'Reboot')
+			echo ' rebooting...'
+			sync
+			#reboot -f
+			reboot; exit 0
+		;;
+		'Reboot from HDD')
+
+			echo ''
+			reboot-to-main
+		;;
+		'Power off')
+
+			echo ' Shutting down...'
+			sync
+			#poweroff -f
+			halt; exit 0
+		;;
+	esac
+fi

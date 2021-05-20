@@ -1,0 +1,5 @@
+log_task 'Stopping all processes'
+sync
+kill -15 $(ps -o 'pid' | tail -n +3 | xargs) > '/dev/null' 2>&1
+sleep 5
+kill -9 $(ps -o 'pid' | tail -n +3 | xargs) > '/dev/null' 2>&1

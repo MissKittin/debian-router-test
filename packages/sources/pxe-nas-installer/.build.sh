@@ -80,8 +80,6 @@ ${do_chown} && chown root:root ./share/pxe-nas-installer/modules/E_xfce4/config/
 chmod 755 ./share/pxe-nas-installer/modules/E_xfce4/config/.config
 ${do_chown} && chown root:root ./share/pxe-nas-installer/modules/E_xfce4/config/.config/xfce4
 chmod 755 ./share/pxe-nas-installer/modules/E_xfce4/config/.config/xfce4
-${do_chown} && chown root:root ./share/pxe-nas-installer/modules/E_xfce4/config/.config/xfce4/xfwm4
-chmod 700 ./share/pxe-nas-installer/modules/E_xfce4/config/.config/xfce4/xfwm4
 ${do_chown} && chown root:root ./share/pxe-nas-installer/modules/E_xfce4/config/.config/xfce4/desktop
 chmod 700 ./share/pxe-nas-installer/modules/E_xfce4/config/.config/xfce4/desktop
 ${do_chown} && chown root:root ./share/pxe-nas-installer/modules/E_xfce4/config/.config/xfce4/desktop/icons.screen0-1008x720.rc
@@ -118,8 +116,6 @@ ${do_chown} && chown root:root ./share/pxe-nas-installer/modules/E_xfce4/config/
 chmod 644 ./share/pxe-nas-installer/modules/E_xfce4/config/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml
 ${do_chown} && chown root:root ./share/pxe-nas-installer/modules/E_xfce4/config/.config/xfce4/xfconf/xfce-perchannel-xml/displays.xml
 chmod 644 ./share/pxe-nas-installer/modules/E_xfce4/config/.config/xfce4/xfconf/xfce-perchannel-xml/displays.xml
-${do_chown} && chown root:root ./share/pxe-nas-installer/modules/E_xfce4/config/.config/xfce4/panel
-chmod 755 ./share/pxe-nas-installer/modules/E_xfce4/config/.config/xfce4/panel
 ${do_chown} && chown root:root ./share/pxe-nas-installer/modules/E_xfce4/config/.config/Thunar
 chmod 700 ./share/pxe-nas-installer/modules/E_xfce4/config/.config/Thunar
 ${do_chown} && chown root:root ./share/pxe-nas-installer/modules/E_xfce4/config/.config/Thunar/accels.scm
@@ -164,6 +160,10 @@ ${do_chown} && chown root:root ./sbin/pxe-nas-installer
 chmod 700 ./sbin/pxe-nas-installer
 ${do_chown} && chown root:root ./install.sh
 chmod 755 ./install.sh
+
+mkdir ./share/pxe-nas-installer/modules/E_xfce4/config/.config/xfce4/xfwm4
+chmod 700 ./share/pxe-nas-installer/modules/E_xfce4/config/.config/xfce4/xfwm4
+mkdir ./share/pxe-nas-installer/modules/E_xfce4/config/.config/xfce4/panel
 
 gzip -9 ./share/pxe-nas-installer/modules/E_ssh/sshd_config
 

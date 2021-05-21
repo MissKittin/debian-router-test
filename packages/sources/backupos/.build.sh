@@ -66,8 +66,8 @@ ${do_chown} && chown root:root ./.source/rootfs-bin.img-1.30.0/usr/share/doc
 chmod 755 ./.source/rootfs-bin.img-1.30.0/usr/share/doc
 ${do_chown} && chown root:root ./.source/rootfs-bin.img-1.30.0/usr/share/doc/backupos
 chmod 755 ./.source/rootfs-bin.img-1.30.0/usr/share/doc/backupos
-${do_chown} && chown root:root ./.source/rootfs-bin.img-1.30.0/usr/share/doc/backupos/busybox_config.gz
-chmod 644 ./.source/rootfs-bin.img-1.30.0/usr/share/doc/backupos/busybox_config.gz
+${do_chown} && chown root:root ./.source/rootfs-bin.img-1.30.0/usr/share/doc/backupos/busybox_config
+chmod 644 ./.source/rootfs-bin.img-1.30.0/usr/share/doc/backupos/busybox_config
 ${do_chown} && chown root:root ./.source/rootfs-bin.img-1.30.0/usr/share/doc/backupos/userspace.txt
 chmod 644 ./.source/rootfs-bin.img-1.30.0/usr/share/doc/backupos/userspace.txt
 ${do_chown} && chown root:root ./.source/modules.img-4.19.0-3-686
@@ -5930,10 +5930,10 @@ ${do_chown} && chown root:root ./.source/modules.img-4.19.0-3-686/lib/modules/4.
 chmod 644 ./.source/modules.img-4.19.0-3-686/lib/modules/4.19.0-3-686/modules.order
 ${do_chown} && chown root:root ./.source/modules.img-4.19.0-3-686/boot
 chmod 755 ./.source/modules.img-4.19.0-3-686/boot
-${do_chown} && chown root:root ./.source/modules.img-4.19.0-3-686/boot/System.map-4.19.0-3-686.gz
-chmod 640 ./.source/modules.img-4.19.0-3-686/boot/System.map-4.19.0-3-686.gz
-${do_chown} && chown root:root ./.source/modules.img-4.19.0-3-686/boot/config-4.19.0-3-686.gz
-chmod 640 ./.source/modules.img-4.19.0-3-686/boot/config-4.19.0-3-686.gz
+${do_chown} && chown root:root ./.source/modules.img-4.19.0-3-686/boot/System.map-4.19.0-3-686
+chmod 640 ./.source/modules.img-4.19.0-3-686/boot/System.map-4.19.0-3-686
+${do_chown} && chown root:root ./.source/modules.img-4.19.0-3-686/boot/config-4.19.0-3-686
+chmod 640 ./.source/modules.img-4.19.0-3-686/boot/config-4.19.0-3-686
 ${do_chown} && chown root:root ./.source/modules.img-4.19.0-3-686/usr
 chmod 755 ./.source/modules.img-4.19.0-3-686/usr
 ${do_chown} && chown root:root ./.source/modules.img-4.19.0-3-686/usr/share
@@ -5950,10 +5950,6 @@ ${do_chown} && chown root:root ./.source/rootfs/etc
 chmod 755 ./.source/rootfs/etc
 ${do_chown} && chown root:root ./.source/rootfs/etc/profile
 chmod 644 ./.source/rootfs/etc/profile
-${do_chown} && chown root:root ./.source/rootfs/etc/modules-load.d
-chmod 755 ./.source/rootfs/etc/modules-load.d
-${do_chown} && chown root:root ./.source/rootfs/etc/modules-load.d/99_modules-load.rc
-chmod 644 ./.source/rootfs/etc/modules-load.d/99_modules-load.rc
 ${do_chown} && chown root:root ./.source/rootfs/etc/shadow
 chmod 640 ./.source/rootfs/etc/shadow
 ${do_chown} && chown root:root ./.source/rootfs/etc/init
@@ -6482,6 +6478,11 @@ tar cf ../backupos-menu_1.1.tar *
 cd ..
 rm -r -f ./backupos-menu_1.1
 cd ../../../../../..
+
+echo 'Preparing images...'
+gzip -9 ./.source/modules.img-4.19.0-3-686/boot/System.map-4.19.0-3-686
+gzip -9 ./.source/modules.img-4.19.0-3-686/boot/config-4.19.0-3-686
+gzip -9 ./.source/rootfs-bin.img-1.30.0/usr/share/doc/backupos/busybox_config
 
 echo 'Building images... '
 cd ./.source

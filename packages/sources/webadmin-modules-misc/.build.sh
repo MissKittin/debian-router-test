@@ -284,8 +284,8 @@ ${do_chown} && chown root:root ./webadmin/home-plugins/01_splash-info/splash-inf
 chmod 644 ./webadmin/home-plugins/01_splash-info/splash-info.php
 ${do_chown} && chown root:root ./extras-status.sh
 chmod 755 ./extras-status.sh
-${do_chown} && chown root:root ./.config-files.txt.gz
-chmod 644 ./.config-files.txt.gz
+${do_chown} && chown root:root ./.config-files.txt
+chmod 644 ./.config-files.txt
 ${do_chown} && chown root:root ./.build.sh
 chmod 644 ./.build.sh
 ${do_chown} && chown root:root ./extras-uninstall.sh
@@ -402,6 +402,7 @@ ${do_chown} && chown root:root ./webadmin-extras/lib/themes/bright/index.full.ph
 chmod 644 ./webadmin-extras/lib/themes/bright/index.full.php
 ${do_chown} && chown root:root ./.build-jquery.sh
 chmod 755 ./.build-jquery.sh
+
 ./webadmin/home-plugins/01_splash-info/mkcache.sh
 ./.build-jquery.sh
 
@@ -433,6 +434,8 @@ ln -s ../../../lib/prevent-index.php ./webadmin/home-plugins/01_splash-info/modu
 ln -s ../../lib/prevent-index.php ./webadmin/home-plugins/01_splash-info/index.php
 ln -s extras-install.sh install.sh
 ln -s extras-uninstall.sh uninstall.sh
+
+gzip -9 ./.config-files.txt
 
 chmod 644 ./.build.sh
 echo ''

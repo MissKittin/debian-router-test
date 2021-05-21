@@ -106,8 +106,8 @@ ${do_chown} && chown root:root ./share/bootstrap-installer/in-chroot.d/S50_auto-
 chmod 644 ./share/bootstrap-installer/in-chroot.d/S50_auto-startx.rc
 ${do_chown} && chown root:root ./share/bootstrap-installer/in-chroot.d/S50_tty-auto-login.rc
 chmod 644 ./share/bootstrap-installer/in-chroot.d/S50_tty-auto-login.rc
-${do_chown} && chown root:root ./share/bootstrap-installer/in-chroot.d/K26_dpkg-reconfigure.rc.old.gz
-chmod 644 ./share/bootstrap-installer/in-chroot.d/K26_dpkg-reconfigure.rc.old.gz
+${do_chown} && chown root:root ./share/bootstrap-installer/in-chroot.d/K26_dpkg-reconfigure.rc.old
+chmod 644 ./share/bootstrap-installer/in-chroot.d/K26_dpkg-reconfigure.rc.old
 ${do_chown} && chown root:root ./share/bootstrap-installer/in-chroot.d/S01_config.rc
 chmod 644 ./share/bootstrap-installer/in-chroot.d/S01_config.rc
 ${do_chown} && chown root:root ./share/bootstrap-installer/in-chroot.d/S20_user-script.rc
@@ -120,8 +120,8 @@ ${do_chown} && chown root:root ./share/bootstrap-installer/in-chroot.d/S50_userm
 chmod 644 ./share/bootstrap-installer/in-chroot.d/S50_usermod.rc
 ${do_chown} && chown root:root ./share/bootstrap-installer/in-chroot.d/S28_user-script.rc
 chmod 644 ./share/bootstrap-installer/in-chroot.d/S28_user-script.rc
-${do_chown} && chown root:root ./share/bootstrap-installer/in-chroot.d/K23_apt-install.old.rc.gz
-chmod 644 ./share/bootstrap-installer/in-chroot.d/K23_apt-install.old.rc.gz
+${do_chown} && chown root:root ./share/bootstrap-installer/in-chroot.d/K23_apt-install.old.rc
+chmod 644 ./share/bootstrap-installer/in-chroot.d/K23_apt-install.old.rc
 ${do_chown} && chown root:root ./share/bootstrap-installer/in-chroot.d/S99_user-script.rc
 chmod 644 ./share/bootstrap-installer/in-chroot.d/S99_user-script.rc
 ${do_chown} && chown root:root ./share/bootstrap-installer/in-chroot.d/S21_apt-mark.rc
@@ -154,8 +154,6 @@ ${do_chown} && chown root:root ./share/bootstrap-installer/in-chroot.d/S50_remov
 chmod 644 ./share/bootstrap-installer/in-chroot.d/S50_remove-apt-tweaks.rc
 ${do_chown} && chown root:root ./share/bootstrap-installer/in-chroot.d/S50_systemd-tweaks.rc
 chmod 644 ./share/bootstrap-installer/in-chroot.d/S50_systemd-tweaks.rc
-${do_chown} && chown root:root ./share/bootstrap-installer/in-chroot.d/K10_fake-libpam-systemd.rc.gz
-chmod 644 ./share/bootstrap-installer/in-chroot.d/K10_fake-libpam-systemd.rc.gz
 ${do_chown} && chown root:root ./CHANGELOG.txt
 chmod 644 ./CHANGELOG.txt
 ${do_chown} && chown root:root ./install.sh
@@ -166,6 +164,9 @@ ${do_chown} && chown root:root ./VERSION.txt
 chmod 644 ./VERSION.txt
 
 ln -s ./debian/bootstrap-installer.rc_debian-desktop ./etc/bootstrap-installer.rc
+
+gzip -9 ./share/bootstrap-installer/in-chroot.d/K26_dpkg-reconfigure.rc.old
+gzip -9 ./share/bootstrap-installer/in-chroot.d/K23_apt-install.old.rc
 
 chmod 644 ./.build.sh
 echo ''

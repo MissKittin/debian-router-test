@@ -1,0 +1,9 @@
+./webadmin/home-plugins/01_splash-info/config.rc
+./webadmin/login-plugins/01_internet-info/config.rc
+./webadmin/net-bwusage/config.rc
+./webadmin/net-devices/config.rc
+./webadmin/net-wired/config.rc
+./webadmin/sys-daemons/config.php
+./webadmin/sys-logs/config.php
+./webadmin/sys-storage/config.php
+./webadmin-extras/lib/favicon/favicon.php

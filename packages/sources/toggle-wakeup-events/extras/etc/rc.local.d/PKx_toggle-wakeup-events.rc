@@ -1,0 +1,1 @@
+/usr/local/etc/init.d/toggle-wakeup-events start > /dev/null 2>&1 &

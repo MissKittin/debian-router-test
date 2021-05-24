@@ -1,0 +1,5 @@
+# toggle-wakeup-events script configuration
+# eg: ENABLE_EVENTS='EVENT1 EVENT2 EVENT3'
+
+ENABLE_EVENTS=''
+DISABLE_EVENTS=''

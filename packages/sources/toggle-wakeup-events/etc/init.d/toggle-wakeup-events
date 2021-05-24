@@ -1,0 +1,33 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          toggle-wakeup-events
+# Required-Start:
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:
+# Short-Description: Setup ACPI wakeup table
+### END INIT INFO
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+. /lib/lsb/init-functions
+
+LOG_TO_KMESG='true'
+
+case "${1}" in
+	'start')
+		log_action_msg_pre; echo 'Setting up ACPI wakeup table'
+		if "${LOG_TO_KMESG}"; then
+			/usr/local/sbin/toggle-wakeup-events.sh | while read line; do
+				echo "toggle-wakeup-events: ${line}" > /dev/kmsg 2>/dev/null
+			done
+		else
+			/usr/local/sbin/toggle-wakeup-events.sh > /dev/null 2>&1
+		fi
+	;;
+	*)
+		echo 'toggle-wakeup-events start'
+	;;
+esac
+
+exit 0

@@ -1,0 +1,11 @@
+# Enable/disable buttons
+enabled_logout='true'
+enabled_user_switch='true'
+enabled_lock='true'
+enabled_shutdown='true'
+enabled_reboot='true'
+enabled_suspend='true'
+enabled_hybrid_suspend='true'
+enabled_hibernate='true'
+enabled_lock_tick='true'
+enabled_lock_tick_by_default='true'

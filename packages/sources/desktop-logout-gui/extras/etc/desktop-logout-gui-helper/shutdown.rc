@@ -1,0 +1,2 @@
+sleep 2
+echo "This is the shutdown script from the helper and it is executed by $(whoami)"

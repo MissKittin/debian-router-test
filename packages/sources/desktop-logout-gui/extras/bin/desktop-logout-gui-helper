@@ -1,0 +1,19 @@
+#!/bin/sh
+# Superuser helper for desktop-logout-gui
+# 24.05.2021
+
+RESOURCES_DIR='/usr/local/etc/desktop-logout-gui-helper'
+
+case "${1}" in
+	'logout') if [ -e "${RESOURCES_DIR}/logout.rc" ]; then . "${RESOURCES_DIR}/logout.rc"; else echo 'Method not found'; fi; ;;
+	'switch-user') if [ -e "${RESOURCES_DIR}/switch-user.rc" ]; then . "${RESOURCES_DIR}/switch-user.rc"; else echo 'Method not found'; fi; ;;
+	'lock') if [ -e "${RESOURCES_DIR}/lock.rc" ]; then . "${RESOURCES_DIR}/lock.rc"; else echo 'Method not found'; fi; ;;
+	'shutdown') if [ -e "${RESOURCES_DIR}/shutdown.rc" ]; then . "${RESOURCES_DIR}/shutdown.rc"; else echo 'Method not found'; fi; ;;
+	'reboot') if [ -e "${RESOURCES_DIR}/reboot.rc" ]; then . "${RESOURCES_DIR}/reboot.rc"; else echo 'Method not found'; fi; ;;
+	'suspend') if [ -e "${RESOURCES_DIR}/suspend.rc" ]; then . "${RESOURCES_DIR}/suspend.rc"; else echo 'Method not found'; fi; ;;
+	'hybrid-suspend') if [ -e "${RESOURCES_DIR}/hybrid-suspend.rc" ]; then . "${RESOURCES_DIR}/hybrid-suspend.rc"; else echo 'Method not found'; fi; ;;
+	'hibernate') if [ -e "${RESOURCES_DIR}/hibernate.rc" ]; then . "${RESOURCES_DIR}/hibernate.rc"; else echo 'Method not found'; fi; ;;
+	*) echo 'Method not exists'; echo 'Available methods: logout switch-user lock shutdown reboot suspend hybrid-suspend hibernate'; exit '1' ;;
+esac
+
+exit '0'

@@ -1,0 +1,5 @@
+Cmnd_Alias DLGH = /usr/local/bin/desktop-logout-gui-helper
+
+Defaults!DLGH !syslog
+
+user	ALL = NOPASSWD: DLGH

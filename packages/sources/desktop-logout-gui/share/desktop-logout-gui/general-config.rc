@@ -1,0 +1,11 @@
+# General configuration file
+
+# reset variables
+user_full_name=''
+machine_vendor=''
+
+# set new variables
+gtkdialog='gtkdialog'
+#LANG='C'
+#user_full_name='Standard user'
+#machine_vendor='My PC'

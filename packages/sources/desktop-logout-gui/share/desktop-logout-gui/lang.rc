@@ -1,0 +1,12 @@
+# Configure custom labels
+#lang[0]='New window title'
+#lang[7]='New logout label'
+#lang[11]='New switch user label'
+#lang[5]='New lock label'
+#lang[3]='New shut down label'
+#lang[2]='New reboot label'
+#lang[4]='New suspend label'
+#lang[10]='New hybrid suspend label'
+#lang[8]='New hibernate label'
+#lang[9]='New lock screen tick label'
+#lang[6]='New cancel label'

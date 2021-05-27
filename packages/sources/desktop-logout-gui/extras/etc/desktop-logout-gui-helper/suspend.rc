@@ -1,0 +1,1 @@
+echo "This is the suspend script from the helper and it is executed by $(whoami)"

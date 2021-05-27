@@ -1,0 +1,56 @@
+# Configure actions for buttons
+case "${EXIT}" in
+	# Logout
+	"${lang[7]}")
+		echo 'Logout method placeholder'
+	;;
+
+	# Switch user
+	"${lang[11]}")
+		echo 'Switch user method placeholder'
+	;;
+
+	# Lock
+	"${lang[5]}")
+		echo 'Lock method placeholder'
+	;;
+
+	# Shutdown
+	"${lang[3]}")
+		[ -x '/usr/local/bin/desktop-logout-gui-helper' ] && nohup sudo /usr/local/bin/desktop-logout-gui-helper shutdown > /dev/null 2>&1 &
+		echo 'Shutdown method placeholder'
+	;;
+
+	# Reboot
+	"${lang[2]}")
+		[ -x '/usr/local/bin/desktop-logout-gui-helper' ] && nohup sudo /usr/local/bin/desktop-logout-gui-helper reboot > /dev/null 2>&1 &
+		echo 'Reboot method placeholder'
+	;;
+
+	# Suspend
+	"${lang[4]}")
+		if "${do_lock_screen}"; then
+			echo 'Lock screen checkbox enabled'
+		fi
+		echo 'Suspend method placeholder'
+		[ -x '/usr/local/bin/desktop-logout-gui-helper' ] && sudo /usr/local/bin/desktop-logout-gui-helper suspend
+	;;
+
+	# Hybrid suspend
+	"${lang[10]}")
+		if "${do_lock_screen}"; then
+			echo 'Lock screen checkbox enabled'
+		fi
+		echo 'Hybrid suspend method placeholder'
+		[ -x '/usr/local/bin/desktop-logout-gui-helper' ] && sudo /usr/local/bin/desktop-logout-gui-helper hybrid-suspend
+	;;
+
+	# Hibernate
+	"${lang[8]}")
+		if "${do_lock_screen}"; then
+			echo 'Lock screen checkbox enabled'
+		fi
+		echo 'Hibernate method placeholder'
+		[ -x '/usr/local/bin/desktop-logout-gui-helper' ] && sudo /usr/local/bin/desktop-logout-gui-helper hibernate
+	;;
+esac

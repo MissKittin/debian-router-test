@@ -1,0 +1,24 @@
+#!/bin/bash
+# xfce_logout_gui_v2-2 17.11.2018
+# desktop-logout-gui 25.05.2021
+
+RESOURCES_DIR='/usr/local/share/desktop-logout-gui'
+. "${RESOURCES_DIR}/general-config.rc"
+
+if [ -e "${RESOURCES_DIR}/lang.d/${LANG}.rc" ]; then
+	. "${RESOURCES_DIR}/lang.d/${LANG}.rc"
+else
+	. "${RESOURCES_DIR}/lang.d/default.rc"
+fi
+. "${RESOURCES_DIR}/lang.rc"
+
+. "${RESOURCES_DIR}/methods-enabled.rc"
+. "${RESOURCES_DIR}/gui.rc"
+
+OUTPUT=''
+for i in $("${gtkdialog}" --center --program=MAIN_DIALOG); do OUTPUT="${OUTPUT} ${i}"; done
+eval ${OUTPUT}
+
+. "${RESOURCES_DIR}/methods.rc"
+
+exit '0'

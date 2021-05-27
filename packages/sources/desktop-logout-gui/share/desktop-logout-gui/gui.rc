@@ -1,0 +1,97 @@
+# GUI resource - do not edit
+
+"${enabled_logout}" && enabled_logout='' || enabled_logout='sensitive="false"'
+"${enabled_user_switch}" && enabled_user_switch='' || enabled_user_switch='sensitive="false"'
+"${enabled_lock}" && enabled_lock='' || enabled_lock='sensitive="false"'
+"${enabled_shutdown}" && enabled_shutdown='' || enabled_shutdown='sensitive="false"'
+"${enabled_reboot}" && enabled_reboot='' || enabled_reboot='sensitive="false"'
+"${enabled_suspend}" && enabled_suspend='' || enabled_suspend='sensitive="false"'
+"${enabled_hybrid_suspend}" && enabled_hybrid_suspend='' || enabled_hybrid_suspend='sensitive="false"'
+"${enabled_hibernate}" && enabled_hibernate='' || enabled_hibernate='sensitive="false"'
+"${enabled_lock_tick}" && enabled_lock_tick='sensitive="true"' || enabled_lock_tick='sensitive="false"'
+
+if [ ! "${USER}" = '' ]; then
+	if [ "${user_full_name}" = '' ]; then
+		user_full_name="$(getent passwd "${USER}")"
+		user_full_name="$(echo "${user_full_name}" | cut -d ':' -f 5)"
+		user_full_name="$(echo "${user_full_name}" | cut -d ',' -f 1)"
+		[ "${user_full_name}" = '' ] && user_full_name="${USER}"
+	fi
+else
+	user_full_name='.'
+fi
+
+if [ "${machine_vendor}" = '' ]; then
+	[ -e '/sys/devices/virtual/dmi/id/board_vendor' ] && machine_vendor="$(cat '/sys/devices/virtual/dmi/id/board_vendor')"
+	[ -e '/sys/devices/virtual/dmi/id/board_name' ] && machine_vendor="${machine_vendor} $(cat '/sys/devices/virtual/dmi/id/board_name')"
+	[ "${machine_vendor}" = '' ] && machine_vendor='.' || machine_vendor="$(echo -n "${machine_vendor}" | xargs)"
+fi
+
+export MAIN_DIALOG='
+	<window title="'"${lang[0]}"'" icon-name="system-log-out" resizable="false" width-request="512" height-request="300"  decorated="false">
+		<vbox>
+			<frame>
+				<hbox>
+					<text>
+						<label>'"${user_full_name}"'</label>
+					</text>
+				</hbox>
+				<hbox homogeneous="true">
+					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_logout}"'>
+						<label>'"${lang[7]}"'</label>
+						<input file icon="system-log-out"></input>
+					</button>
+					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_user_switch}"'>
+						<label>'"${lang[11]}"'</label>
+						<input file icon="user-desktop"></input>
+					</button>
+					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_lock}"'>
+						<label>'"${lang[5]}"'</label>
+						<input file icon="system-lock-screen"></input>
+					</button>
+				</hbox>
+				<hbox homogeneous="true">
+					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_shutdown}"'>
+						<label>'"${lang[3]}"'</label>
+						<input file icon="system-shutdown"></input>
+					</button>
+					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_reboot}"'>
+						<label>'"${lang[2]}"'</label>
+						<input file icon="system-reboot"></input>
+					</button>
+				</hbox>
+				<hbox homogeneous="true">
+					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_suspend}"'>
+						<label>'"${lang[4]}"'</label>
+						<input file icon="system-suspend"></input>
+					</button>
+					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_hybrid_suspend}"'>
+						<label>'"${lang[10]}"'</label>
+						<input file icon="system-suspend"></input>
+					</button>
+					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_hibernate}"'>
+						<label>'"${lang[8]}"'</label>
+						<input file icon="system-hibernate"></input>
+					</button>
+				</hbox>
+				<hbox homogeneous="true">
+					<checkbox '"${enabled_lock_tick}"'>
+						<default>'"${enabled_lock_tick_by_default}"'</default>
+						<label>'"${lang[9]}"'</label>
+						<variable>do_lock_screen</variable>
+					</checkbox>
+				</hbox>
+			</frame>
+			<hbox>
+				<text space-expand="true">
+					<label>'"${machine_vendor}"'</label>
+					<sensitive>false</sensitive>
+				</text>
+				<button>
+			 		<label>'"${lang[6]}"'</label>
+			 		<input file stock="gtk-cancel"></input>
+				</button>
+			</hbox>
+		</vbox>
+	</window>
+'

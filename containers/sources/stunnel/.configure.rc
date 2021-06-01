@@ -1,64 +1,51 @@
-check_apt_cache()
+log_file='/.debug.txt'
+log() { echo ${2} "${1}"; echo ${2} "${1}" >> "${log_file}"; }
+install_packages()
 {
-	check_apt_cache_print_S2() { echo -n "${2} "; }
-	check_apt_cache_print_S3() { echo -n "${3} " | tr -d '('; }
-	apt-get install -s "${1}" | grep 'Inst ' | while read line; do
-		local deb_file="$(apt-cache show $(check_apt_cache_print_S2 $line) | grep 'Filename: ' | grep "$$(check_apt_cache_print_S3 $line)")"
-		echo "${deb_file##*/}"
-	done
-	unset check_apt_cache_print_S2
-	unset check_apt_cache_print_S3
-}
-wait_for_network()
-{
-	[ ! "${1}" = '' ] && local loop_i='1'
+	local PING_OPTIONS='-4'
+	local PING_HOST='ftp.debian.org'
+	local WGET_HOST='http://ftp.debian.org/'
 
-	echo -n 'Waiting for network...'
-	while ! wget -q --tries=10 --timeout=20 --spider "${1}"; do
-		sleep 1
-		echo sleep >> /.debug.txt
-		echo -n .
-		if [ ! "${1}" = '' ]; then
-			[ "${loop_i}" = "${1}" ] && break
-			loop_i=$((loop_i+1))
+	if mountpoint -q '/var/cache/apt/archives'; then
+		echo ' i: cache detected' >> "${log_file}"
+
+		if timeout 10 ping -c 1 ${PING_OPTIONS} "${PING_HOST}" > /dev/null 2>&1; then
+			log ' -> Internet is available, updating apt lists'
+			apt-get update >> "${log_file}" 2>&1
 		fi
-	done
-	echo .
-}
 
-echo start >> /.debug.txt
-	force_apt_update='false'
-	if mountpoint -q /var/cache/apt/archives; then
-		wait_for_network 'http://ftp.debian.org/' '10'
-		if ! \
-			check_apt_cache 'stunnel4' | while read package; do
-				if [ ! -e "/var/cache/apt/archives/${package}" ]; then
-					echo "package ${package} not cached" >> /.debug.txt
-					exit 1
-				fi
+		log ' -> Trying to install packages'
+		if ! apt-get install -y ${@} >> "${log_file}" 2>&1; then
+			log ' -> Install failed, waiting for network' '-n'
+			while ! wget -q --tries=10 --timeout=20 --spider "${WGET_HOST}"; do
+				sleep 1
+				log '.' '-n'
 			done
-		then
-			force_apt_update='true'
-			wait_for_network 'http://ftp.debian.org/'
+			log ''
+
+			log ' -> Updating apt lists'
+			apt-get update >> "${log_file}" 2>&1
+
+			log ' -> Installing packages'
+			apt-get install -y ${@} >> "${log_file}" 2>&1
 		fi
 	else
-		wait_for_network 'http://ftp.debian.org/'
+		log ' -> Waiting for network' '-n'
+		while ! wget -q --tries=10 --timeout=20 --spider "${WGET_HOST}"; do
+			sleep 1
+			log '.' '-n'
+		done
+		log ''
+
+		log ' -> Updating apt lists'
+		apt-get update >> "${log_file}" 2>&1
+
+		log ' -> Installing packages'
+		apt-get install -y ${@} >> "${log_file}" 2>&1
+
+		log ' -> Cleaning cache'
+		apt-get clean >> "${log_file}" 2>&1
 	fi
-if "${force_apt_update}" || ! mountpoint -q /var/cache/apt/archives; then
-	echo update >> /.debug.txt
-		echo Updating apt database...
-		apt-get update >> /.debug.txt
-fi
-echo install >> /.debug.txt
-	echo Installing packages...
-	apt-get install -y stunnel4 >> /.debug.txt 2>&1
-# debug tool
-#	apt-get install -y strace
-if mountpoint -q /var/cache/apt/archives; then
-	echo noclean >> /.debug.txt
-else
-	echo clean >> /.debug.txt
-		echo Cleaning apt...
-		apt-get clean
-fi
-echo stop >> /.debug.txt
+}
+
+install_packages 'stunnel4'

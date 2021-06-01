@@ -1,7 +1,0 @@
-# Move resolv.conf to /run (minimize unnecessary disk writes) (20/21)
-if ${resolvconv_to_run}; then
-	print_message 'tweaking resolv.conf' "${COLOR_INFO}"
-
-	mv /etc/resolv.conf /run/.resolv.conf
-	ln -s /run/.resolv.conf /etc/resolv.conf
-fi

@@ -1,7 +1,0 @@
-# add user repos (1/21)
-if [ -e '/usr/local/etc/bootstrap-installer-repos.list' ]; then
-	print_message 'generating user repositories list' "${COLOR_INFO}"
-	mkdir -p /usr/local/etc/${installer_config_dir}apt/sources.list.d
-	cat /usr/local/etc/bootstrap-installer-repos.list >> /usr/local/etc/${installer_config_dir}apt/sources.list.d/additional.list
-	ln -s /etc/apt/sources.list.d/additional.list /usr/local/etc/${installer_config_dir}apt/sources.list.d/additional.list
-fi

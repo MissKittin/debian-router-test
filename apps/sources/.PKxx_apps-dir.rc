@@ -1,0 +1,5 @@
+# Create /var/tmp/.apps mountpoint
+if [ ! -e '/var/tmp/.apps' ]; then
+	mkdir '/var/tmp/.apps'
+	mount -t 'tmpfs' -o 'rw,nosuid,nodev,exec,noatime,nodiratime,uid=user,gid=user,mode=750' 'apps' '/var/tmp/.apps'
+fi

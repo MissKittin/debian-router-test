@@ -1,23 +1,51 @@
-echo start >> /.debug.txt
-	echo -n Waiting for network...
-	PING_HOST='http://ftp.debian.org/'
-	while ! wget -q --tries=10 --timeout=20 --spider $PING_HOST; do
-		sleep 1
-		echo sleep >> /.debug.txt
-		echo -n .
-	done
-	echo .
-echo update >> /.debug.txt
-	echo Updating apt database...
-	apt-get update >> /.debug.txt
-echo install >> /.debug.txt
-	echo Installing packages...
-	apt-get install -y miredo >> /.debug.txt 2>&1
-if mountpoint -q /var/cache/apt/archives; then
-	echo noclean >> /.debug.txt
-else
-	echo clean >> /.debug.txt
-		echo Cleaning apt...
-		apt-get clean
-fi
-echo stop >> /.debug.txt
+log_file='/.debug.txt'
+log() { echo ${2} "${1}"; echo ${2} "${1}" >> "${log_file}"; }
+install_packages()
+{
+	local PING_OPTIONS='-4'
+	local PING_HOST='ftp.debian.org'
+	local WGET_HOST='http://ftp.debian.org/'
+
+	if mountpoint -q '/var/cache/apt/archives'; then
+		echo ' i: cache detected' >> "${log_file}"
+
+		if timeout 10 ping -c 1 ${PING_OPTIONS} "${PING_HOST}" > /dev/null 2>&1; then
+			log ' -> Internet is available, updating apt lists'
+			apt-get update >> "${log_file}" 2>&1
+		fi
+
+		log ' -> Trying to install packages'
+		if ! apt-get install -y ${@} >> "${log_file}" 2>&1; then
+			log ' -> Install failed, waiting for network' '-n'
+			while ! wget -q --tries=10 --timeout=20 --spider "${WGET_HOST}"; do
+				sleep 1
+				log '.' '-n'
+			done
+			log ''
+
+			log ' -> Updating apt lists'
+			apt-get update >> "${log_file}" 2>&1
+
+			log ' -> Installing packages'
+			apt-get install -y ${@} >> "${log_file}" 2>&1
+		fi
+	else
+		log ' -> Waiting for network' '-n'
+		while ! wget -q --tries=10 --timeout=20 --spider "${WGET_HOST}"; do
+			sleep 1
+			log '.' '-n'
+		done
+		log ''
+
+		log ' -> Updating apt lists'
+		apt-get update >> "${log_file}" 2>&1
+
+		log ' -> Installing packages'
+		apt-get install -y ${@} >> "${log_file}" 2>&1
+
+		log ' -> Cleaning cache'
+		apt-get clean >> "${log_file}" 2>&1
+	fi
+}
+
+install_packages 'miredo'

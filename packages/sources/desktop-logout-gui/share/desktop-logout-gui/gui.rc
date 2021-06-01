@@ -10,6 +10,19 @@
 "${enabled_hibernate}" && enabled_hibernate='' || enabled_hibernate='sensitive="false"'
 "${enabled_lock_tick}" && enabled_lock_tick='sensitive="true"' || enabled_lock_tick='sensitive="false"'
 
+focused_cancel=' is-focus="true"'; focused_logout='' focused_user_switch=''; focused_lock=''; focused_shutdown=''; focused_reboot=''; focused_suspend=''; focused_hybrid_suspend=''; focused_hibernate=''; focused_lock_tick=''
+case "${1#--focused-button=}" in
+	'logout') focused_logout='is-focus="true"'; focused_cancel=''; ;;
+	'switch-user') focused_user_switch='is-focus="true"'; focused_cancel=''; ;;
+	'lock') focused_lock='is-focus="true"'; focused_cancel=''; ;;
+	'shutdown') focused_shutdown='is-focus="true"'; focused_cancel=''; ;;
+	'reboot') focused_reboot='is-focus="true"'; focused_cancel=''; ;;
+	'suspend') focused_suspend='is-focus="true"'; focused_cancel=''; ;;
+	'hybrid-suspend') focused_hybrid_suspend='is-focus="true"'; focused_cancel=''; ;;
+	'hibernate') focused_hibernate='is-focus="true"'; focused_cancel=''; ;;
+	'lock-tick') focused_lock_tick='is-focus="true"'; focused_cancel=''; ;;
+esac
+
 if [ ! "${USER}" = '' ]; then
 	if [ "${user_full_name}" = '' ]; then
 		user_full_name="$(getent passwd "${USER}")"
@@ -37,45 +50,45 @@ export MAIN_DIALOG='
 					</text>
 				</hbox>
 				<hbox homogeneous="true">
-					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_logout}"'>
+					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_logout}"' '"${focused_logout}"'>
 						<label>'"${lang[7]}"'</label>
 						<input file icon="system-log-out"></input>
 					</button>
-					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_user_switch}"'>
+					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_user_switch}"' '"${focused_user_switch}"'>
 						<label>'"${lang[11]}"'</label>
 						<input file icon="user-desktop"></input>
 					</button>
-					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_lock}"'>
+					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_lock}"' '"${focused_lock}"'>
 						<label>'"${lang[5]}"'</label>
 						<input file icon="system-lock-screen"></input>
 					</button>
 				</hbox>
 				<hbox homogeneous="true">
-					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_shutdown}"'>
+					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_shutdown}"' '"${focused_shutdown}"'>
 						<label>'"${lang[3]}"'</label>
 						<input file icon="system-shutdown"></input>
 					</button>
-					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_reboot}"'>
+					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_reboot}"' '"${focused_reboot}"'>
 						<label>'"${lang[2]}"'</label>
 						<input file icon="system-reboot"></input>
 					</button>
 				</hbox>
 				<hbox homogeneous="true">
-					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_suspend}"'>
+					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_suspend}"' '"${focused_suspend}"'>
 						<label>'"${lang[4]}"'</label>
 						<input file icon="system-suspend"></input>
 					</button>
-					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_hybrid_suspend}"'>
+					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_hybrid_suspend}"' '"${focused_hybrid_suspend}"'>
 						<label>'"${lang[10]}"'</label>
 						<input file icon="system-suspend"></input>
 					</button>
-					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_hibernate}"'>
+					<button image-position="2" theme-icon-size="30" space-fill="true" '"${enabled_hibernate}"' '"${focused_hibernate}"'>
 						<label>'"${lang[8]}"'</label>
 						<input file icon="system-hibernate"></input>
 					</button>
 				</hbox>
 				<hbox homogeneous="true">
-					<checkbox '"${enabled_lock_tick}"'>
+					<checkbox '"${enabled_lock_tick}"' '"${focused_lock_tick}"'>
 						<default>'"${enabled_lock_tick_by_default}"'</default>
 						<label>'"${lang[9]}"'</label>
 						<variable>do_lock_screen</variable>
@@ -87,11 +100,12 @@ export MAIN_DIALOG='
 					<label>'"${machine_vendor}"'</label>
 					<sensitive>false</sensitive>
 				</text>
-				<button>
+				<button'"${focused_cancel}"'>
 			 		<label>'"${lang[6]}"'</label>
 			 		<input file stock="gtk-cancel"></input>
 				</button>
 			</hbox>
 		</vbox>
+		<action signal="key-press-event" condition="command_is_true([ $KEY_RAW = 0x9 ] && echo true)">EXIT:exit</action>
 	</window>
 '

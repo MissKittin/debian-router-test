@@ -36,7 +36,7 @@ if cd /usr/local/etc/insserv.conf.d > /dev/null 2>&1; then
 		if [ -e '/usr/local/etc/insserv.conf.d/busybox-syslogd' ]; then
 			echo ' [EXISTS]'
 		else
-			ln -s ${PACKAGE_DIR}/etc/insserv.conf.d/busybox-syslogd . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+			ln -s ${PACKAGE_DIR}/extras/etc/insserv.conf.d/busybox-syslogd . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 		fi
 else
 	echo '[ln] etc/insserv.conf.d/busybox-syslogd /usr/local/etc/insserv.conf.d [Fail]'

@@ -40,10 +40,12 @@ ${do_chown} && chown root:root ./extras-status.sh
 chmod 755 ./extras-status.sh
 ${do_chown} && chown root:root ./extras
 chmod 755 ./extras
-${do_chown} && chown root:root ./extras/insserv.conf.d
-chmod 755 ./extras/insserv.conf.d
-${do_chown} && chown root:root ./extras/insserv.conf.d/busybox-syslogd
-chmod 644 ./extras/insserv.conf.d/busybox-syslogd
+${do_chown} && chown root:root ./extras/etc
+chmod 755 ./extras/etc
+${do_chown} && chown root:root ./extras/etc/insserv.conf.d
+chmod 755 ./extras/etc/insserv.conf.d
+${do_chown} && chown root:root ./extras/etc/insserv.conf.d/busybox-syslogd
+chmod 644 ./extras/etc/insserv.conf.d/busybox-syslogd
 ${do_chown} && chown root:root ./status.sh
 chmod 755 ./status.sh
 ${do_chown} && chown root:root ./.build.sh

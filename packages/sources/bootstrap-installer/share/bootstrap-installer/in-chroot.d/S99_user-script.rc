@@ -1,5 +1,0 @@
-# Execute last user script
-if [ -x '/usr/local/etc/bootstrap-installer_last.sh' ]; then
-	print_message 'executing last user script' "${COLOR_INFO}"
-	/usr/local/etc/bootstrap-installer_last.sh "${@}"
-fi

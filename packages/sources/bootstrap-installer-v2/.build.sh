@@ -90,8 +90,8 @@ ${do_chown} && chown root:root ./share/bootstrap-installer/in-chroot.d
 chmod 755 ./share/bootstrap-installer/in-chroot.d
 ${do_chown} && chown root:root ./share/bootstrap-installer/in-chroot.d/S10_user-repos.rc
 chmod 644 ./share/bootstrap-installer/in-chroot.d/S10_user-repos.rc
-${do_chown} && chown root:root ./share/bootstrap-installer/in-chroot.d/S50-vts.rc
-chmod 644 ./share/bootstrap-installer/in-chroot.d/S50-vts.rc
+${do_chown} && chown root:root ./share/bootstrap-installer/in-chroot.d/S50_vts.rc
+chmod 644 ./share/bootstrap-installer/in-chroot.d/S50_vts.rc
 ${do_chown} && chown root:root ./share/bootstrap-installer/in-chroot.d/S50_initramfs-tools-tweaks.rc
 chmod 644 ./share/bootstrap-installer/in-chroot.d/S50_initramfs-tools-tweaks.rc
 ${do_chown} && chown root:root ./share/bootstrap-installer/in-chroot.d/S10_apt-tweaks.rc

@@ -21,7 +21,7 @@ if [ -e "$(dirname "${0}")/extras-status.sh" ]; then
 fi
 
 # Check if installed
-if [ ! -e /etc/init.d/webadmin ] || [ ! -e /usr/local/etc/default/webadmin ] || [ ! -e /usr/local/etc/init.d/webadmin ] || [ ! -e /usr/local/etc/webadmin.php.ini ] || [ ! -e /usr/local/share/webadmin ] || [ ! -e /etc/sudoers.d/webadmin ]; then
+if [ ! -e /etc/init.d/webadmin ] || [ ! -e /usr/local/etc/default/webadmin ] || [ ! -e /usr/local/etc/init.d/webadmin ] || [ ! -e /usr/local/etc/webadmin.php.ini ] || [ ! -e /usr/local/share/webadmin ] || [ ! -e /etc/sudoers.d/zwebadmin ]; then
 	echo 'Not installed'
 	exit 1
 fi
@@ -66,8 +66,8 @@ echo -n '[rm] /usr/local/etc/authbind/byport/80'
 	rm /usr/local/etc/authbind/byport/80 > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Uninstall - /usr/local/etc/sudoers.d
-echo -n '[rm] /usr/local/etc/sudoers.d/webadmin'
-	rm /usr/local/etc/sudoers.d/webadmin > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+echo -n '[rm] /usr/local/etc/sudoers.d/zwebadmin'
+	rm /usr/local/etc/sudoers.d/zwebadmin > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Uninstall - /etc/authbind/byport
 echo -n '[rm] /etc/authbind/byport/80'
@@ -77,9 +77,9 @@ echo -n '[rm] /etc/authbind/byport/80'
 echo -n '[rm] /etc/init.d/webadmin'
 	rm /etc/init.d/webadmin > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
-# Uninstall - /etc/sudoers.d/webadmin
-echo -n '[rm] /etc/sudoers.d/webadmin'
-	rm /etc/sudoers.d/webadmin > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+# Uninstall - /etc/sudoers.d/zwebadmin
+echo -n '[rm] /etc/sudoers.d/zwebadmin'
+	rm /etc/sudoers.d/zwebadmin > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Notification
 echo ''

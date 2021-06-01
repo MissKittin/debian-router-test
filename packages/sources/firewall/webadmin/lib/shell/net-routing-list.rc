@@ -6,10 +6,10 @@ case $1 in
 	'net-routing-list')
 		case $2 in
 			'route')
-				command -v route > /dev/null 2>&1 && route || echo '<span class="content_warning">Not installed!</span>'
+				command -v route > /dev/null 2>&1 && timeout 5 route || echo '<span class="content_warning">Not installed!</span>' # timeout is optional
 			;;
 			'route6')
-				command -v route > /dev/null 2>&1 && route -6 || echo '<span class="content_warning">Not installed!</span>'
+				command -v route > /dev/null 2>&1 && timeout 5 route -6 || echo '<span class="content_warning">Not installed!</span>' # timeout is required
 			;;
 			'brctl')
 				if command -v brctl > /dev/null 2>&1; then

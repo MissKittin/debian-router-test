@@ -1,5 +1,0 @@
-# Execute pre-apt user script
-if [ -x '/usr/local/etc/bootstrap-installer_pre-apt.sh' ]; then
-	print_message 'executing pre-apt user script' "${COLOR_INFO}"
-	/usr/local/etc/bootstrap-installer_pre-apt.sh "${@}"
-fi

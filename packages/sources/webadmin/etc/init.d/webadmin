@@ -101,7 +101,7 @@ case "${1}" in
 				log_daemon_msg 'Precaching scripts' "${DAEMON_NAME}"
 				echo "$(date '+%Y-%m-%d %H:%M:%S') Starting precaching script" >> "${LOG}"
 				sleep 1
-				wget -O- -q "http://127.0.0.1:${port}${PRECACHING_FILE}?compile&autocompile" >> ${PRECACHING_LOG} 2>&1 && log_end_msg 0 || log_end_msg 1
+				timeout 60 wget -O- -q "http://127.0.0.1:${port}${PRECACHING_FILE}?compile&autocompile" >> ${PRECACHING_LOG} 2>&1 && log_end_msg 0 || log_end_msg 1
 				echo "$(date '+%Y-%m-%d %H:%M:%S') Precaching script ended" >> "${LOG}"
 
 				[ -e "${PRECACHING_LOG}.gz" ] && rm "${PRECACHING_LOG}.gz"

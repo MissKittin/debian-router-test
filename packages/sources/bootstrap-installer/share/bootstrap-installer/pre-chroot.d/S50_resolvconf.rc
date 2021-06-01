@@ -1,8 +1,0 @@
-# Copy resolv.conf
-if [ -e '/etc/resolv.conf' ]; then
-	print_message 'copying resolv.conf' "${COLOR_INFO}"
-	[ -e './etc/resolv.conf' ] && rm ./etc/resolv.conf
-	cp /etc/resolv.conf ./etc/resolv.conf
-else
-	print_message 'host OS does not have /etc/resolv.conf' "${COLOR_FAIL}"
-fi

@@ -1,3 +1,0 @@
-# Import configuration
-print_message 'importing configuration' "${COLOR_INFO}"
-. /usr/local/etc/bootstrap-installer.rc

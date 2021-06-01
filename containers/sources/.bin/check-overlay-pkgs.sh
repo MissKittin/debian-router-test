@@ -35,6 +35,7 @@ print_version_b()
 	local version="$(echo -n "${3}" | tr -d '(' | tr -d ')')"
 	local line
 	echo -n " ${package} ${version} "
+	"${version_check}" || echo ''
 	if "${version_check}"; then
 		apt-cache policy "${package}" | grep 'Candidate' | while read line; do
 			dpkg --compare-versions "$(print_S2 ${line})" gt "${version}" && echo '[upgradable]' || echo '[up to date]'

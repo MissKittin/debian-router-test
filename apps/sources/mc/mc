@@ -5,22 +5,22 @@ if [ ! -e "$(dirname "$(readlink -f "${0}")")/mc.tar.gz" ]; then
 	exit 1
 fi
 
-if [ ! -e /tmp/.mc ]; then
+if [ ! -e /var/tmp/.apps/.mc ]; then
 	[ ! -e "${HOME}/.config/mc/mcedit" ] && mkdir -p "${HOME}/.config/mc/mcedit"
-	[ ! -L "${HOME}/.config/mc/mcedit/Syntax" ] && ln -s "/tmp/.mc/share/mc/syntax" "${HOME}/.config/mc/mcedit/Syntax"
+	[ ! -L "${HOME}/.config/mc/mcedit/Syntax" ] && ln -s "/var/tmp/.apps/.mc/share/mc/syntax" "${HOME}/.config/mc/mcedit/Syntax"
 	[ ! -e "${HOME}/.local/share/mc" ] && mkdir -p "${HOME}/.local/share/mc"
-	[ ! -L "${HOME}/.local/share/mc/skins" ] && ln -s "/tmp/.mc/share/mc/skins" "${HOME}/.local/share/mc/skins"
+	[ ! -L "${HOME}/.local/share/mc/skins" ] && ln -s "/var/tmp/.apps/.mc/share/mc/skins" "${HOME}/.local/share/mc/skins"
 
-	tar xf $(dirname "$(readlink -f "$0")")/mc.tar.gz -C /tmp
-	LD_LIBRARY_PATH=/tmp/.mc/lib /tmp/.mc/bin/${0##*/}-bin $@
+	tar xf $(dirname "$(readlink -f "$0")")/mc.tar.gz -C /var/tmp/.apps
+	LD_LIBRARY_PATH=/var/tmp/.apps/.mc/lib /var/tmp/.apps/.mc/bin/${0##*/}-bin $@
 
 	while ps -A | grep ${0##*/}-bin > /dev/null 2>&1; do
 		sleep 1
 	done
 
-	rm -r -f /tmp/.mc
+	rm -r -f /var/tmp/.apps/.mc
 else
-	LD_LIBRARY_PATH=/tmp/.mc/lib /tmp/.mc/bin/mc-bin $@
+	LD_LIBRARY_PATH=/var/tmp/.apps/.mc/lib /var/tmp/.apps/.mc/bin/mc-bin $@
 fi
 
 exit 0

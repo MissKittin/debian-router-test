@@ -63,8 +63,8 @@ echo -n '/usr/local/etc/authbind/byport/80'
 	fi
 
 # /usr/local/etc/sudoers.d
-echo -n '/usr/local/etc/sudoers.d/webadmin'
-	if [ -L /usr/local/etc/sudoers.d/webadmin ] && [ -e /usr/local/etc/sudoers.d/webadmin ]; then
+echo -n '/usr/local/etc/sudoers.d/zwebadmin'
+	if [ -L /usr/local/etc/sudoers.d/zwebadmin ] && [ -e /usr/local/etc/sudoers.d/zwebadmin ]; then
 		installed=true
 		echo ' [ OK ]'
 	else
@@ -93,8 +93,8 @@ echo -n '/etc/init.d/webadmin'
 	fi
 
 # /etc/sudoers.d
-echo -n '/etc/sudoers.d/webadmin'
-	if [ -L /etc/sudoers.d/webadmin ] && [ -e /etc/sudoers.d/webadmin ]; then
+echo -n '/etc/sudoers.d/zwebadmin'
+	if [ -L /etc/sudoers.d/zwebadmin ] && [ -e /etc/sudoers.d/zwebadmin ]; then
 		installed=true
 		echo ' [ OK ]'
 	else

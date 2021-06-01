@@ -1,0 +1,3 @@
+#!/bin/sh
+[ -e /run/initramfs/no-fsck ] || echo -n '' > /run/initramfs/no-fsck
+exit 0

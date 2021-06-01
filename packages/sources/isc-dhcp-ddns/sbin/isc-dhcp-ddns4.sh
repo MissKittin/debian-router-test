@@ -39,7 +39,7 @@ case "${action}" in
 
 		# Check if exists in localdns hosts files
 		if [ -e "${localdns_hosts_file}" ]; then # localdns package may not be installed
-			read_file "${localdns_hosts_file}" | grep "\b${hostname}${lan_domain}\b" > /dev/null 2>&1 && abort_push "${hostname}${lan_domain} already exists in ${localdns_hosts_file}" 0
+			read_file "${localdns_hosts_file}" | grep "\b${hostname}\b" > /dev/null 2>&1 && abort_push "${hostname}${lan_domain} already exists in ${localdns_hosts_file}" 0
 		fi
 
 		# Check if exists in ddns hosts

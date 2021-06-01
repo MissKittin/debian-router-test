@@ -1,7 +1,0 @@
-# Add non-privileged user (4/21)
-if [ "${username}" = '' ]; then
-	print_message 'username is empty - not adding user' "${COLOR_FAIL}"
-else
-	print_message 'adding non-privileged user' "${COLOR_SUCCESS}"
-	adduser --gecos '' ${username}
-fi

@@ -5,17 +5,17 @@ if [ ! -e "$(dirname "$(readlink -f "${0}")")/leafpad.tar.gz" ]; then
 	exit 1
 fi
 
-if [ ! -e /tmp/.leafpad ]; then
-	tar xf $(dirname "$(readlink -f "$0")")/leafpad.tar.gz -C /tmp
-	FONTCONFIG_FILE=/tmp/.leafpad/etc/fonts/fonts.conf LD_LIBRARY_PATH=/tmp/.leafpad/lib /tmp/.leafpad/bin/leafpad-bin $@ &
+if [ ! -e /var/tmp/.apps/.leafpad ]; then
+	tar xf $(dirname "$(readlink -f "$0")")/leafpad.tar.gz -C /var/tmp/.apps
+	FONTCONFIG_FILE=/var/tmp/.apps/.leafpad/etc/fonts/fonts.conf LD_LIBRARY_PATH=/var/tmp/.apps/.leafpad/lib /var/tmp/.apps/.leafpad/bin/leafpad-bin $@ &
 
 	while ps -A | grep leafpad-bin > /dev/null 2>&1; do
 		sleep 1
 	done
 
-	rm -r -f /tmp/.leafpad
+	rm -r -f /var/tmp/.apps/.leafpad
 else
-	FONTCONFIG_FILE=/tmp/.leafpad/etc/fonts/fonts.conf LD_LIBRARY_PATH=/tmp/.leafpad/lib /tmp/.leafpad/bin/leafpad-bin $@
+	FONTCONFIG_FILE=/var/tmp/.apps/.leafpad/etc/fonts/fonts.conf LD_LIBRARY_PATH=/var/tmp/.apps/.leafpad/lib /var/tmp/.apps/.leafpad/bin/leafpad-bin $@
 fi
 
 exit 0

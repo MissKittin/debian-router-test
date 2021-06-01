@@ -5,24 +5,24 @@ if [ ! -e "$(dirname "$(readlink -f "${0}")")/rox-filer.tar.gz" ]; then
 	exit 1
 fi
 
-if [ ! -e /tmp/.rox-filer ]; then
-	tar xf $(dirname "$(readlink -f "${0}")")/rox-filer.tar.gz -C /tmp
+if [ ! -e /var/tmp/.apps/.rox-filer ]; then
+	tar xf $(dirname "$(readlink -f "${0}")")/rox-filer.tar.gz -C /var/tmp/.apps
 	if [ ! -e "${HOME}/.icons/ROX" ]; then
 		[ -e "${HOME}/.icons" ] && rm ${HOME}/.icons/ROX > /dev/null 2>&1 || mkdir ${HOME}/.icons
-		ln -s /tmp/.rox-filer/share/rox/ROX ${HOME}/.icons/ROX
+		ln -s /var/tmp/.apps/.rox-filer/share/rox/ROX ${HOME}/.icons/ROX
 	fi
 
-	#FONTCONFIG_FILE=/tmp/.rox-filer/etc/fonts/fonts.conf LD_LIBRARY_PATH=/tmp/.rox-filer/lib /tmp/.rox-filer/bin/rox-filer $@
-	XDG_DATA_DIRS=/tmp/.rox-filer/share GDK_PIXBUF_MODULEDIR=/tmp/.rox-filer/lib/gdk-pixbuf-2.0/2.10.0/loaders GDK_PIXBUF_MODULE_FILE=/tmp/.rox-filer/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache FONTCONFIG_FILE=/tmp/.rox-filer/etc/fonts/fonts.conf LD_LIBRARY_PATH=/tmp/.rox-filer/lib /tmp/.rox-filer/bin/rox-filer $@
+	#FONTCONFIG_FILE=/var/tmp/.apps/.rox-filer/etc/fonts/fonts.conf LD_LIBRARY_PATH=/var/tmp/.apps/.rox-filer/lib /var/tmp/.apps/.rox-filer/bin/rox-filer $@
+	XDG_DATA_DIRS=/var/tmp/.apps/.rox-filer/share GDK_PIXBUF_MODULEDIR=/var/tmp/.apps/.rox-filer/lib/gdk-pixbuf-2.0/2.10.0/loaders GDK_PIXBUF_MODULE_FILE=/var/tmp/.apps/.rox-filer/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache FONTCONFIG_FILE=/var/tmp/.apps/.rox-filer/etc/fonts/fonts.conf LD_LIBRARY_PATH=/var/tmp/.apps/.rox-filer/lib /var/tmp/.apps/.rox-filer/bin/rox-filer $@
 
 	while ps -A | grep rox-filer > /dev/null 2>&1; do
 		sleep 1
 	done
 
-	rm -r -f /tmp/.rox-filer
+	rm -r -f /var/tmp/.apps/.rox-filer
 else
-	#FONTCONFIG_FILE=/tmp/.rox-filer/etc/fonts/fonts.conf LD_LIBRARY_PATH=/tmp/.rox-filer/lib /tmp/.rox-filer/bin/rox-filer $@
-	XDG_DATA_DIRS=/tmp/.rox-filer/share GDK_PIXBUF_MODULEDIR=/tmp/.rox-filer/lib/gdk-pixbuf-2.0/2.10.0/loaders GDK_PIXBUF_MODULE_FILE=/tmp/.rox-filer/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache FONTCONFIG_FILE=/tmp/.rox-filer/etc/fonts/fonts.conf LD_LIBRARY_PATH=/tmp/.rox-filer/lib /tmp/.rox-filer/bin/rox-filer $@
+	#FONTCONFIG_FILE=/var/tmp/.apps/.rox-filer/etc/fonts/fonts.conf LD_LIBRARY_PATH=/var/tmp/.apps/.rox-filer/lib /var/tmp/.apps/.rox-filer/bin/rox-filer $@
+	XDG_DATA_DIRS=/var/tmp/.apps/.rox-filer/share GDK_PIXBUF_MODULEDIR=/var/tmp/.apps/.rox-filer/lib/gdk-pixbuf-2.0/2.10.0/loaders GDK_PIXBUF_MODULE_FILE=/var/tmp/.apps/.rox-filer/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache FONTCONFIG_FILE=/var/tmp/.apps/.rox-filer/etc/fonts/fonts.conf LD_LIBRARY_PATH=/var/tmp/.apps/.rox-filer/lib /var/tmp/.apps/.rox-filer/bin/rox-filer $@
 fi
 
 exit 0

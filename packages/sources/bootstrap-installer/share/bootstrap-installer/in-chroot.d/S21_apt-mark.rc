@@ -1,7 +1,0 @@
-# Mark all packages installed by debootstrap as auto-installed (5/21)
-print_message 'all manual packages to auto packages' "${COLOR_INFO}"
-apt-mark showmanual | while read line; do
-	apt-mark auto ${line}
-done
-
-unset line

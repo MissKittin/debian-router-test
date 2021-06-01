@@ -1,6 +1,7 @@
 # Mount system directories
 print_message 'binding system mountpoints' "${COLOR_INFO}"
 
-for i in dev dev/pts proc run sys; do
+for i in dev dev/pts proc sys; do
 	mount --bind /${i} ./${i}
 done
+mount -t tmpfs run ./run

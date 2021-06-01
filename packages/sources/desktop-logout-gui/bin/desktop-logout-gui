@@ -12,6 +12,34 @@ else
 fi
 . "${RESOURCES_DIR}/lang.rc"
 
+case "${1}" in
+	'--help' | '-h')
+		echo 'desktop-logout-gui'
+		echo 'desktop-logout-gui --focused-button=button-name' # this case is in gui.rc
+		echo ' available buttons: logout switch-user lock shutdown reboot suspend hybrid-suspend hibernate lock-tick'
+		echo 'desktop-logout-gui --run=method [--no-lock-screen]'
+		echo ' available methods: logout switch-user lock shutdown reboot suspend hybrid-suspend hibernate'
+		echo ' note: $do_lock_screen is true with --run option by default'
+		exit '0'
+	;;
+	--run=*)
+		[ "${2}" = '--no-lock-screen' ] && do_lock_screen='false' || do_lock_screen='true'
+		case "${1#--run=}" in
+			'logout') EXIT="${lang[7]}"; ;;
+			'switch-user') EXIT="${lang[11]}"; ;;
+			'lock') EXIT="${lang[5]}"; ;;
+			'shutdown') EXIT="${lang[3]}"; ;;
+			'reboot') EXIT="${lang[2]}"; ;;
+			'suspend') EXIT="${lang[4]}"; ;;
+			'hybrid-suspend') EXIT="${lang[10]}"; ;;
+			'hibernate') EXIT="${lang[8]}"; ;;
+			*) echo '--run: wrong method specified'; exit '1'; ;;
+		esac
+		. "${RESOURCES_DIR}/methods.rc"
+		exit '0'
+	;;
+esac
+
 . "${RESOURCES_DIR}/methods-enabled.rc"
 . "${RESOURCES_DIR}/gui.rc"
 

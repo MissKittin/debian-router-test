@@ -44,12 +44,31 @@ ${do_chown} && chown root:root ./install.sh
 chmod 755 ./install.sh
 ${do_chown} && chown root:root ./uninstall.sh
 chmod 755 ./uninstall.sh
-${do_chown} && chown root:root ./boot
-chmod 755 ./boot
-${do_chown} && chown root:root ./boot/initrd-fsck-patch.img
-chmod 644 ./boot/initrd-fsck-patch.img
 ${do_chown} && chown root:root ./VERSION.txt
 chmod 644 ./VERSION.txt
+${do_chown} && chown root:root ./.source
+chmod 755 ./.source
+${do_chown} && chown root:root ./.source/sbin
+chmod 755 ./.source/sbin
+${do_chown} && chown root:root ./.source/sbin/fsck.ext4
+chmod 755 ./.source/sbin/fsck.ext4
+${do_chown} && chown root:root ./.source/sbin/e2fsck
+chmod 755 ./.source/sbin/e2fsck
+${do_chown} && chown root:root ./.source/sbin/fsck
+chmod 755 ./.source/sbin/fsck
+
+if [ ! -e './boot/initrd-fsck-patch.img' ]; then
+	echo -n 'Building image... '
+	mkdir ./boot
+	cd ./.source
+	find | cpio --create --format='newc' > ../boot/initrd-fsck-patch.img
+	gzip -9 ../boot/initrd-fsck-patch.img
+	mv ../boot/initrd-fsck-patch.img.gz ../boot/initrd-fsck-patch.img
+	for i in 'fsck.ext4' 'e2fsck' 'fsck'; do
+		chmod 644 ./sbin/${i}
+	done
+	cd ..
+fi
 
 chmod 644 ./.build.sh
 echo ''

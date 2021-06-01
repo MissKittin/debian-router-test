@@ -33,6 +33,7 @@ FILES='
 	login-plugins/01_internet-info
 	login-plugins/05_check-dash
 	login-plugins/15_check-js
+	login-plugins/20_check-https
 	net-bwusage
 	net-devices
 	net-wicd

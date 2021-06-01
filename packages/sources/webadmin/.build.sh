@@ -52,8 +52,8 @@ ${do_chown} && chown root:root ./etc/rc.local.d/PKx_webadmin.rc
 chmod 644 ./etc/rc.local.d/PKx_webadmin.rc
 ${do_chown} && chown root:root ./etc/sudoers.d
 chmod 755 ./etc/sudoers.d
-${do_chown} && chown root:root ./etc/sudoers.d/webadmin
-chmod 640 ./etc/sudoers.d/webadmin
+${do_chown} && chown root:root ./etc/sudoers.d/zwebadmin
+chmod 640 ./etc/sudoers.d/zwebadmin
 ${do_chown} && chown root:root ./extras-status.sh
 chmod 755 ./extras-status.sh
 ${do_chown} && chown root:root ./extras

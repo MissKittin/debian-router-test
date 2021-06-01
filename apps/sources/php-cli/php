@@ -1,14 +1,19 @@
 #!/bin/sh
 
+if [ -e "$(dirname "$(readlink -f "${0}")")/php-cli" ]; then
+	LD_LIBRARY_PATH="$(dirname "$(readlink -f "${0}")")/php-cli/lib" "$(dirname "$(readlink -f "${0}")")/php-cli/bin/php" $@
+	exit $?
+fi
+
 if [ ! -e "$(dirname "$(readlink -f "${0}")")/php-cli.tar.gz" ]; then
 	echo 'Build PHP first'
 	exit 1
 fi
 
-if [ ! -e /tmp/.php-cli ]; then
-	tar xf $(dirname "$(readlink -f "${0}")")/php-cli.tar.gz -C /tmp
+if [ ! -e /var/tmp/.apps/.php-cli ]; then
+	tar xf $(dirname "$(readlink -f "${0}")")/php-cli.tar.gz -C /var/tmp/.apps
 
-	LD_LIBRARY_PATH=/tmp/.php-cli/lib /tmp/.php-cli/bin/php $@ &
+	LD_LIBRARY_PATH=/var/tmp/.apps/.php-cli/lib /var/tmp/.apps/.php-cli/bin/php $@ &
 	PHP_PID="${!}"
 	trap 'kill ${PHP_PID}' INT
 	wait
@@ -17,9 +22,9 @@ if [ ! -e /tmp/.php-cli ]; then
 		sleep 1
 	done
 
-	rm -r -f /tmp/.php-cli
+	rm -r -f /var/tmp/.apps/.php-cli
 else
-	LD_LIBRARY_PATH=/tmp/.php-cli/lib /tmp/.php-cli/bin/php $@
+	LD_LIBRARY_PATH=/var/tmp/.apps/.php-cli/lib /var/tmp/.apps/.php-cli/bin/php $@
 fi
 
 exit 0

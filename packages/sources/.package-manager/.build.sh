@@ -52,6 +52,8 @@ ${do_chown} && chown root:root ./dev-tools
 chmod 755 ./dev-tools
 ${do_chown} && chown root:root ./dev-tools/dumpmods.sh
 chmod 755 ./dev-tools/dumpmods.sh
+${do_chown} && chown root:root ./dev-tools/dumpsymlinks.sh
+chmod 755 ./dev-tools/dumpsymlinks.sh
 ${do_chown} && chown root:root ./dev-tools/package2repo.sh
 chmod 755 ./dev-tools/package2repo.sh
 ${do_chown} && chown root:root ./CHANGELOG.txt

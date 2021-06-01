@@ -18,12 +18,14 @@ This package allows you to install systemd dependent packages without all that c
 3) upgrade systemd packages
 4) install another init
 5) if `systemd-sysv` and `systemd-shim` can be removed, purge these packages
+6) run `pam-auth-update`
 
 `systemd` package may have configuration files installed:
 1) **purge** `systemd`, **remove** dependent packages
 2) install `systemd`
 3) install dependent packages
 4) `apt-mark auto systemd`
+5) run `pam-auth-update`
 
 ### Fake packages
 * `libpam-systemd`

@@ -1,6 +1,0 @@
-# Import all enabled libraries
-
-for library in ${PATH_TO_ROOT}${SHARE_DIR}/lib/I*.rc; do
-	. ${library}
-done
-unset library

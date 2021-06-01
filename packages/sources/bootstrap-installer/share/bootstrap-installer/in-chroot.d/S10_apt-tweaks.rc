@@ -1,7 +1,0 @@
-# Do not install recommended packages (6/21)
-if ${apt_no_recommends}; then
-	print_message 'tweaking apt' "${COLOR_INFO}"
-	mkdir -p /usr/local/etc/${installer_config_dir}apt/apt.conf.d
-	echo 'apt::install-recommends "false";' > /usr/local/etc/${installer_config_dir}apt/apt.conf.d/99-no-recommends
-	ln -s /usr/local/etc/${installer_config_dir}apt/apt.conf.d/99-no-recommends /etc/apt/apt.conf.d/99-no-recommends
-fi

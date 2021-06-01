@@ -1,6 +1,0 @@
-# Import all libraries
-for library in ${SHARE_DIR}/lib/I*.rc; do
-	. ${library}
-done
-
-unset library

@@ -61,7 +61,7 @@ fi
 
 
 # Check if installed
-if [ -e /etc/init.d/webadmin ] || [ -e /usr/local/etc/default/webadmin ] || [ -e /usr/local/etc/init.d/webadmin ] || [ -e /usr/local/etc/webadmin.php.ini ] || [ -e /usr/local/share/webadmin ] || [ -e /etc/sudoers.d/webadmin ]; then
+if [ -e /etc/init.d/webadmin ] || [ -e /usr/local/etc/default/webadmin ] || [ -e /usr/local/etc/init.d/webadmin ] || [ -e /usr/local/etc/webadmin.php.ini ] || [ -e /usr/local/share/webadmin ] || [ -e /etc/sudoers.d/zwebadmin ]; then
 	echo 'Already installed'
 	exit 1
 fi
@@ -106,7 +106,7 @@ echo -n '[ln] etc/authbind/byport/80 /usr/local/etc/authbind/byport'
 # Install - /usr/local/etc/sudoers.d
 cd /usr/local/etc/sudoers.d
 echo -n '[ln] etc/sudoers.d/webadmin /usr/local/etc/sudoers.d'
-	ln -s ${PACKAGE_DIR}/etc/sudoers.d/webadmin . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+	ln -s ${PACKAGE_DIR}/etc/sudoers.d/zwebadmin . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Install - /etc/authbind/byport
 cd /etc/authbind/byport
@@ -118,10 +118,10 @@ cd /etc/init.d
 echo -n '[ln] /usr/local/etc/init.d/webadmin /etc/init.d'
 	ln -s /usr/local/etc/init.d/webadmin . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
-# Install - /etc/sudoers.d/webadmin
+# Install - /etc/sudoers.d/zwebadmin
 cd /etc/sudoers.d
-echo -n '[ln] /usr/local/etc/sudoers.d/webadmin /etc/sudoers.d'
-	ln -s /usr/local/etc/sudoers.d/webadmin . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+echo -n '[ln] /usr/local/etc/sudoers.d/zwebadmin /etc/sudoers.d'
+	ln -s /usr/local/etc/sudoers.d/zwebadmin . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Install - /usr/local/sbin
 #cd /usr/local/sbin
@@ -139,7 +139,7 @@ php /usr/local/share/webadmin/lib/console/generate-cache.php
 # Notification
 echo ''
 #echo ' ! Configure /usr/local/etc/rc.local.d'
-echo ' ! Configure user in /etc/sudoers.d/webadmin'
+echo ' ! Configure user in /etc/sudoers.d/zwebadmin'
 echo ' ! chown user /usr/local/share/${PACKAGE_DIR}/${PACKAGE_NAME}/etc/authbind/byport/80'
 echo ' ! Configure user in /usr/local/default/webadmin'
 #echo ' ! Configure user in /usr/local/etc/rc.local.d/P*_webadmin.rc'

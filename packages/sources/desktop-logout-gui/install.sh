@@ -15,7 +15,7 @@ if [ ! "$(whoami)" = 'root' ]; then
 fi
 
 # Check environment
-if [ ! -e /usr/bin/gtkdialog ]; then
+if [ ! -e /usr/bin/gtkdialog ] && [ ! -e /usr/local/bin/gtkdialog ]; then
 	echo 'gtkdialog debian package not installed'
 	exit 1
 fi

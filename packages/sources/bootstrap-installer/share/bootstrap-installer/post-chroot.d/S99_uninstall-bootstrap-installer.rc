@@ -1,5 +1,0 @@
-# Uninstall this package (not used anymore in this OS)
-# dirname+readlink == /path/to/package/sbin ; uninstall.sh is in parent directory
-
-print_message 'removing bootstrap-installer' "${COLOR_INFO}"
-"$(dirname "$(readlink -f "${0}")")/../uninstall.sh" --force

@@ -196,6 +196,10 @@ ${do_chown} && chown root:root ./webadmin/login-plugins/15_check-js
 chmod 755 ./webadmin/login-plugins/15_check-js
 ${do_chown} && chown root:root ./webadmin/login-plugins/15_check-js/check-js.php
 chmod 644 ./webadmin/login-plugins/15_check-js/check-js.php
+${do_chown} && chown root:root ./webadmin/login-plugins/20_check-https
+chmod 755 ./webadmin/login-plugins/20_check-https
+${do_chown} && chown root:root ./webadmin/login-plugins/20_check-https/check-https.php
+chmod 644 ./webadmin/login-plugins/20_check-https/check-https.php
 ${do_chown} && chown root:root ./webadmin/sys-clock
 chmod 755 ./webadmin/sys-clock
 ${do_chown} && chown root:root ./webadmin/sys-clock/shell.php
@@ -420,6 +424,7 @@ ln -s index.min.php ./webadmin/sys-storage/script/index.php
 ln -s ../../lib/prevent-index.php ./webadmin/login-plugins/05_check-dash/index.php
 ln -s ../../lib/prevent-index.php ./webadmin/login-plugins/01_internet-info/index.php
 ln -s ../../lib/prevent-index.php ./webadmin/login-plugins/15_check-js/index.php
+ln -s ../../lib/prevent-index.php ./webadmin/login-plugins/20_check-https/index.php
 ln -s ../prevent-index.php ./webadmin-extras/lib/favicon/index.php
 ln -s ../prevent-index.php ./webadmin/lib/opt_htmlheaders/index.php
 ln -s index.min.php ./webadmin-extras/lib/themes/dark/index.php

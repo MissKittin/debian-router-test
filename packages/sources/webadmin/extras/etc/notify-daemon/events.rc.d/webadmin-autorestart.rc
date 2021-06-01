@@ -9,7 +9,17 @@ check_webadmin_autorestart()
 			log 'webadmin_autorestart: testing webadmin server'
 			if [ "$(timeout 60 wget -O- -q --content-on-error 'http://127.0.0.1/lib/prevent-index.php?check-for-autorestart' 2>&1)" = '' ]; then
 				log 'webadmin_autorestart: restarting webadmin'
-				/etc/init.d/webadmin restart > /dev/null 2>&1
+				if [ -e '/var/run/webadmin/webadmin.pid' ]; then
+					#pkill -KILL -P $(cat '/var/run/webadmin/webadmin.pid')
+					kill -KILL -- -$(($(cat '/var/run/webadmin/webadmin.pid')-1))
+				else
+					log 'webadmin_autorestart: no /var/run/webadmin/webadmin.pid - cannot kill child processes'
+				fi
+				# start and stop twice due to precaching error
+				/etc/init.d/webadmin stop > /dev/null 2>&1
+				/etc/init.d/webadmin start > /dev/null 2>&1
+				/etc/init.d/webadmin stop > /dev/null 2>&1
+				/etc/init.d/webadmin start > /dev/null 2>&1
 				log 'webadmin_autorestart: webadmin restarted'
 			else
 				log 'webadmin_autorestart: webadmin is running normally'

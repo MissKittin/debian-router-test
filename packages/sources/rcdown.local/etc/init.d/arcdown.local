@@ -5,7 +5,7 @@
 # Required-Stop:
 # Default-Start:     0 6
 # Default-Stop:
-# Short-Description: Run /etc/rcdown.local if it exist
+# Short-Description: Run /usr/local/etc/rcdown.local if it exist
 ### END INIT INFO
 
 
@@ -17,8 +17,8 @@ PATH=/sbin:/usr/sbin:/bin:/usr/bin
 do_start() {
 	if [ -x /etc/rc.local ]; then
 	        #[ "$VERBOSE" != no ] && log_begin_msg "Running local boot scripts (/etc/rc.local)"
-	        log_begin_msg "Running local shutdown scripts (/etc/rcdown.local)"
-		/etc/rcdown.local
+	        log_begin_msg "Running local shutdown scripts (/usr/local/etc/rcdown.local)"
+		/usr/local/etc/rcdown.local
 		ES=$?
 		#[ "$VERBOSE" != no ] && log_end_msg $ES
 		log_end_msg $ES

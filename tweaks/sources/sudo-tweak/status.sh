@@ -3,7 +3,7 @@ installed=false
 broken=false
 echo ''
 
-for i in /etc/default/hwclock /etc/default/hwclock; do
+for i in /usr/local/etc/sudoers.d/nodns /etc/sudoers.d/nodns /usr/local/etc/sudoers.d/nolecture /etc/sudoers.d/nolecture; do
 	echo -n "${i}"
 		if [ -L ${i} ] && [ -e ${i} ]; then
 			installed=true

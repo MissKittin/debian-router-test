@@ -4,6 +4,7 @@ Tweak for sysvinit that allows aggressive parallelization startup scripts.
 ### Warning
 **DO NOT PARALELIZE SCRIPTS LIKE `check*`, `mount*`, `udev*`, `kmod`, `bootmisc`, `rc.local` and `rmnologin`.**  
 **IF YOU DO THIS, YOU CAN DESTROY YOUR OS!**  
+**RACE CONDITION MAY OCCUR** eg. between networking and hostapd: when hostapd first starts it will create a bridge which will not be configured by `/etc/init.d/networking`  
 **YOU USE THIS PACKAGE AT YOUR OWN RISK.**
 
 ### Configuration

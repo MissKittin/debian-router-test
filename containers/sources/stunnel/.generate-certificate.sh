@@ -1,7 +1,10 @@
 #!/bin/sh
+
 dns_link="${1}"
+ip_addr="${2}"
+
 if [ "${dns_link}" = '' ]; then
-	echo 'generate-certificate.sh dns-link'
+	echo 'generate-certificate.sh dns-link [ip-address]'
 	exit 1
 fi
 
@@ -11,7 +14,7 @@ cd '/ssl'
 
 # CA gen
 openssl genrsa -out ./rootCA.key 2048
-openssl req -x509 -new -nodes -key ./rootCA.key -sha256 -days 36500 -out ./rootCA.pem -subj '/CN=${dns_link}/O=${dns_link}/OU=${dns_link}'
+openssl req -x509 -new -nodes -key ./rootCA.key -sha256 -days 36500 -out ./rootCA.pem -subj '/CN='"${dns_link}"'/O='"${dns_link}"'/OU='"${dns_link}"
 
 # Server - certificate params
 echo 'authorityKeyIdentifier=keyid,issuer' > '/v3.ext'
@@ -21,6 +24,7 @@ echo 'subjectAltName = @alt_names' >> '/v3.ext'
 echo '' >> '/v3.ext'
 echo '[alt_names]' >> '/v3.ext'
 echo "DNS.1 = ${dns_link}" >> '/v3.ext'
+[ ! "${ip_addr}" = '' ] && echo "IP.1 = ${ip_addr}" >> '/v3.ext'
 
 # Server - certificate gen
 openssl req -new -newkey rsa:2048 -nodes -keyout ./server.key -subj '/C=SE/ST=None/L=NB/O='"${dns_link}"'/CN='"${dns_link}" -out ./server.csr

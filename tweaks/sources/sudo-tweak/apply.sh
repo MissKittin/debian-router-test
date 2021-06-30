@@ -24,13 +24,21 @@ if [ -e /usr/local/etc/sudoers.d/nodns ] || [ -e /etc/sudoers.d/nodns ]; then
 	echo 'Already installed'
 	exit 1
 fi
+if [ -e /usr/local/etc/sudoers.d/nolecture ] || [ -e /etc/sudoers.d/nolecture ]; then
+	echo 'Already installed'
+	exit 1
+fi
 
 cd /usr/local/etc/sudoers.d
 echo -n '[ln] etc/sudoers.d/nodns /usr/local/etc/sudoers.d'
 	ln -s ${PACKAGE_DIR}/etc/sudoers.d/nodns . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+echo -n '[ln] etc/sudoers.d/nolecture /usr/local/etc/sudoers.d'
+	ln -s ${PACKAGE_DIR}/etc/sudoers.d/nolecture . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 cd /etc/sudoers.d
 echo -n '[ln] /usr/local/etc/sudoers.d/nodns /etc/sudoers.d'
 	ln -s /usr/local/etc/sudoers.d/nodns . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+echo -n '[ln] /usr/local/etc/sudoers.d/nolecture /etc/sudoers.d'
+	ln -s /usr/local/etc/sudoers.d/nolecture . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 exit 0

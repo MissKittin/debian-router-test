@@ -9,6 +9,8 @@ if [ ! "${use_sudo}" = '' ] && [ ! "${username}" = '' ]; then
 	# tweak sudo
 	echo 'Defaults !fqdn' > /etc/sudoers.d/nodns
 	chmod 440 /etc/sudoers.d/nodns
+	echo 'Defaults lecture=never' > /etc/sudoers.d/nolecture
+	chmod 440 /etc/sudoers.d/nolecture
 
 	# mount /var/lib/sudo as tmpfs
 	[ -e "/usr/local/etc/${installer_config_dir}fstab" ] && echo 'sudo /var/lib/sudo tmpfs auto,nosuid,nodev,noexec,mode=755 0 0' >> /usr/local/etc/${installer_config_dir}fstab
@@ -24,6 +26,8 @@ if [ ! "${use_sudo}" = '' ] && [ ! "${username}" = '' ]; then
 		# tweak sudo
 		mv /etc/sudoers.d/nodns /usr/local/etc/${installer_config_dir}sudoers.d/nodns
 		ln -s /usr/local/etc/${installer_config_dir}sudoers.d/nodns /etc/sudoers.d/nodns
+		mv /etc/sudoers.d/nolecture /usr/local/etc/${installer_config_dir}sudoers.d/nolecture
+		ln -s /usr/local/etc/${installer_config_dir}sudoers.d/nolecture /etc/sudoers.d/nolecture
 	fi
 else
 	print_message 'set root password' "${COLOR_FAILED}"

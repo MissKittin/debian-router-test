@@ -20,6 +20,8 @@ ${do_chown} && chown root:root ./etc/sudoers.d
 chmod 755 ./etc/sudoers.d
 ${do_chown} && chown root:root ./etc/sudoers.d/nodns
 chmod 640 ./etc/sudoers.d/nodns
+${do_chown} && chown root:root ./etc/sudoers.d/nolecture
+chmod 640 ./etc/sudoers.d/nolecture
 ${do_chown} && chown root:root ./remove.sh
 chmod 755 ./remove.sh
 ${do_chown} && chown root:root ./status.sh

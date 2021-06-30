@@ -28,9 +28,9 @@ fi
 
 echo "${part} / ${root_partition_fs} auto,suid,nodev,exec,noatime,nodiratime,async 0 1" > /usr/local/etc/${installer_config_dir}fstab
 [ -e '/sys/firmware/efi' ] && echo "${esp_part} /boot/efi vfat noauto,nosuid,nodev,noexec,noatime,nodiratime,async,uid=0,gid=0,umask=137,dmask=027 0 2" >> /usr/local/etc/${installer_config_dir}fstab
-[ ! "${tmp_as_tmpfs}" = '' ] && echo 'tmp /tmp tmpfs auto,nosuid,nodev,noexec,noatime,nodiratime,mode=1777 0 0' >> /usr/local/etc/${installer_config_dir}fstab
-[ ! "${tmp_as_tmpfs}" = '' ] && echo 'tmp /var/tmp tmpfs auto,nosuid,nodev,noexec,noatime,nodiratime 0 0' >> /usr/local/etc/${installer_config_dir}fstab
-[ ! "${root_home_as_tmpfs}" = '' ] && echo 'tmp /root tmpfs auto,nosuid,nodev,noexec,noatime,nodiratime,mode=700 0 0' >> /usr/local/etc/${installer_config_dir}fstab
+[ ! "${tmp_as_tmpfs}" = '' ] && [ -d '/tmp' ] && echo 'tmp /tmp tmpfs auto,nosuid,nodev,noexec,noatime,nodiratime,mode=1777 0 0' >> /usr/local/etc/${installer_config_dir}fstab
+[ ! "${tmp_as_tmpfs}" = '' ] && [ -d '/var/tmp' ] && echo 'tmp /var/tmp tmpfs auto,nosuid,nodev,noexec,noatime,nodiratime 0 0' >> /usr/local/etc/${installer_config_dir}fstab
+[ ! "${root_home_as_tmpfs}" = '' ] && [ -d '/root' ] && echo 'tmp /root tmpfs auto,nosuid,nodev,noexec,noatime,nodiratime,mode=700 0 0' >> /usr/local/etc/${installer_config_dir}fstab
 
 rm /etc/fstab
 ln -s /usr/local/etc/${installer_config_dir}fstab /etc/fstab

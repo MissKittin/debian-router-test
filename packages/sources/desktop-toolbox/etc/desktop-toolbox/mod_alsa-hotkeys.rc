@@ -1,0 +1,4 @@
+AMIXER='amixer' # binary path
+AUDIO_CHANNEL='Master'
+UP_STEPS='3'
+DOWN_STEPS='2'

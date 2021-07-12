@@ -1,0 +1,26 @@
+. "${MODULES_DIR}/lib_module-header.rc"
+
+if [ "${2}" = 'do_system_update' ]; then
+	pre_upgrade
+	apt list --upgradable
+	apt upgrade
+	apt-get autoremove --purge
+	apt-get clean
+	post_upgrade
+	exit 0
+fi
+
+while :; do
+	${APT_UPDATERD} status > /dev/null 2>&1
+	[ "${?}" = '2' ] && break
+	sleep 2
+done
+
+print_S1() { echo -n "${1}"; }
+packages="$(print_S1 $(LANG=C ${APT_CHECK} -h -c -f 2>&1 | grep 'packages can be updated'))"
+if [ "${packages}" = '0' ]; then
+	${NOTIFY_SEND} "${NOTIFY_TITLE}" "${ALL_PACKAGES_UP_TO_DATE}"
+else
+	${NOTIFY_SEND} "${NOTIFY_TITLE}" "${packages} ${N_PACKAGES_CAN_BE_UPDATED}"
+	${TERMINAL_EMULATOR} ${TERMINAL_EMULATOR_OPTS} -e "${SUDO} $(readlink -f ${0}) apt-updater do_system_update"
+fi

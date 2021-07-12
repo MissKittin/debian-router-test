@@ -1,0 +1,7 @@
+# Copy this file to your-daemon-name.rc and edit
+
+DAEMON_NAME='Daemon name'
+DAEMON_START='/etc/init.d/daemon start'
+DAEMON_RESTART='/etc/init.d/daemon restart'
+DAEMON_STOP='/etc/init.d/daemon stop'
+DAEMON_STATUS='/etc/init.d/daemon status'

@@ -1,0 +1,53 @@
+#!/bin/sh
+# Exit codes:
+#  0 - updated
+#  1 - no config file/no wget installed
+#  2 - already updated
+#  3 - already updating
+#  4 - not updated
+#  5 - gzipping log
+
+CONFIG_FILE='/usr/local/etc/apt-updaterd.rc'
+LOG_FILE='/proc/self/fd/1'
+
+if [ ! -e "${CONFIG_FILE}" ]; then
+	echo 'No config file'
+	exit 1
+fi
+. "${CONFIG_FILE}"
+
+if ! command -v ${WGET} > /dev/null 2>&1; then
+	echo 'Wget not installed'
+	exit 1
+fi
+
+if [ -e "${LOG_FILE}" ] && [ -e "${LOG_FILE}.gz" ]; then
+	echo 'Gzipping in progess...'
+	exit 5
+fi
+if [ -e "${LOG_FILE}" ]; then
+	echo 'Updating in progress...'
+	exit 3
+fi
+if [ -e "${LOG_FILE}.gz" ]; then
+	echo 'APT database already updated'
+	exit 2
+fi
+if [ "${1}" = 'status' ]; then
+	echo 'APT database not updated'
+	exit 4
+fi
+
+log() { echo "$(date '+%Y.%M.%d %H:%M:%S') ${@}" >> "${LOG_FILE}"; }
+echo -n '' >> "${LOG_FILE}"
+chmod "${LOG_MODE}" "${LOG_FILE}"
+chown "${LOG_OWNER}" "${LOG_FILE}"
+
+while ! ${WGET} ${WGET_OPTS} "${PING_HOST}"; do
+	log 'Waiting for network'
+	sleep 10
+done
+apt-get update 2>&1 | while read line; do log "${line}"; done
+
+gzip -9 "${LOG_FILE}" > /dev/null 2>&1 &
+exit 0

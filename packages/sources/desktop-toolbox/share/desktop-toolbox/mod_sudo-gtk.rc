@@ -1,0 +1,85 @@
+. "${MODULES_DIR}/lib_module-header.rc"
+
+PARAMS="${@}"
+[ ! "${0##*/}" = 'sudo-gtk' ] && PARAMS="$(echo -n "${@}" | sed 's/sudo-gtk //')"
+
+if [ "x${PARAMS}" = 'x' ]; then
+	echo "${0} program-name"
+	exit 1
+fi
+
+${SUDO} -n 'true' > /dev/null 2>&1 && exec ${SUDO} ${PARAMS}
+
+PASSWD_PROMPT='
+ <window title="'"${LABEL_TITLE}"'" resizable="false" icon-name="systemsettings">
+  <vbox>
+   <hbox>
+    <frame '"${LABEL_ENTER_PASSWORD}"'>
+     <entry activates_default="true">
+      <sensitive>password</sensitive>
+      <variable>PASSWORD</variable>
+     </entry>
+     <expander>
+      <text>
+       <label>'"${PARAMS}"'</label>
+      </text>
+      <label>'"${LABEL_REQUESTED_COMMAND}"'</label>
+     </expander>
+    </frame>
+   </hbox>
+   <hbox>
+    <button>
+     <label>'"${LABEL_CANCEL}"'</label>
+     <input file stock="gtk-cancel"></input>
+     <variable>EXIT</variable>
+    </button>
+    <button>
+     <label>'"${LABEL_OK}"'</label>
+     <input file stock="gtk-ok"></input>
+     <variable>EXIT</variable>
+    </button>
+   </hbox>
+  </vbox>
+  <action signal="key-press-event" condition="command_is_true([ $KEY_RAW = 0x9 ] && echo true)">EXIT:'"${LABEL_CANCEL}"'</action>
+  <action signal="key-press-event" condition="command_is_true([ $KEY_RAW = 0x24 ] && echo true)">EXIT:OK</action>
+ </window>
+'; export PASSWD_PROMPT
+BAD_PASSWORD='
+ <window title="'"${LABEL_TITLE}"'" resizable="false" icon-name="systemsettings">
+  <vbox>
+   <hbox>
+    <pixmap icon_size="6">
+     <input file stock="gtk-dialog-error"></input>
+    </pixmap>
+    <text>
+     <label>'"${LABEL_BAD_PASSWORD}"'</label>
+    </text>
+   </hbox>
+   <hbox>
+    <button>
+     <label>'"${LABEL_OK}"'</label>
+     <input file stock="gtk-ok"></input>
+    </button>
+   </hbox>
+  </vbox>
+ </window>
+'; export BAD_PASSWORD
+
+I="${IFS}"; IFS=''
+for STATEMENTS in $(gtkdialog --program=PASSWD_PROMPT); do
+	eval ${STATEMENTS}
+done
+IFS="${I}"; unset I
+
+[ "${EXIT}" = "${LABEL_CANCEL}" ] && exit 1
+if [ "${PASSWORD}" = '' ]; then
+	gtkdialog --program=BAD_PASSWORD > /dev/null 2>&1
+	exit 1
+fi
+
+if ! echo "${PASSWORD}" | ${SUDO} -S 'true' > /dev/null 2>&1; then
+	gtkdialog --program=BAD_PASSWORD > /dev/null 2>&1
+	exit 1
+fi
+
+exec ${SUDO} ${PARAMS}

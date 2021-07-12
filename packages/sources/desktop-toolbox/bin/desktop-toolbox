@@ -1,0 +1,14 @@
+#!/bin/bash
+MODULES_DIR="/usr/local/share/desktop-toolbox"
+CONFIG_DIR="/usr/local/etc/desktop-toolbox"
+[ "${0##*/}" = 'desktop-toolbox' ] && module="${1}" || module="${0##*/}"
+
+if [ "${module}" = '' ]; then
+	echo 'No module specified'
+elif [ -e "${MODULES_DIR}/mod_${module}.rc" ]; then
+	. "${MODULES_DIR}/mod_${module}.rc"
+else
+	echo "Module ${module} not found"
+fi
+
+exit 0

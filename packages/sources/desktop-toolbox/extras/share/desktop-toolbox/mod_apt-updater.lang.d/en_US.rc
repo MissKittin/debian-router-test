@@ -1,0 +1,4 @@
+NOTIFY_TITLE='System update'
+ALL_PACKAGES_UP_TO_DATE='All packages are up to date'
+N_PACKAGES_CAN_BE_UPDATED='packages can be upgraded'
+TERMINAL_EMULATOR_WINDOW_TITLE='System_update'

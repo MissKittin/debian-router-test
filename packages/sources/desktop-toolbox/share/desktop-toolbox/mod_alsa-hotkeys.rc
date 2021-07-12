@@ -1,0 +1,24 @@
+. "${MODULES_DIR}/lib_module-header.rc"
+
+[ "${0##*/}" = 'alsa-hotkeys' ] && PARAM="${1}" || PARAM="${2}"
+case "${PARAM}" in
+	'up') ${AMIXER} set "${AUDIO_CHANNEL}" "${UP_STEPS}+"; ;;
+	'down') ${AMIXER} set "${AUDIO_CHANNEL}" "${DOWN_STEPS}-"; ;;
+	'mute')
+		[ "${0##*/}" = 'alsa-hotkeys' ] && PARAM="${2}" || PARAM="${3}"
+		case "${PARAM}" in
+			'force-mute') ${AMIXER} set "${AUDIO_CHANNEL}" mute; ;;
+			'force-unmute') ${AMIXER} set "${AUDIO_CHANNEL}" unmute; ;;
+			*)
+				if ${AMIXER} get "${AUDIO_CHANNEL}" | sed 5q | grep -q '\[on\]'; then
+					${AMIXER} set "${AUDIO_CHANNEL}" mute
+				else
+					${AMIXER} set "${AUDIO_CHANNEL}" unmute
+				fi
+			;;
+		esac
+	;;
+	*)
+		echo 'alsa-hotkeys up|down|mute [force-mute|force-unmute]'
+	;;
+esac

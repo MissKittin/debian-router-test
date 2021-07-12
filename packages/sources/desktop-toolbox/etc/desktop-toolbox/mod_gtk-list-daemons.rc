@@ -1,0 +1,1 @@
+SUDO="$(readlink -f "${0}") sudo-gtk" # sudo-gtk module

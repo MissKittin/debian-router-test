@@ -1,0 +1,6 @@
+LABEL_TITLE='sudo'
+LABEL_ENTER_PASSWORD='Hasło użytkownika'
+LABEL_REQUESTED_COMMAND='Żądane polecenie'
+LABEL_CANCEL='Anuluj'
+LABEL_OK='OK'
+LABEL_BAD_PASSWORD='Złe hasło'

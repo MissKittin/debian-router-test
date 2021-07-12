@@ -1,0 +1,7 @@
+LABEL_TITLE='Demony'
+LABEL_START='Start'
+LABEL_RESTART='Restart'
+LABEL_STOP='Stop'
+LABEL_REFRESH='Odśwież'
+LABEL_EXIT='Wyjdź'
+LABEL_NO_DAEMONS_DEFINED='Brak zdefiniowanych demonów'

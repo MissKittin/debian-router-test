@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Daemons
+Name[pl]=Demony
+Comment=Start/stop daemons
+Comment[pl]=Uruchom/zatrzymaj daemony
+Icon=application-x-executable-symbolic
+Exec=gtk-list-daemons
+NoDisplay=false
+Categories=System;
+StartupNotify=false
+Terminal=false

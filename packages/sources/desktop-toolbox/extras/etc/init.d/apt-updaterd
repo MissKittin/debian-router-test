@@ -1,0 +1,32 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          apt-updaterd
+# Required-Start:
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:
+# Short-Description: Run APT database update
+### END INIT INFO
+
+# Options
+DAEMON='/usr/local/sbin/apt-updaterd'
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+. /lib/lsb/init-functions
+
+case "${1}" in
+	'start')
+		log_daemon_msg 'Starting system updater' 'system-updater'
+		start-stop-daemon --start --quiet --background --exec $DAEMON -- && log_end_msg 0 || log_end_msg 1
+	;;
+	'status')
+		exec $DAEMON status
+	;;
+	*)
+		echo "${0} start|status"
+		exit 1
+	;;
+esac
+
+exit 0

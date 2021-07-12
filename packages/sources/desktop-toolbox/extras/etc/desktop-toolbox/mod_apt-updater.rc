@@ -1,0 +1,17 @@
+pre_upgrade()
+{
+	# Put pre upgrade commands here
+	echo -n ''
+}
+post_upgrade()
+{
+	# Put post upgrade commands here
+	echo -n ''
+}
+
+APT_CHECK='apt-check' # binary path
+APT_UPDATERD='/etc/init.d/apt-updaterd'
+NOTIFY_SEND='notify-send' # binary path
+TERMINAL_EMULATOR='x-terminal-emultator' # binary path
+TERMINAL_EMULATOR_OPTS="--hide-menubar --title=${TERMINAL_EMULATOR_WINDOW_TITLE}"
+SUDO='sudo' # binary path

@@ -1,0 +1,7 @@
+LABEL_TITLE='Daemons'
+LABEL_START='Start'
+LABEL_RESTART='Restart'
+LABEL_STOP='Stop'
+LABEL_REFRESH='Refresh'
+LABEL_EXIT='Exit'
+LABEL_NO_DAEMONS_DEFINED='No daemons defined'

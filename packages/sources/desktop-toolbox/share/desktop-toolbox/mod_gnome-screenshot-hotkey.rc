@@ -1,0 +1,8 @@
+. "${MODULES_DIR}/lib_module-header.rc"
+
+if [ ! -e "${SCREENSHOT_FILE%/*}" ]; then
+	mkdir -p "${SCREENSHOT_FILE%/*}"
+	"${SCREENSHOTS_DIR_CHMOD}" && chmod "${SCREENSHOTS_DIR_MODE}" "${SCREENSHOT_FILE%/*}"
+fi
+
+${GNOME_SCREENSHOT} --file=${SCREENSHOT_FILE}

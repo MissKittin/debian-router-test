@@ -1,0 +1,4 @@
+GNOME_SCREENSHOT='gnome-screenshot' # binary path
+SCREENSHOTS_DIR_CHMOD='true'
+SCREENSHOTS_DIR_MODE='1777'
+SCREENSHOT_FILE="/tmp/screenshots/print-screen_$(date '+%Y%M%d%H%M%S%N').png"

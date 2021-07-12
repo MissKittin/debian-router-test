@@ -1,0 +1,6 @@
+LOG_FILE='/var/run/.apt-updater.log'
+LOG_OWNER='root:adm'
+LOG_MODE='640'
+WGET='wget'
+WGET_OPTS='-q --tries=10 --timeout=20 --spider'
+PING_HOST='http://ftp.debian.org/'

@@ -1,0 +1,79 @@
+. "${MODULES_DIR}/lib_module-header.rc"
+
+${SUDO} true || exit 1
+
+if_is_running() { ${SUDO} ${@} > '/dev/null' 2>&1 && echo -n 'gtk-yes' || echo -n 'gtk-no'; }
+create_dialog()
+{
+	DIALOG='
+	<window title="'"${LABEL_TITLE}"'" resizable="false">
+	 <vbox>
+	  <frame>
+	'
+
+	for i in ${CONFIG_DIR}/mod_gtk-list-daemons.rc.d/*.rc; do
+		if [ "${i}" = "${CONFIG_DIR}/mod_gtk-list-daemons.rc.d/*.rc" ]; then
+			DIALOG="${DIALOG}"'
+			<hbox homogeneous="true">
+			 <text>
+			  <label>'"${LABEL_NO_DAEMONS_DEFINED}"'</label>
+			 </text>
+			</hbox>
+			'
+			break
+		fi
+
+		. "${i}"
+
+		DIALOG="${DIALOG}"'
+		<hbox>
+		 <text>
+		  <label>'"${DAEMON_NAME}"'</label>
+		 </text>'
+		[ ! "${DAEMON_START}" = '' ] && DIALOG="${DIALOG}"'
+		 <button>
+		  <label>'"${LABEL_START}"'</label>
+		  <action>'"${SUDO} ${DAEMON_START}"' > /dev/null 2>&1</action>
+		 </button>'
+		[ ! "${DAEMON_RESTART}" = '' ] && DIALOG="${DIALOG}"'
+		 <button>
+		  <label>'"${LABEL_RESTART}"'</label>
+		  <action>'"${SUDO} ${DAEMON_RESTART}"' > /dev/null 2>&1</action>
+		 </button>'
+		[ ! "${DAEMON_STOP}" = '' ] && DIALOG="${DIALOG}"'
+		 <button>
+		  <label>'"${LABEL_STOP}"'</label>
+		  <action>'"${SUDO} ${DAEMON_STOP}"' > /dev/null 2>&1</action>
+		 </button>'
+		[ ! "${DAEMON_STATUS}" = '' ] && DIALOG="${DIALOG}"'
+		 <pixmap icon_size="1">
+		  <input file stock="'"$(if_is_running ${DAEMON_STATUS})"'"></input>
+		 </pixmap>'
+		DIALOG="${DIALOG}"'</hbox>'
+	done
+
+	DIALOG="${DIALOG}"'
+	 </frame>
+	 <hbox>
+	  <button>
+	   <label>'"${LABEL_REFRESH}"'</label>
+	   <input file stock="gtk-refresh"></input>
+	   <variable>RELOAD</variable>
+	  </button>
+	  <button>
+	   <label>'"${LABEL_EXIT}"'</label>
+	   <input file stock="gtk-quit"></input>
+	   <variable>EXIT</variable>
+	  </button>
+	  </hbox>
+	 </vbox>
+	</window>
+	'
+	export DIALOG
+}
+
+while true; do
+	create_dialog
+	for i in $(gtkdialog --program=DIALOG); do eval "${i}"; done
+	([ "${EXIT}" = "${LABEL_EXIT}" ] || [ "${EXIT}" = 'abort' ]) && break
+done

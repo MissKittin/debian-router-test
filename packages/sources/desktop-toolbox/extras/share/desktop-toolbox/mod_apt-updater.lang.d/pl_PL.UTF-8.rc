@@ -1,0 +1,4 @@
+NOTIFY_TITLE='Aktualizacja systemu'
+ALL_PACKAGES_UP_TO_DATE='Wszystkie paczki aktualne'
+N_PACKAGES_CAN_BE_UPDATED='paczek może zostać zaktualizowanych'
+TERMINAL_EMULATOR_WINDOW_TITLE='Aktualizacja_systemu'

@@ -1,0 +1,21 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          asplashscreen-stop
+# Required-Start:    $remote_fs $all
+# Required-Stop: 
+# Default-Start:     2 3 4 5
+# Default-Stop:
+# Short-Description: Stop splash screen
+### END INIT INFO
+
+PATH='/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin'
+
+if [ -e '/var/run/sendsigs.omit.d/asplashscreen' ]; then
+	[ -e '/usr/local/etc/desktop-splashscreen/config.rc' ] && . '/usr/local/etc/desktop-splashscreen/config.rc'
+	kill -9 $(cat '/var/run/sendsigs.omit.d/asplashscreen')
+	rm '/var/run/sendsigs.omit.d/asplashscreen'
+	if "${CHVT_HACK}"; then chvt 2; chvt 1; fi
+	"${CLEAR_TTY_HACK}" && clear > /dev/tty1
+fi
+
+exit 0

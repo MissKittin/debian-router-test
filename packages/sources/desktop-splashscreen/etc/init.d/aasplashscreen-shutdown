@@ -1,0 +1,32 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          aasplashscreen-shutdown
+# Required-Start:    $all
+# Required-Stop:
+# Default-Start:     0 6
+# Default-Stop:
+# Short-Description: Start splash screen on shutdown and reboot
+### END INIT INFO
+
+PATH='/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin'
+
+[ -e '/proc/cmdline' ] && for i in $(cat '/proc/cmdline'); do
+	case "${i}" in
+		'splash')
+			case "${runlevel}" in
+				'6') image='reboot'; ;;
+				'0') image='shutdown'; ;;
+				*)
+					echo 'desktop-splashscreen: $runlevel is not 0 nor 6'
+					exit 1
+				;;
+			esac
+			[ ! -e "/usr/local/etc/desktop-splashscreen/${image}-splash.png" ] && exit 0
+			fbi -T 1 -noverbose -a "/usr/local/etc/desktop-splashscreen/${image}-splash.png" > /dev/null 2>&1
+			pidof 'fbi' > '/var/run/sendsigs.omit.d/asplashscreen'
+			break
+		;;
+	esac
+done
+
+exit 0

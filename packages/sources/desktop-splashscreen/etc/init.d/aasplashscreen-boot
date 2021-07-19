@@ -1,0 +1,26 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          aasplashscreen-boot
+# Required-Start:
+# Required-Stop:
+# Should-Start:      glibc
+# Default-Start:     S
+# Default-Stop:
+# Short-Description: Start splash screen
+### END INIT INFO
+
+PATH='/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin'
+[ ! -e '/usr/local/etc/desktop-splashscreen/boot-splash.png' ] && exit 0
+
+[ -e '/proc/cmdline' ] && for i in $(cat '/proc/cmdline'); do
+	case "${i}" in
+		'splash')
+			[ ! -e '/var/run/sendsigs.omit.d' ] && mkdir '/var/run/sendsigs.omit.d'
+			fbi -T 1 -noverbose -a '/usr/local/etc/desktop-splashscreen/boot-splash.png' > /dev/null 2>&1
+			pidof 'fbi' > '/var/run/sendsigs.omit.d/asplashscreen'
+			break
+		;;
+	esac
+done
+
+exit 0

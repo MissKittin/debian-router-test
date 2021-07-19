@@ -1,0 +1,2 @@
+CHVT_HACK='true' # chvt after killing fbi
+CLEAR_TTY_HACK='true' # avoid "map: vt?? => fb0"

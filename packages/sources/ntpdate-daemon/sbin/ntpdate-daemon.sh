@@ -14,11 +14,15 @@ do_ntpdate()
 	fi
 	echo ' :: Synchronizing...'
 	${ntpdate_command}
+	if [ ! "${rtc_update_script}" = '' ]; then
+		echo ' :: Updating RTC...'
+		${rtc_update_script}
+	fi
 }
 
 case ${1} in
 	'--daemon')
-		while true; do
+		while :; do
 			do_ntpdate > /dev/null 2>&1
 			sleep ${sync_every}
 		done

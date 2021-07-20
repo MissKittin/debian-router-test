@@ -2,3 +2,4 @@
 ping_host='http://ftp.debian.org/' # false to disable internet checking
 sync_every='43200' # seconds
 ntpdate_command='ntpdate-debian'
+#rtc_update_script='/etc/init.d/hwclock.sh stop' # not updating if empty

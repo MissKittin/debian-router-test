@@ -24,7 +24,7 @@ fi
 echo ''
 
 # Uninstall - /usr/local/etc/notify-daemon
-for i in apt-update.rc dpkg_rubbish.rc obsolete-kernels.rc ssh.rc smart.rc; do
+for i in apt-update.rc cmos-battery.rc dpkg_rubbish.rc obsolete-kernels.rc ssh.rc smart.rc; do
 	echo -n "[rm] /usr/local/etc/notify-daemon/events.rc.d/${i}"
 		if [ -e "/usr/local/etc/notify-daemon/events.rc.d/${i}" ]; then
 			rm /usr/local/etc/notify-daemon/events.rc.d/${i} > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'

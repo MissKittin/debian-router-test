@@ -1,0 +1,27 @@
+# Check if CMOS battery is empty
+event_name='CMOS battery'
+
+check_cmos_battery()
+{
+	local current_value='/sys/class/hwmon/hwmon1/in8_input' # edit this
+	local minimum_value='2400' # 2.4V or 2.7V
+
+	if [ ! -f "${current_value}" ]; then
+		log "cmos-battery: ${current_value} not exists"
+		return 1
+	fi
+
+	current_value="$(cat "${current_value}")"
+	if [ "${current_value}" -gt "${minimum_value}" ]; then
+		log 'cmos-battery: battery is ok'
+		return 1
+	else
+		log 'cmos-battery: battery is empty'
+		return 0
+	fi
+}
+send_notify_cmos_battery()
+{
+	send_notify 'cmos-battery' 'medium' 'CMOS battery is empty'
+}
+checklist="$checklist cmos_battery"

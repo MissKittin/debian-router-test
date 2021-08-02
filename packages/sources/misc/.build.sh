@@ -64,6 +64,8 @@ ${do_chown} && chown root:root ./extras/etc/notify-daemon/events.rc.d/obsolete-k
 chmod 644 ./extras/etc/notify-daemon/events.rc.d/obsolete-kernels.rc
 ${do_chown} && chown root:root ./extras/etc/notify-daemon/events.rc.d/apt.rc
 chmod 644 ./extras/etc/notify-daemon/events.rc.d/apt.rc
+${do_chown} && chown root:root ./extras/etc/notify-daemon/events.rc.d/cmos-battery.rc
+chmod 644 ./extras/etc/notify-daemon/events.rc.d/cmos-battery.rc
 ${do_chown} && chown root:root ./extras/etc/rc.local.d
 chmod 755 ./extras/etc/rc.local.d
 ${do_chown} && chown root:root ./extras/etc/rc.local.d/PK99_zz-fs-ssd-tweaks.rc

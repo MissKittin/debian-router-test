@@ -32,7 +32,7 @@ echo ''
 
 # Install - /usr/local/etc/notify-daemon
 if cd /usr/local/etc/notify-daemon/events.rc.d > /dev/null 2>&1; then
-	for i in apt-update.rc cmos-battery.rc dpkg_rubbish.rc obsolete-kernels.rc ssh.rc smart.rc; do
+	for i in apt-update.rc etc-trash.rc obsolete-kernels.rc ssh.rc smart.rc; do
 		echo -n "[ln] extras/etc/notify-daemon/events.rc.d/${i} /usr/local/etc/notify-daemon/events.rc.d"
 			if [ -e "/usr/local/etc/notify-daemon/events.rc.d/${i}" ]; then
 				echo ' [EXISTS]'

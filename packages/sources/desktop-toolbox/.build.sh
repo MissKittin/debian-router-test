@@ -36,10 +36,6 @@ ${do_chown} && chown root:root ./extras-install.sh
 chmod 755 ./extras-install.sh
 ${do_chown} && chown root:root ./extras
 chmod 755 ./extras
-${do_chown} && chown root:root ./extras/bin
-chmod 755 ./extras/bin
-${do_chown} && chown root:root ./extras/bin/apt-check
-chmod 755 ./extras/bin/apt-check
 ${do_chown} && chown root:root ./extras/sbin
 chmod 755 ./extras/sbin
 ${do_chown} && chown root:root ./extras/sbin/apt-updaterd
@@ -125,6 +121,7 @@ chmod 644 ./CHANGELOG.txt
 ${do_chown} && chown root:root ./VERSION.txt
 chmod 644 ./VERSION.txt
 
+mkdir ./extras/bin
 ln -s desktop-toolbox ./bin/sudo-gtk
 ln -s desktop-toolbox ./bin/alsa-hotkeys
 ln -s desktop-toolbox ./bin/gnome-screenshot-hotkey

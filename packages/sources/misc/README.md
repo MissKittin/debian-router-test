@@ -2,7 +2,6 @@
 Install this package as last.
 
 ### Scripts
-* `apt-check` (not mine, source lost [maybe from ubuntu forum or askubuntu])
 * [DEPRECATED] `ntpdate-daemon.sh` -> first wait for internet connection and then synchronize
 * `set-zram.sh` -> enable or disable zram swap
 * [DEPRECATED] `system-autoupdate.sh` -> run `apt-get update` every `n` hours (default `n`==20)
@@ -10,7 +9,7 @@ Install this package as last.
 ### Extras
 * [DEPRECATED] acpid-mods
 * dnsmasq config
-* notify-daemon scripts
+* notify-daemon scripts (apt-check package required for apt-update.rc script)
 * rc.local scripts and tweaks
 
 ## Deprecated files

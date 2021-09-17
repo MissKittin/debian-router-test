@@ -32,7 +32,7 @@ echo ''
 
 # Install - /usr/local/bin
 cd /usr/local/bin
-for i in apt-check apt-updater; do
+for i in apt-updater; do
 	echo -n "[ln] bin/${i} /usr/local/bin"
 		if [ -e "/usr/local/bin/${i}" ]; then
 			echo ' [EXISTS]'

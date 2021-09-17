@@ -1,0 +1,13 @@
+Package: libpam-elogind
+Version: 9999999999
+Architecture: all
+Maintainer: MissKittin@github
+Installed-Size: 0
+Depends:
+Provides: logind
+Section: admin
+Priority: optional
+Description: Debian systemd crack
+ You installed the fake-systemd package.
+ To remove this, run uninstall.sh from package directory
+ and reinstall the package from the official repository.

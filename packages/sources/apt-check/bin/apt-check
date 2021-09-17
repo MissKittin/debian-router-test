@@ -22,7 +22,8 @@ update() {
   fi
 }
 
-SECURITY_LIST=/tmp/apt-check.sh-fs6s6dfsf-security.list
+#SECURITY_LIST=/tmp/apt-check.sh-fs6s6dfsf-security.list
+SECURITY_LIST="$(mktemp -t '.apt-check.XXXXXXXXXX')"
 
 security_upgrades() {
   grep security /etc/apt/sources.list > $SECURITY_LIST || true
@@ -96,6 +97,7 @@ updates_count() {
 
 exit_appropriately() {
   updates_count
+	[ -e "${SECURITY_LIST}" ] && rm -f "${SECURITY_LIST}"
   exit
 }
 

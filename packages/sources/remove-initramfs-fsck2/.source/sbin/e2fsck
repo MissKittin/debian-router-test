@@ -1,0 +1,4 @@
+#!/bin/sh
+[ ! "${ROOTFSTYPE}" = '' ] && modprobe "${ROOTFSTYPE}"
+[ -e /run/initramfs/no-fsck ] || echo -n '' > /run/initramfs/no-fsck
+exit 0

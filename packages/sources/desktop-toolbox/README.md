@@ -9,8 +9,7 @@ built on gtkdialog.
 * `sudo-gtk` GUI for sudo
 
 ### Extras
-* `apt-check` required for `apt-updater` module
-* `apt-updater` notifies user about updates and doing update if accepted
+* `apt-updater` notifies user about updates and doing update if accepted (apt-check package required)
 * `apt-updaterd` update apt database on boot (required for `apt-updater` module)
 * menu launchers (you need to create `/usr/local/share/applications` directory)
 

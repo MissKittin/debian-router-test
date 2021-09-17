@@ -13,7 +13,7 @@ echo " ${PACKAGE_NAME} - extras"
 echo ''
 
 # /usr/local
-for i in bin/apt-check bin/apt-updater etc/apt-updaterd.rc etc/desktop-toolbox/mod_apt-updater.rc etc/init.d/apt-updaterd sbin/apt-updaterd share/desktop-toolbox/mod_apt-updater.rc share/desktop-toolbox/mod_apt-updater.lang.d; do
+for i in bin/apt-updater etc/apt-updaterd.rc etc/desktop-toolbox/mod_apt-updater.rc etc/init.d/apt-updaterd sbin/apt-updaterd share/desktop-toolbox/mod_apt-updater.rc share/desktop-toolbox/mod_apt-updater.lang.d; do
 	echo -n "/usr/local/${i}"
 		if [ -L /usr/local/${i} ] && [ -e /usr/local/${i} ]; then
 			installed=true

@@ -53,7 +53,7 @@ chmod 644 ./VERSION.txt
 ${do_chown} && chown root:root ./.source
 chmod 755 ./.source
 
-for i in ${SOURCE_PACKAGES}; do
+for i in ${SOURCE_PACKAGES} libpam-elogind; do
 	${do_chown} && chown root:root ./.source/${i}
 	chmod 755 ./.source/${i}
 	${do_chown} && chown root:root ./.source/${i}/DEBIAN
@@ -93,6 +93,28 @@ if [ ! -e './share' ]; then
 		echo ' and reinstall the package from the official repository.' >> '../share/fake-systemd/Packages'
 		echo '' >> '../share/fake-systemd/Packages'
 	done
+
+	dpkg --build libpam-elogind
+	mv "libpam-elogind.deb" "../share/fake-systemd/libpam-elogind.deb"
+
+	echo "Package: libpam-elogind" >> '../share/fake-systemd/Packages'
+	echo 'Version: 9999999999' >> '../share/fake-systemd/Packages'
+	echo 'Architecture: all' >> '../share/fake-systemd/Packages'
+	echo 'Maintainer: MissKittin@github' >> '../share/fake-systemd/Packages'
+	echo 'Installed-Size: 0' >> '../share/fake-systemd/Packages'
+	echo "Filename: ./libpam-elogind.deb" >> '../share/fake-systemd/Packages'
+	echo 'Size: '"$(stat -c '%s' ../share/fake-systemd/libpam-elogind.deb)" >> '../share/fake-systemd/Packages'
+	echo 'MD5sum: '"$(print_S1 $(md5sum ../share/fake-systemd/libpam-elogind.deb))" >> '../share/fake-systemd/Packages'
+	echo 'SHA1: '"$(print_S1 $(sha1sum ../share/fake-systemd/libpam-elogind.deb))" >> '../share/fake-systemd/Packages'
+	echo 'SHA256: '"$(print_S1 $(sha256sum ../share/fake-systemd/libpam-elogind.deb))" >> '../share/fake-systemd/Packages'
+	echo 'Provides: logind' >> '../share/fake-systemd/Packages'
+	echo 'Section: admin' >> '../share/fake-systemd/Packages'
+	echo 'Priority: optional' >> '../share/fake-systemd/Packages'
+	echo 'Description: Debian systemd crack' >> '../share/fake-systemd/Packages'
+	echo ' You installed the fake-systemd package.' >> '../share/fake-systemd/Packages'
+	echo ' To remove this, run uninstall.sh from package directory' >> '../share/fake-systemd/Packages'
+	echo ' and reinstall the package from the official repository.' >> '../share/fake-systemd/Packages'
+	echo '' >> '../share/fake-systemd/Packages'
 
 	gzip -9 '../share/fake-systemd/Packages'
 	cd ..

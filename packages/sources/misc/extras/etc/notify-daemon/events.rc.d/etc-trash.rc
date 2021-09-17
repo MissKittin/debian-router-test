@@ -1,0 +1,30 @@
+# Check if dpkg left the garbage in /etc
+# 11.06.2019, 30.08.2021
+event_name='etc trash'
+
+check_etc_trash()
+{
+	if find '/etc' -name '*.dpkg-*' -o -name '*.ucf-*' -o -name '*.merge-error' | grep . > /dev/null 2>&1; then
+		log 'dpkg_rubbish: trash in /etc'
+		return 0
+	fi
+	#if find /etc | grep '.dpkg-dist' > /dev/null 2>&1; then
+	#	log 'dpkg_rubbish: trash in /etc'
+	#	return 0
+	#elif find /etc | grep '.dpkg-old' > /dev/null 2>&1; then
+	#	log 'dpkg_rubbish: trash in /etc'
+	#	return 0
+	#elif find /etc | grep '.dpkg-new' > /dev/null 2>&1; then
+	#	log 'dpkg_rubbish: trash in /etc'
+	#	return 0
+	#elif find /etc | grep '.ucf-dist' > /dev/null 2>&1; then
+	#	log 'dpkg_rubbish: trash in /etc'
+	#	return 0
+	#fi
+	return 1
+}
+send_notify_etc_trash()
+{
+	send_notify 'etc-trash' 'low' 'Trash in /etc'
+}
+checklist="$checklist etc_trash"

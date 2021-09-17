@@ -19,7 +19,7 @@ if [ -e /etc/issue.old ] || [ -e /etc/motd.old ]; then
 fi
 
 # Check if installed
-if [ -e /usr/local/sbin/apt-check ] || [ -e /usr/local/sbin/set-zram.sh ]; then
+if [ -e /usr/local/sbin/set-zram.sh ]; then
 	echo 'Already installed'
 	exit 1
 fi
@@ -45,7 +45,7 @@ done
 
 # Install - /usr/local/sbin
 cd /usr/local/sbin
-for i in apt-check set-zram.sh; do
+for i in set-zram.sh; do
 	echo -n '[ln] sbin/'"${i}"' /usr/local/sbin'
 		ln -s ${PACKAGE_DIR}/sbin/${i} . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 done

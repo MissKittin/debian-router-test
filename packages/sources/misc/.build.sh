@@ -54,8 +54,8 @@ ${do_chown} && chown root:root ./extras/etc/notify-daemon/events.rc.d/smart.rc
 chmod 644 ./extras/etc/notify-daemon/events.rc.d/smart.rc
 ${do_chown} && chown root:root ./extras/etc/notify-daemon/events.rc.d/system-autoupdate.rc
 chmod 644 ./extras/etc/notify-daemon/events.rc.d/system-autoupdate.rc
-${do_chown} && chown root:root ./extras/etc/notify-daemon/events.rc.d/dpkg_rubbish.rc
-chmod 644 ./extras/etc/notify-daemon/events.rc.d/dpkg_rubbish.rc
+${do_chown} && chown root:root ./extras/etc/notify-daemon/events.rc.d/etc-trash.rc
+chmod 644 ./extras/etc/notify-daemon/events.rc.d/etc-trash.rc
 ${do_chown} && chown root:root ./extras/etc/notify-daemon/events.rc.d/apt-update.rc
 chmod 644 ./extras/etc/notify-daemon/events.rc.d/apt-update.rc
 ${do_chown} && chown root:root ./extras/etc/notify-daemon/events.rc.d/ssh.rc
@@ -64,8 +64,6 @@ ${do_chown} && chown root:root ./extras/etc/notify-daemon/events.rc.d/obsolete-k
 chmod 644 ./extras/etc/notify-daemon/events.rc.d/obsolete-kernels.rc
 ${do_chown} && chown root:root ./extras/etc/notify-daemon/events.rc.d/apt.rc
 chmod 644 ./extras/etc/notify-daemon/events.rc.d/apt.rc
-${do_chown} && chown root:root ./extras/etc/notify-daemon/events.rc.d/cmos-battery.rc
-chmod 644 ./extras/etc/notify-daemon/events.rc.d/cmos-battery.rc
 ${do_chown} && chown root:root ./extras/etc/rc.local.d
 chmod 755 ./extras/etc/rc.local.d
 ${do_chown} && chown root:root ./extras/etc/rc.local.d/PK99_zz-fs-ssd-tweaks.rc
@@ -106,8 +104,6 @@ ${do_chown} && chown root:root ./sbin/system-autoupdate.sh
 chmod 640 ./sbin/system-autoupdate.sh
 ${do_chown} && chown root:root ./sbin/correct-wake-on-lan.sh
 chmod 640 ./sbin/correct-wake-on-lan.sh
-${do_chown} && chown root:root ./sbin/apt-check
-chmod 750 ./sbin/apt-check
 ${do_chown} && chown root:root ./sbin/ntpdate-daemon.sh
 chmod 640 ./sbin/ntpdate-daemon.sh
 ${do_chown} && chown root:root ./install.sh

@@ -37,7 +37,7 @@ for i in issue motd; do
 done
 
 # /usr/local/sbin
-for i in apt-check set-zram.sh; do
+for i in set-zram.sh; do
 	echo -n "/usr/local/sbin/${i}"
 		if [ -L /usr/local/sbin/${i} ] && [ -e /usr/local/sbin/${i} ]; then
 			installed=true

@@ -24,7 +24,7 @@ fi
 echo ''
 
 # Uninstall - /usr/local/bin
-for i in apt-check apt-updater; do
+for i in apt-updater; do
 	echo -n "[rm] /usr/local/bin/${i}"
 		if [ -e "/usr/local/bin/${i}" ]; then
 			rm /usr/local/bin/${i} > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'

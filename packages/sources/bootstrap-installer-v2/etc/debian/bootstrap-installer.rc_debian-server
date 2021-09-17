@@ -121,7 +121,7 @@ use_sudo='true'
 ### Other packages
 
 # Install dialog package
-apt_install_packages="${apt_install_packages} dialog"
+#apt_install_packages="${apt_install_packages} dialog"
 
 # Install additional packages
 apt_install_packages="${apt_install_packages} busybox-static"

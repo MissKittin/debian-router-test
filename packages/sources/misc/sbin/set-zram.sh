@@ -1,4 +1,8 @@
 #!/bin/bash
+export LANG=C
+export LANGUAGE=C
+export LC_ALL=C
+
 autoenable=true
 
 enable_zram()

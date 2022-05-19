@@ -319,6 +319,34 @@ ${do_chown} && chown root:root ./bin/notify-daemon.sh
 chmod 755 ./bin/notify-daemon.sh
 ${do_chown} && chown root:root ./VERSION.txt
 chmod 644 ./VERSION.txt
+${do_chown} && chown root:root ./webadmin
+chmod 755 ./webadmin
+${do_chown} && chown root:root ./webadmin/home-plugins
+chmod 755 ./webadmin/home-plugins
+${do_chown} && chown root:root ./webadmin/home-plugins/x_notifications
+chmod 755 ./webadmin/home-plugins/x_notifications
+${do_chown} && chown root:root ./webadmin/home-plugins/x_notifications/notifications.php
+chmod 644 ./webadmin/home-plugins/x_notifications/notifications.php
+${do_chown} && chown root:root ./webadmin/home-plugins/x_notifications/index.php
+chmod 644 ./webadmin/home-plugins/x_notifications/index.php
+${do_chown} && chown root:root ./webadmin/home-plugins/x_notifications/shell.sh
+chmod 755 ./webadmin/home-plugins/x_notifications/shell.sh
+${do_chown} && chown root:root ./extras
+chmod 755 ./extras
+${do_chown} && chown root:root ./extras/etc
+chmod 755 ./extras/etc
+${do_chown} && chown root:root ./extras/etc/notify-daemon
+chmod 755 ./extras/etc/notify-daemon
+${do_chown} && chown root:root ./extras/etc/notify-daemon/journal.rc.d
+chmod 755 ./extras/etc/notify-daemon/journal.rc.d
+${do_chown} && chown root:root ./extras/etc/notify-daemon/journal.rc.d/www.rc
+chmod 644 ./extras/etc/notify-daemon/journal.rc.d/www.rc
+${do_chown} && chown root:root ./extras-status.sh
+chmod 755 ./extras-status.sh
+${do_chown} && chown root:root ./extras-install.sh
+chmod 755 ./extras-install.sh
+${do_chown} && chown root:root ./extras-uninstall.sh
+chmod 755 ./extras-uninstall.sh
 
 ln -s ../share/notify-daemon/config ./etc/notify-daemon
 echo -n '' > ./share/notify-daemon/subsystems.d/log-syslog/setup_subsystem-provides-log

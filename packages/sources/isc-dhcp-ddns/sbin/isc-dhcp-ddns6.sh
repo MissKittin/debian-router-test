@@ -1,6 +1,7 @@
 #!/bin/sh
 # DDNS by hosts for isc-dhcp-server -> dnsmasq - IPv6 version
 # 24.02.2021
+# readfile ${localdns_hosts_file} | grep "\b${hostname}${lan_domain}\b" bug patched and read_file "${ddns_hosts_file}" | grep > /dev/null added 30.04.2022
 
 # Get localdns hosts file
 [ -e '/usr/local/sbin/localdns.sh' ] && localdns_hosts_file="$(/usr/local/sbin/localdns.sh print-hostsfile-location)"
@@ -56,11 +57,11 @@ case "${action}" in
 
 		# Check if exists in localdns hosts files
 		if [ -e "${localdns_hosts_file}" ]; then # localdns package may not be installed
-			read_file "${localdns_hosts_file}" | grep "\b${hostname}${lan_domain}\b" > /dev/null 2>&1 && abort_push "${hostname}${lan_domain} already exists in ${localdns_hosts_file}" 0
+			read_file "${localdns_hosts_file}" | grep "\b${hostname}\b" > /dev/null 2>&1 && abort_push "${hostname}${lan_domain} already exists in ${localdns_hosts_file}" 0
 		fi
 
 		# Check if exists in ddns hosts
-		read_file "${ddns_hosts_file}" | grep "\b${hostname}${lan_domain}\b" && abort_push "${hostname}${lan_domain} already exists in ${ddns_hosts_file}" 0
+		read_file "${ddns_hosts_file}" | grep "\b${hostname}${lan_domain}\b" > /dev/null 2>&1 && abort_push "${hostname}${lan_domain} already exists in ${ddns_hosts_file}" 0
 
 		# Find IP
 		ip="$(find_ipv6 "${mac}")" || abort_push "IPv6 not found for ${hostname}${lan_domain}" 0

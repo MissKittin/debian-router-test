@@ -8,6 +8,14 @@ debug_log 'tasks-v1: importing tasks'
 . ${subsystem}/subsystem.rc.d/critical-events.rc
 . ${subsystem}/subsystem.rc.d/events.rc
 
+debug_log 'tasks-v1: applying libtimestamp compatibility'
+path_event_temp="${libtimestamp_path}"
+. "${share_dir}/extensions.d/libtimestamp.rc"
+notify_daemon_timestamp()
+{
+	notify_daemon__libtimestamp "${1}" "${2}" "${3}" "${4}"
+}
+
 subsystem__tasks_v1()
 {
 	debug_log 'subsystem__tasks_v1(): executing task__critical_events_v1'

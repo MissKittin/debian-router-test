@@ -21,7 +21,7 @@ if [ -e "$(dirname "${0}")/extras-status.sh" ]; then
 fi
 
 # Check if installed
-if [ ! -e /usr/local/etc/notify-daemon ] || [ -e /usr/local/share/notify-daemon ] || [ ! -e /usr/local/sbin/notify-daemon-state.sh ] || [ ! -e /usr/local/sbin/notify-daemon.sh ]; then
+if [ ! -e /usr/local/etc/notify-daemon ] || [ ! -e /usr/local/share/notify-daemon ] || [ ! -e /usr/local/sbin/notify-daemon-state.sh ] || [ ! -e /usr/local/sbin/notify-daemon.sh ]; then
 	echo 'Not installed'
 	exit 1
 fi

@@ -10,7 +10,6 @@ FILES='
 	lib/console/check-command-stack.sh
 	lib/console/update-shebang.php
 	lib/opt_htmlheaders
-	lib/range_icons
 	lib/shell/check-ipv6.rc
 	lib/shell/check-service.rc
 	lib/shell/path.rc
@@ -25,7 +24,6 @@ FILES='
 	login-plugins/20_check-https
 	net-bwusage
 	net-devices
-	net-wicd
 	net-wired
 	sys-clock
 	sys-daemons

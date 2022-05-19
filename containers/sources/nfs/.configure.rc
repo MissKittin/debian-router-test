@@ -2,6 +2,8 @@ log_file='/.debug.txt'
 log() { echo ${2} "${1}"; echo ${2} "${1}" >> "${log_file}"; }
 install_packages()
 {
+	local result=0
+
 	local PING_OPTIONS='-4'
 	local PING_HOST='ftp.debian.org'
 	local WGET_HOST='http://ftp.debian.org/'
@@ -15,7 +17,7 @@ install_packages()
 		fi
 
 		log ' -> Trying to install packages'
-		if ! apt-get install -y ${@} >> "${log_file}" 2>&1; then
+		if ! apt-get install -y ${DEBIAN_TARGET_RELEASE} ${@} >> "${log_file}" 2>&1; then
 			log ' -> Install failed, waiting for network' '-n'
 			while ! wget -q --tries=10 --timeout=20 --spider "${WGET_HOST}"; do
 				sleep 1
@@ -27,7 +29,10 @@ install_packages()
 			apt-get update >> "${log_file}" 2>&1
 
 			log ' -> Installing packages'
-			apt-get install -y ${@} >> "${log_file}" 2>&1
+			apt-get install -y ${DEBIAN_TARGET_RELEASE} ${@} >> "${log_file}" 2>&1 || result=1
+
+			log ' -> Cleaning cache'
+			apt-get autoclean >> "${log_file}" 2>&1
 		fi
 	else
 		log ' -> Waiting for network' '-n'
@@ -41,11 +46,13 @@ install_packages()
 		apt-get update >> "${log_file}" 2>&1
 
 		log ' -> Installing packages'
-		apt-get install -y ${@} >> "${log_file}" 2>&1
+		apt-get install -y ${DEBIAN_TARGET_RELEASE} ${@} >> "${log_file}" 2>&1 || result=1
 
 		log ' -> Cleaning cache'
 		apt-get clean >> "${log_file}" 2>&1
 	fi
+
+	return ${result}
 }
 
 log 'Preparing /run'

@@ -16,6 +16,8 @@ case "${1}" in
 			/etc/init.d/busybox-syslogd zip
 			logger --tag containers syslog autoboot: busybox-syslog log zipped
 		fi
+
+		exit 0
 	;;
 	'stop')
 		exec "$(dirname ${0})/stop.sh"

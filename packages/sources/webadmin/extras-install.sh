@@ -40,13 +40,16 @@ if cd /usr/local/etc/notify-daemon/events.rc.d > /dev/null 2>&1; then
 				ln -s ${PACKAGE_DIR}/extras/etc/notify-daemon/events.rc.d/${i} . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 			fi
 	done
-	cd /usr/local/etc/notify-daemon/journal-manager.rc.d
-	echo -n '[ln] extras/etc/notify-daemon/journal-manager.rc.d/www.rc /usr/local/etc/notify-daemon/journal-manager.rc.d'
-		if [ -e '/usr/local/etc/notify-daemon/journal-manager.rc.d/www.rc' ]; then
-			echo ' [EXISTS]'
-		else
-			ln -s ${PACKAGE_DIR}/extras/etc/notify-daemon/journal-manager.rc.d/www.rc . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
-		fi
+
+	if [ -e /usr/local/etc/notify-daemon/journal-manager.rc.d ]; then
+		cd /usr/local/etc/notify-daemon/journal-manager.rc.d
+		echo -n '[ln] extras/etc/notify-daemon/journal-manager.rc.d/www.rc /usr/local/etc/notify-daemon/journal-manager.rc.d'
+			if [ -e '/usr/local/etc/notify-daemon/journal-manager.rc.d/www.rc' ]; then
+				echo ' [EXISTS]'
+			else
+				ln -s ${PACKAGE_DIR}/extras/etc/notify-daemon/journal-manager.rc.d/www.rc . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+			fi
+	fi
 else
 	echo 'notify-daemon is not installed'
 fi

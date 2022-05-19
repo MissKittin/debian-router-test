@@ -6,8 +6,6 @@ For more info, see `share/notify-daemon/README.txt`.
 
 ### Warning
 **Conflicts with notify-daemon v1**  
-**Tests in dev environment are successfull, but is not deployed on my server.**  
-**Use at your own risk.**
 
 ### Subsystems
 Each subsystem has `README.txt`

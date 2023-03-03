@@ -1,6 +1,0 @@
-[Allow Everything Dammit]
-Identity=unix-group:users
-Action=*
-ResultAny=yes
-ResultInactive=yes
-ResultActive=yes

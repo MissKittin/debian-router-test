@@ -17,3 +17,9 @@ mount -o remount,hidepid=2 /proc
 # other sources too, such as from the System.map
 # files in /boot
 chmod 400 /proc/kallsyms
+
+# deny listing /run
+chmod 751 /run
+
+# protect hardware uuid
+chmod 400 /sys/class/dmi/id/product_uuid > /dev/null 2>&1

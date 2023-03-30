@@ -1,11 +1,32 @@
 # Set root partition
-print_message 'setting root partition' "${COLOR_INFO}"
-
 if [ "${root_partition}" = '' ]; then
-	if [ "${1}" = '' ]; then
-		print_message 'parameter required' "${COLOR_FAILED}"
-		echo ' bootstrap-install.sh /dev/sd[0-9][a-z]'
-		exit 1
+	[ "${1}" = '' ] && root_partition=$(lsblk -P | grep 'MOUNTPOINT="'"$(pwd)"'"' | sed -n 's/.*NAME=\"\([^\"]*\)\".*/\1/p')
+
+	if [ "${root_partition}" = '' ]; then
+		if [ "${1}" = '' ]; then
+			print_message 'parameter required' "${COLOR_FAILED}"
+			echo ' bootstrap-installer.sh /dev/sd[a-z][0-9]'
+			echo ' bootstrap-installer.sh /dev/vd[a-z][0-9]'
+			echo ' bootstrap-installer.sh /dev/xvd[a-z][0-9]'
+			echo ' bootstrap-installer.sh /dev/mmcblk[0-9]p[0-9]'
+			echo ' bootstrap-installer.sh /dev/nvme[0-9]n[0-9]p[0-9]'
+			echo ' bootstrap-installer.sh /dev/loop[0-9]p[0-9]'
+			exit 1
+		fi
+
+		print_message "using ${1} as root partition" "${COLOR_INFO}"
+		in_chroot_params="root=${1}"
+	else
+		root_partition="/dev/${root_partition}"
+		print_message "detected ${root_partition} as root partition" "${COLOR_SUCCESS}"
+		in_chroot_params="root=${root_partition}"
 	fi
-	in_chroot_params="root=${1}"
+else
+	print_message "using ${root_partition} as root partition" "${COLOR_INFO}"
+	in_chroot_params="root=${root_partition}"
+fi
+
+if [ ! "${root_partition}" = '#/dev/null' ] && [ ! -b "${root_partition}" ]; then
+	print_message "${root_partition} is not a valid block device" "${COLOR_FAILED}"
+	exit 1
 fi

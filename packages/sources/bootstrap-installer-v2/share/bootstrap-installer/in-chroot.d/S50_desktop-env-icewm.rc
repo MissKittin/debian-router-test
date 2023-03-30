@@ -2,11 +2,110 @@
 if [ "${desktop_env}" = 'icewm' ] && [ ! "${username}" = '' ]; then
 	print_message 'configuring IceWM' "${COLOR_INFO}"
 
-	mkdir /home/${username}/.icewm
-	chown ${username}:${username} /home/${username}/.icewm
-	echo "rox -p $(cat /etc/hostname)" > /home/${username}/.icewm/startup
-	chown ${username}:${username} /home/${username}/.icewm/startup
-	chmod 755 /home/${username}/.icewm/startup
-	echo 'exec icewm-session' > /home/${username}/.xinitrc
-	chown ${username}:${username} /home/${username}/.xinitrc
+		mkdir "/home/${username}/.icewm"
+		chown "${username}:${username}" "/home/${username}/.icewm"
+
+		# Preferences
+			if [ ! -e "/home/${username}/.icewm/preferences" ]; then
+				echo -n '' > "/home/${username}/.icewm/preferences"
+				chown "${username}:${username}" "/home/${username}/.icewm/preferences"
+			fi	
+
+			echo 'TaskBarShowClock=0' >> "/home/${username}/.icewm/preferences"
+			echo 'TaskBarShowMailboxStatus=0' >> "/home/${username}/.icewm/preferences"
+			echo 'TaskBarShowShowDesktopButton=0' >> "/home/${username}/.icewm/preferences"
+			echo 'TaskBarShowWindowListMenu=0' >> "/home/${username}/.icewm/preferences"
+			echo 'TaskBarWorkspacesLimit="3"' >> "/home/${username}/.icewm/preferences"
+			echo 'WorkspaceNames=" 1 ", " 2 ", " 3 ", " 4 "' >> "/home/${username}/.icewm/preferences"
+
+			if [ "${desktop_icewm_keyboard_layouts}" = '' ]; then
+				echo '#KeyboardLayouts="de","fr","jp"' >> "/home/${username}/.icewm/preferences"
+			else
+				echo 'KeyboardLayouts='"${desktop_icewm_keyboard_layouts}" >> "/home/${username}/.icewm/preferences"
+			fi
+
+		# Startup
+			if [ ! -e "/home/${username}/.icewm/startup" ]; then
+				echo -n '' > "/home/${username}/.icewm/startup"
+				chown "${username}:${username}" "/home/${username}/.icewm/startup"
+				chmod 755 "/home/${username}/.icewm/startup"
+			fi
+	
+			echo '[ -e "${HOME}/.screenlayout/startup.sh" ] && "${HOME}/.screenlayout/startup.sh" &' >> "/home/${username}/.icewm/startup"
+			echo '[ -e "/usr/lib/notification-daemon/notification-daemon" ] && /usr/lib/notification-daemon/notification-daemon &' >> "/home/${username}/.icewm/startup"
+			echo '[ -e "/usr/bin/xdg-user-dirs-update" ] && /usr/bin/xdg-user-dirs-update &' >> "/home/${username}/.icewm/startup"
+			echo '[ -e "/usr/bin/wicd-gtk" ] && /usr/bin/wicd-gtk --tray &' >> "/home/${username}/.icewm/startup"
+			echo '[ -e "/usr/bin/nm-applet" ] && /usr/bin/nm-applet &' >> "/home/${username}/.icewm/startup"
+			echo 'rox -p default' >> "/home/${username}/.icewm/startup"
+
+		# Toolbar
+			echo -n '' > "/home/${username}/.icewm/toolbar"
+			chown "${username}:${username}" "/home/${username}/.icewm/toolbar"
+
+		# xinitrc
+			if [ ! -e "/home/${username}/.xinitrc" ]; then
+				echo -n '' > "/home/${username}/.xinitrc"
+				chown "${username}:${username}" "/home/${username}/.xinitrc"
+			fi
+	
+			echo 'exec icewm-session' >> "/home/${username}/.xinitrc"
+
+		# xserverrc - old X startup pattern
+			if [ -e '/etc/X11/xinit/xserverrc' ]; then
+				if [ ! -e "/home/${username}/.xserverrc" ]; then
+					cp -p '/etc/X11/xinit/xserverrc' "/home/${username}/.xserverrc"
+					chown "${username}:${username}" "/home/${username}/.xserverrc"
+				fi
+
+				sed -i 's/\/usr\/bin\/X/\/usr\/bin\/X -retro/g' "/home/${username}/.xserverrc"
+			fi
+
+	print_message 'configuring ROX' "${COLOR_INFO}"
+
+		mkdir -p "/home/${username}/.config/rox.sourceforge.net/ROX-Filer"
+		chown "${username}:${username}" "/home/${username}/.config/rox.sourceforge.net/ROX-Filer"
+		chown "${username}:${username}" "/home/${username}/.config/rox.sourceforge.net"
+		chown "${username}:${username}" "/home/${username}/.config"
+
+		echo '<?xml version="1.0"?>' > "/home/${username}/.config/rox.sourceforge.net/ROX-Filer/Options"
+		echo '<Options>' >> "/home/${username}/.config/rox.sourceforge.net/ROX-Filer/Options"
+		echo '  <Option name="pinboard_tasklist">0</Option>' >> "/home/${username}/.config/rox.sourceforge.net/ROX-Filer/Options"
+		#[ -e '/usr/bin/urxvtcd' ] && echo '  <Option name="menu_xterm">urxvtcd</Option>' >> "/home/${username}/.config/rox.sourceforge.net/ROX-Filer/Options"
+		echo '  <Option name="menu_xterm">x-terminal-emulator</Option>' >> "/home/${username}/.config/rox.sourceforge.net/ROX-Filer/Options"
+		echo '  <Option name="toolbar_disable">gtk-close, gtk-zoom-fit, gtk-sort-ascending, gtk-help</Option>' >> "/home/${username}/.config/rox.sourceforge.net/ROX-Filer/Options"
+		echo '  <Option name="bind_single_pinboard">0</Option>' >> "/home/${username}/.config/rox.sourceforge.net/ROX-Filer/Options"
+		echo '  <Option name="bind_single_click">0</Option>' >> "/home/${username}/.config/rox.sourceforge.net/ROX-Filer/Options"
+		echo '</Options>' >> "/home/${username}/.config/rox.sourceforge.net/ROX-Filer/Options"
+		chown "${username}:${username}" "/home/${username}/.config/rox.sourceforge.net/ROX-Filer/Options"
+
+		ln -s '/media' "/home/${username}/media"
+
+	if [ -e '/usr/bin/urxvt' ]; then
+		print_message 'configuring rxvt' "${COLOR_INFO}"
+
+		if [ ! -e "/home/${username}/.Xresources" ]; then
+			echo -n '' > "/home/${username}/.Xresources"
+			chown "${username}:${username}" "/home/${username}/.Xresources"
+		else
+			echo '' >> "/home/${username}/.Xresources"
+		fi
+
+		echo '#include ".Xresources.d/urxvt"' >> "/home/${username}/.Xresources"
+
+		if [ ! -e "/home/${username}/.Xresources.d" ]; then
+			mkdir "/home/${username}/.Xresources.d"
+			chown "${username}:${username}" "/home/${username}/.Xresources.d"
+		fi
+
+		echo 'URxvt*geometry: 85x35' > "/home/${username}/.Xresources.d/urxvt"
+		echo 'URxvt*font: 7x14' >> "/home/${username}/.Xresources.d/urxvt"
+		echo 'URxvt*reverseVideo: true' >> "/home/${username}/.Xresources.d/urxvt"
+		echo 'URxvt*visualBell: false' >> "/home/${username}/.Xresources.d/urxvt"
+		echo 'URxvt*saveLines: 700' >> "/home/${username}/.Xresources.d/urxvt"
+
+		chown "${username}:${username}" "/home/${username}/.Xresources.d/urxvt"
+
+		update-alternatives --install '/usr/bin/x-terminal-emulator' 'x-terminal-emulator' '/usr/bin/urxvtcd' 0
+		update-alternatives --set 'x-terminal-emulator' '/usr/bin/urxvtcd'
+	fi
 fi

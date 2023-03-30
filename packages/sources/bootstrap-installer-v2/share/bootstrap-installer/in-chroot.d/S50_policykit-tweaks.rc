@@ -1,0 +1,44 @@
+# Tweak policykit
+
+# THE DISOBEDIENT WILL BE EXECUTED!
+#if [ ! "${policykit_tweaks}" = '' ] && [ ! "${username}" = '' ] && [ -e '/etc/polkit-1/localauthority/50-local.d' ]; then
+#	print_message 'destroying policykit' "${COLOR_INFO}"
+#
+#	mkdir -p "/usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d"
+#	chown -R 'root:root' "/usr/local/etc/${installer_config_dir}polkit-1"
+#	chmod -s "/usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d"
+#	chmod -s "/usr/local/etc/${installer_config_dir}polkit-1/localauthority"
+#	chmod -s "/usr/local/etc/${installer_config_dir}polkit-1"
+#
+#	echo '[Allow Everything Dammit]' > "/usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/allow_everything.pkla"
+#	echo "Identity=unix-group:${username}" >> "/usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/allow_everything.pkla"
+#	echo 'Action=*' >> "/usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/allow_everything.pkla"
+#	echo 'ResultAny=yes' >> "/usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/allow_everything.pkla"
+#	echo 'ResultInactive=yes' >> "/usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/allow_everything.pkla"
+#	echo 'ResultActive=yes' >> "/usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/allow_everything.pkla"
+#
+#	ln -s "/usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/allow_everything.pkla" "/etc/polkit-1/localauthority/50-local.d/allow_everything.pkla"
+#fi
+
+if [ ! "${policykit_tweaks}" = '' ] && [ ! "${username}" = '' ] && [ "$(sed 's/\..*//' /etc/debian_version)" -le '7' ] && [ -e '/etc/polkit-1/localauthority/50-local.d' ]; then
+	print_message 'tweaking policykit for wheezy and older' "${COLOR_INFO}"
+
+	mkdir -p "/usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d"
+	chown -R 'root:root' "/usr/local/etc/${installer_config_dir}polkit-1"
+	chmod -s "/usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d"
+	chmod -s "/usr/local/etc/${installer_config_dir}polkit-1/localauthority"
+	chmod -s "/usr/local/etc/${installer_config_dir}polkit-1"
+
+	# https://unix.stackexchange.com/a/59543
+	echo '[restart '"${username}"']' > "/usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/shutdown-reboot-${username}.pkla"
+	echo 'Identity=unix-user:'"${username}" >> "/usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/shutdown-reboot-${username}.pkla"
+	echo 'Action=org.freedesktop.consolekit.system.restart' >> "/usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/shutdown-reboot-${username}.pkla"
+	echo 'ResultAny=yes' >> "/usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/shutdown-reboot-${username}.pkla"
+	echo '' >> "/usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/shutdown-reboot-${username}.pkla"
+	echo '[stop '"${username}"']' >> "/usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/shutdown-reboot-${username}.pkla"
+	echo 'Identity=unix-user:'"${username}" >> "/usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/shutdown-reboot-${username}.pkla"
+	echo 'Action=org.freedesktop.consolekit.system.stop' >> "/usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/shutdown-reboot-${username}.pkla"
+	echo 'ResultAny=yes' >> "/usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/shutdown-reboot-${username}.pkla"
+
+	ln -s "/usr/local/etc/${installer_config_dir}polkit-1/localauthority/50-local.d/shutdown-reboot-${username}.pkla" "/etc/polkit-1/localauthority/50-local.d/shutdown-reboot-${username}.pkla"
+fi

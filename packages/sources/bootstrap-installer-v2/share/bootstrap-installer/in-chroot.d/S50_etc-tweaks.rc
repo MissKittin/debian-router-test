@@ -1,0 +1,22 @@
+# Tweak some files in /etc
+if [ ! "${etc_tweaks_no_issue}" = '' ]; then
+	print_message 'tweaking issue' "${COLOR_INFO}"
+
+	echo -n '' >> "/usr/local/etc/${installer_config_dir}issue"
+	chown 'root:root' "/usr/local/etc/${installer_config_dir}issue"
+	chmod 644 "/usr/local/etc/${installer_config_dir}issue"
+
+	mv '/etc/issue' '/etc/issue.old'
+	ln -s "/usr/local/etc/${installer_config_dir}issue" '/etc/issue'
+fi
+
+if [ ! "${etc_tweaks_no_motd}" = '' ]; then
+	print_message 'tweaking motd' "${COLOR_INFO}"
+
+	echo -n '' >> "/usr/local/etc/${installer_config_dir}motd"
+	chown 'root:root' "/usr/local/etc/${installer_config_dir}motd"
+	chmod 644 "/usr/local/etc/${installer_config_dir}motd"
+
+	mv '/etc/motd' '/etc/motd.old'
+	ln -s "/usr/local/etc/${installer_config_dir}motd" '/etc/motd'
+fi

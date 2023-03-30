@@ -1,51 +1,253 @@
 # Remove systemd bloatware (16/21)
-if [ ! "${systemd_tweaks}" = '' ] && [ "${init_type}" = 'systemd' ]; then
+if [ ! "${systemd_tweaks}" = '' ] && [ "${init_type}" = 'systemd' ] && [ -d '/etc/systemd' ]; then
 	print_message 'tweaking systemd' "${COLOR_INFO}"
 
 	# Remove timers
-	rm /etc/systemd/system/timers.target.wants/*
-	ln -s /dev/null /etc/systemd/system/systemd-tmpfiles-clean.timer
+		if [ ! "${systemd_tweaks_notimers}" = '' ]; then
+			print_message 'disabling systemd timers' "${COLOR_INFO}"
+
+			#rm /etc/systemd/system/timers.target.wants/* > /dev/null 2>&1
+			#ln -s '/dev/null' '/etc/systemd/system/systemd-tmpfiles-clean.timer'
+
+			ln -s '/dev/null' '/etc/systemd/system/timers.target'
+		fi
 
 	# Disable timesync
-	[ -e '/etc/systemd/system/dbus-org.freedesktop.timesync1.service' ] && rm /etc/systemd/system/dbus-org.freedesktop.timesync1.service
-	[ -e '/etc/systemd/system/sysinit.target.wants/systemd-timesyncd.service' ] && rm /etc/systemd/system/sysinit.target.wants/systemd-timesyncd.service
+		if [ ! "${systemd_tweaks_notimesync}" = '' ]; then
+			print_message 'disabling systemd timesyncd' "${COLOR_INFO}"
+			[ -e '/etc/systemd/system/dbus-org.freedesktop.timesync1.service' ] && rm '/etc/systemd/system/dbus-org.freedesktop.timesync1.service' > /dev/null 2>&1
+			[ -e '/etc/systemd/system/sysinit.target.wants/systemd-timesyncd.service' ] && rm '/etc/systemd/system/sysinit.target.wants/systemd-timesyncd.service'
+		fi
 
 	# Disable networkd
-	ln -s /dev/null /etc/systemd/system/systemd-networkd.service
-	ln -s /dev/null /etc/systemd/system/systemd-networkd.socket
+		if [ ! "${systemd_tweaks_nonetworkd}" = '' ]; then
+			print_message 'disabling systemd networkd' "${COLOR_INFO}"
+			ln -s '/dev/null' '/etc/systemd/system/systemd-networkd.service'
+			ln -s '/dev/null' '/etc/systemd/system/systemd-networkd.socket'
+		fi
+
+	# Disable some mountpoints
+		for i in /lib/systemd/system/*.mount; do
+			[ "${i}" = '/lib/systemd/system/*.mount' ] && break
+			ln -s '/dev/null' "/etc/systemd/system/${i##*/}"
+		done
+		unset i
 
 	# Do not clear tty1
-	[ ! -e '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d' ] && mkdir -p '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d'
-	echo '[Service]' > '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d/noclear.conf'
-	echo 'TTYVTDisallocate=no' >> '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d/noclear.conf'
-	[ ! -e '/etc/systemd/system/getty@tty1.service.d' ] && ln -s '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d' '/etc/systemd/system/getty@tty1.service.d'
+		if [ ! -e '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d' ]; then
+			mkdir -p '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d'
+			chown -R 'root:root' '/usr/local/etc/'"${installer_config_dir}"'systemd'
+			chmod -s '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d'
+			chmod -s '/usr/local/etc/'"${installer_config_dir}"'systemd/system'
+			chmod -s '/usr/local/etc/'"${installer_config_dir}"'systemd'
+		fi
+
+		echo '[Service]' > '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d/noclear.conf'
+		echo 'TTYVTDisallocate=no' >> '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d/noclear.conf'
+		[ ! -e '/etc/systemd/system/getty@tty1.service.d' ] && \
+			ln -s '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d' '/etc/systemd/system/getty@tty1.service.d'
 
 	# Disable journald
-	if [ ! "${systemd_tweaks_nojournal}" = '' ]; then
-		print_message 'disabling systemd journal' "${COLOR_INFO}"
-		ln -s /dev/null /etc/systemd/system/systemd-journald.service
-		ln -s /dev/null /etc/systemd/system/systemd-journald.socket
-		ln -s /dev/null /etc/systemd/system/systemd-journald-audit.socket
-		ln -s /dev/null /etc/systemd/system/systemd-journald-dev-log.socket
-		ln -s /dev/null /etc/systemd/system/systemd-journal-flush.service
+		if [ ! "${systemd_tweaks_nojournal}" = '' ]; then
+			print_message 'disabling systemd journald' "${COLOR_INFO}"
+			ln -s '/dev/null' '/etc/systemd/system/systemd-journald.service'
+			ln -s '/dev/null' '/etc/systemd/system/systemd-journald.socket'
+			ln -s '/dev/null' '/etc/systemd/system/systemd-journald-audit.socket'
+			ln -s '/dev/null' '/etc/systemd/system/systemd-journald-dev-log.socket'
+			ln -s '/dev/null' '/etc/systemd/system/systemd-journal-flush.service'
+		fi
+
+	# Disable persistent journal (since bullseye)
+		if [ ! "${systemd_tweaks_no_persistent_journal}" = '' ]; then
+			print_message 'disabling persistent systemd journal' "${COLOR_INFO}"
+
+			#rm -r -f '/var/log/journal' > /dev/null 2>&1
+
+			if [ ! -e '/usr/local/etc/'"${installer_config_dir}"'systemd/journald.conf.d' ]; then
+				mkdir -p '/usr/local/etc/'"${installer_config_dir}"'systemd/journald.conf.d'
+				chown -R 'root:root' '/usr/local/etc/'"${installer_config_dir}"'systemd'
+				chmod -s '/usr/local/etc/'"${installer_config_dir}"'systemd/journald.conf.d'
+				chmod -s '/usr/local/etc/'"${installer_config_dir}"'systemd'
+			fi
+
+			echo '[Journal]' > '/usr/local/etc/'"${installer_config_dir}"'systemd/journald.conf.d/volatile-storage.conf'
+			echo 'Storage=volatile' >> '/usr/local/etc/'"${installer_config_dir}"'systemd/journald.conf.d/volatile-storage.conf'
+
+			[ ! -e '/etc/systemd/journald.conf.d' ] && \
+				mkdir '/etc/systemd/journald.conf.d'
+
+			[ ! -e '/etc/systemd/journald.conf.d/volatile-storage.conf' ] && \
+				ln -s '/usr/local/etc/'"${installer_config_dir}"'systemd/journald.conf.d/volatile-storage.conf' '/etc/systemd/journald.conf.d/volatile-storage.conf'
+		fi
+
+	# Show messages during bootup
+		if [ ! -e '/usr/local/etc/'"${installer_config_dir}"'systemd/system.conf.d' ]; then
+			mkdir -p '/usr/local/etc/'"${installer_config_dir}"'systemd/system.conf.d'
+			chown -R 'root:root' '/usr/local/etc/'"${installer_config_dir}"'systemd'
+			chmod -s '/usr/local/etc/'"${installer_config_dir}"'systemd/system.conf.d'
+			chmod -s '/usr/local/etc/'"${installer_config_dir}"'systemd'
+		fi
+
+		echo '[Manager]' > '/usr/local/etc/'"${installer_config_dir}"'systemd/system.conf.d/show-boot-messages.conf'
+		echo 'ShowStatus=yes' >> '/usr/local/etc/'"${installer_config_dir}"'systemd/system.conf.d/show-boot-messages.conf'
+
+		[ ! -e '/etc/systemd/system.conf.d' ] && \
+			mkdir /etc/systemd/system.conf.d
+		[ ! -e '/etc/systemd/system.conf.d/show-boot-messages.conf' ] && \
+			ln -s '/usr/local/etc/'"${installer_config_dir}"'systemd/system.conf.d/show-boot-messages.conf' '/etc/systemd/system.conf.d/show-boot-messages.conf'
+fi
+
+# Key event tweaks
+if [ ! "${systemd_tweaks_handle}" = '' ] && [ "${init_type}" = 'systemd' ] && [ -d '/etc/systemd' ]; then
+	print_message 'tweaking systemd key event handling' "${COLOR_INFO}"
+
+	_systemd_tweaks_logind_add_jessie() { return 0; }
+
+	_jessie_detected='false'
+	if grep '^[a-z]*/[a-z]*$' '/etc/debian_version' > /dev/null 2>&1; then
+		_jessie_detected='true'
+	else
+		[ "$(sed 's/\..*//' /etc/debian_version)" -le '8' ] && _jessie_detected='true'
 	fi
 
-	# Umount and do not use efivars (moved to grub.rc)
-	#if [ -e '/sys/firmware/efi' ]; then
-	#	print_message 'creating "no efivars" rc.local tweak' "${COLOR_INFO}"
-	#	echo '#!/bin/sh' > /usr/local/etc/${installer_config_dir}rc.local
-	#	echo '' >> /usr/local/etc/${installer_config_dir}rc.local
-	#	echo '# umount efivars' >> /usr/local/etc/${installer_config_dir}rc.local
-	#	echo 'umount /sys/firmware/efi/efivars' >> /usr/local/etc/${installer_config_dir}rc.local
-	#	echo 'rmmod efi_pstore' >> /usr/local/etc/${installer_config_dir}rc.local
-	#	echo 'rmmod efivars' >> /usr/local/etc/${installer_config_dir}rc.local
-	#	echo 'rmmod efivarfs' >> /usr/local/etc/${installer_config_dir}rc.local
-	#	echo 'echo '"'"'rc.local: efivars support removed'"'"' > /dev/kmsg' >> /usr/local/etc/${installer_config_dir}rc.local
-	#	echo '' >> /usr/local/etc/${installer_config_dir}rc.local
-	#	echo 'exit 0' >> /usr/local/etc/${installer_config_dir}rc.local
+	"${_jessie_detected}" && _systemd_tweaks_logind_add_jessie()
+	{
+		if [ ! -L '/etc/systemd/logind.conf' ]; then
+			cp -rfp '/etc/systemd/logind.conf' '/etc/systemd/logind.conf.old'
+			mv '/etc/systemd/logind.conf' "/usr/local/etc/${installer_config_dir}systemd/logind.conf"
+			ln -s "/usr/local/etc/${installer_config_dir}systemd/logind.conf" '/etc/systemd/logind.conf'
+		fi
 
-	#	ln -s /usr/local/etc/${installer_config_dir}rc.local /etc/rc.local
-	#fi
+		sed -i 's/#'"${1}"'=.*/'"${1}"'='"${2}"'/g' "/usr/local/etc/${installer_config_dir}systemd/logind.conf"
+	}
+	unset _jessie_detected
+	_systemd_tweaks_logind_add()
+	{
+		if [ ! -e "/usr/local/etc/${installer_config_dir}systemd/logind.conf.d/keyevents.conf" ]; then
+			mkdir -p "/usr/local/etc/${installer_config_dir}systemd/logind.conf.d"
 
-	# cmdline tweak - see grub.rc
+			echo '[Login]' > "/usr/local/etc/${installer_config_dir}systemd/logind.conf.d/keyevents.conf"
+			chown -R 'root:root' "/usr/local/etc/${installer_config_dir}systemd"
+			chmod -s "/usr/local/etc/${installer_config_dir}systemd/logind.conf.d"
+			chmod -s "/usr/local/etc/${installer_config_dir}systemd"
+
+			mkdir -p '/etc/systemd/logind.conf.d'
+			ln -s "/usr/local/etc/${installer_config_dir}systemd/logind.conf.d/keyevents.conf" '/etc/systemd/logind.conf.d/keyevents.conf'
+		fi
+
+		echo "${1}=${2}" >> "/usr/local/etc/${installer_config_dir}systemd/logind.conf.d/keyevents.conf"
+		_systemd_tweaks_logind_add_jessie "${1}" "${2}"
+	}
+
+	[ ! "${systemd_tweaks_handle_powerkey}" = '' ] && \
+		_systemd_tweaks_logind_add 'HandlePowerKey' "${systemd_tweaks_handle_powerkey}"
+	[ ! "${systemd_tweaks_handle_powerkeylongpress}" = '' ] && \
+		_systemd_tweaks_logind_add 'HandlePowerKeyLongPress' "${systemd_tweaks_handle_powerkeylongpress}"
+	[ ! "${systemd_tweaks_handle_rebootkey}" = '' ] && \
+		_systemd_tweaks_logind_add 'HandleRebootKey' "${systemd_tweaks_handle_rebootkey}"
+	[ ! "${systemd_tweaks_handle_rebootkeylongpress}" = '' ] && \
+		_systemd_tweaks_logind_add 'HandleRebootKeyLongPress' "${systemd_tweaks_handle_rebootkeylongpress}"
+	[ ! "${systemd_tweaks_handle_suspendkey}" = '' ] && \
+		_systemd_tweaks_logind_add 'HandleSuspendKey' "${systemd_tweaks_handle_suspendkey}"
+	[ ! "${systemd_tweaks_handle_suspendkeylongpress}" = '' ] && \
+		_systemd_tweaks_logind_add 'HandleSuspendKeyLongPress' "${systemd_tweaks_handle_suspendkeylongpress}"
+	[ ! "${systemd_tweaks_handle_hibernatekey}" = '' ] && \
+		_systemd_tweaks_logind_add 'HandleHibernateKey' "${systemd_tweaks_handle_hibernatekey}"
+	[ ! "${systemd_tweaks_handle_hibernatekeylongpress}" = '' ] && \
+		_systemd_tweaks_logind_add 'HandleHibernateKeyLongPress' "${systemd_tweaks_handle_hibernatekeylongpress}"
+	[ ! "${systemd_tweaks_handle_lidswitch}" = '' ] && \
+		_systemd_tweaks_logind_add 'HandleLidSwitch' "${systemd_tweaks_handle_lidswitch}"
+	[ ! "${systemd_tweaks_handle_lidswitchexternalpower}" = '' ] && \
+		_systemd_tweaks_logind_add 'HandleLidSwitchExternalPower' "${systemd_tweaks_handle_lidswitchexternalpower}"
+	[ ! "${systemd_tweaks_handle_lidswitchdocked}" = '' ] && \
+		_systemd_tweaks_logind_add 'HandleLidSwitchDocked' "${systemd_tweaks_handle_lidswitchdocked}"
+
+	unset _systemd_tweaks_logind_add_jessie
+	unset _systemd_tweaks_logind_add
+fi
+
+# Configure systemd autologin (as non-privileged user) (14/21)
+if [ ! "${systemd_tweaks_tty_autologin}" = '' ] && [ "${init_type}" = 'systemd' ] && [ -d '/etc/systemd' ]; then
+	print_message 'configuring autologin (systemd)' "${COLOR_INFO}"
+
+	if [ ! -e '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d' ]; then
+		mkdir -p '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d'
+		chown -R 'root:root' '/usr/local/etc/'"${installer_config_dir}"'systemd'
+		chmod -s '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d'
+		chmod -s '/usr/local/etc/'"${installer_config_dir}"'systemd/system'
+		chmod -s '/usr/local/etc/'"${installer_config_dir}"'systemd'
+	fi
+
+	echo '[Service]' > '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d/autologin.conf'
+	echo 'ExecStart=' >> '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d/autologin.conf'
+	if [ "${systemd_tweaks_tty_autologin_quiet}" = '' ]; then
+		echo 'ExecStart=-/sbin/agetty --autologin '"${username}"' --noclear %I $TERM' >> '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d/autologin.conf'
+	else
+		echo 'ExecStart=-/sbin/agetty --skip-login  --autologin '"${username}"' --noclear %I $TERM' >> '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d/autologin.conf'
+	fi
+
+	[ ! -e '/etc/systemd/system/getty@tty1.service.d' ] && ln -s '/usr/local/etc/'"${installer_config_dir}"'systemd/system/getty@tty1.service.d' '/etc/systemd/system/getty@tty1.service.d'
+fi
+
+# Configure virtual consoles (15/21)
+if [ ! "${systemd_tweaks_virual_consoles}" = '' ] && [ "${init_type}" = 'systemd' ] && [ -d '/etc/systemd' ]; then
+	print_message 'configuring virtual consoles (systemd)' "${COLOR_INFO}"
+
+	if [ ! -e "/usr/local/etc/${installer_config_dir}systemd/logind.conf.d" ]; then
+		mkdir -p "/usr/local/etc/${installer_config_dir}systemd/logind.conf.d"
+		chown -R 'root:root' "/usr/local/etc/${installer_config_dir}systemd"
+		chmod -s "/usr/local/etc/${installer_config_dir}systemd/logind.conf.d"
+		chmod -s "/usr/local/etc/${installer_config_dir}systemd"
+	fi
+
+	echo '[Login]' > "/usr/local/etc/${installer_config_dir}systemd/logind.conf.d/vts.conf"
+	echo "NAutoVTs=${systemd_tweaks_virual_consoles}" >> "/usr/local/etc/${installer_config_dir}systemd/logind.conf.d/vts.conf"
+	echo "ReserveVTs=${systemd_tweaks_virual_consoles}" >> "/usr/local/etc/${installer_config_dir}systemd/logind.conf.d/vts.conf"
+	chown 'root:root' "/usr/local/etc/${installer_config_dir}systemd/logind.conf.d/vts.conf"
+
+	[ ! -e '/etc/systemd/logind.conf.d' ] && \
+		mkdir /etc/systemd/logind.conf.d
+	[ ! -e '/etc/systemd/logind.conf.d/vts.conf' ] && \
+		ln -s '/usr/local/etc/'"${installer_config_dir}"'systemd/logind.conf.d/vts.conf' '/etc/systemd/logind.conf.d/vts.conf'
+
+	if grep '^[a-z]*/[a-z]*$' '/etc/debian_version' > /dev/null 2>&1 || [ "$(sed 's/\..*//' /etc/debian_version)" -le '8' ]; then
+		if [ ! -L '/etc/systemd/logind.conf' ]; then
+			cp -rfp '/etc/systemd/logind.conf' '/etc/systemd/logind.conf.old'
+			mv '/etc/systemd/logind.conf' "/usr/local/etc/${installer_config_dir}systemd/logind.conf"
+			ln -s "/usr/local/etc/${installer_config_dir}systemd/logind.conf" '/etc/systemd/logind.conf'
+		fi
+
+		sed -i 's/#NAutoVTs=.*/NAutoVTs='"${systemd_tweaks_virual_consoles}"'/g' /usr/local/etc/${installer_config_dir}systemd/logind.conf
+		sed -i 's/#ReserveVT=.*/ReserveVTs='"${systemd_tweaks_virual_consoles}"'/g' /usr/local/etc/${installer_config_dir}systemd/logind.conf
+	fi
+fi
+
+# Enable /proc hidepid workaround
+# https://github.com/systemd/systemd/issues/12955#issuecomment-910324160
+if [ ! "${systemd_tweaks_proc_hidepid}" = '' ]  && [ "${init_type}" = 'systemd' ] && [ -d '/etc/systemd' ]; then
+	print_message 'enabling systemd /proc hidepid workaround' "${COLOR_INFO}"
+
+	groupadd --system 'systemd-proc'
+
+	if [ ! -e '/usr/local/etc/'"${installer_config_dir}"'systemd/system/systemd-logind.service.d' ]; then
+		mkdir -p '/usr/local/etc/'"${installer_config_dir}"'systemd/system/systemd-logind.service.d'
+		chown -R 'root:root' '/usr/local/etc/'"${installer_config_dir}"'systemd'
+		chmod -s '/usr/local/etc/'"${installer_config_dir}"'systemd/system/systemd-logind.service.d'
+		chmod -s '/usr/local/etc/'"${installer_config_dir}"'systemd/system'
+		chmod -s '/usr/local/etc/'"${installer_config_dir}"'systemd'
+	fi
+	if [ ! -e '/usr/local/etc/'"${installer_config_dir}"'systemd/system/user@.service.d' ]; then
+		mkdir -p '/usr/local/etc/'"${installer_config_dir}"'systemd/system/user@.service.d'
+		chown -R 'root:root' '/usr/local/etc/'"${installer_config_dir}"'systemd'
+		chmod -s '/usr/local/etc/'"${installer_config_dir}"'systemd/system/user@.service.d'
+		chmod -s '/usr/local/etc/'"${installer_config_dir}"'systemd/system'
+		chmod -s '/usr/local/etc/'"${installer_config_dir}"'systemd'
+	fi
+
+	echo '[Service]' > '/usr/local/etc/'"${installer_config_dir}"'systemd/system/systemd-logind.service.d/systemd-proc.conf'
+	echo 'SupplementaryGroups=systemd-proc' >> '/usr/local/etc/'"${installer_config_dir}"'systemd/system/systemd-logind.service.d/systemd-proc.conf'
+	cp -p '/usr/local/etc/'"${installer_config_dir}"'systemd/system/systemd-logind.service.d/systemd-proc.conf' '/usr/local/etc/'"${installer_config_dir}"'systemd/system/user@.service.d/systemd-proc.conf'
+
+	[ ! -e '/etc/systemd/system/systemd-logind.service.d' ] && ln -s '/usr/local/etc/'"${installer_config_dir}"'systemd/system/systemd-logind.service.d' '/etc/systemd/system/systemd-logind.service.d'
+	[ ! -e '/etc/systemd/system/user@.service.d' ] && ln -s '/usr/local/etc/'"${installer_config_dir}"'systemd/system/user@.service.d' '/etc/systemd/system/user@.service.d'
 fi

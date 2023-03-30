@@ -1,0 +1,30 @@
+# Configure languages automatically
+if [ ! "${unattended_locales}" = '' ] && [ -e '/usr/sbin/locale-gen' ]; then
+	print_message 'configuring localization automatically' "${COLOR_INFO}"
+
+	[ -e '/etc/locale.gen' ] && mv '/etc/locale.gen' '/etc/locale.gen.old'
+	echo "${unattended_locales}" | tr '|' "\n" > "/usr/local/etc/${installer_config_dir}locale.gen"
+	chown 'root:root' "/usr/local/etc/${installer_config_dir}locale.gen"
+	ln -s "/usr/local/etc/${installer_config_dir}locale.gen" '/etc/locale.gen'
+
+	locale-gen
+
+	[ ! "${unattended_locales_default}" = '' ] && if cat '/etc/locale.gen' | grep "${unattended_locales_default}" > /dev/null 2>&1; then
+		print_message 'setting '"${unattended_locales_default}"' as default language' "${COLOR_SUCCESS}"
+
+		if [ ! -e "/usr/local/etc/${installer_config_dir}default" ]; then
+			chown 'root:root' "/usr/local/etc/${installer_config_dir}default"
+			chmod -s "/usr/local/etc/${installer_config_dir}default"
+		fi
+
+		for i in 'LANG' 'LANGUAGE' 'LC_CTYPE' 'LC_NUMERIC' 'LC_TIME' 'LC_COLLATE' 'LC_MONETARY' 'LC_MESSAGES' 'LC_PAPER' 'LC_NAME' 'LC_ADDRESS' 'LC_TELEPHONE' 'LC_MEASUREMENT' 'LC_IDENTIFICATION' 'LC_ALL'; do
+			echo "${i}="'"'"${unattended_locales_default}"'"' >> "/usr/local/etc/${installer_config_dir}default/locale"
+		done
+		unset i
+
+		[ -e '/etc/default/locale' ] && mv '/etc/default/locale' '/etc/default/locale.old'
+		ln -s "/usr/local/etc/${installer_config_dir}default/locale" '/etc/default/locale'
+	else
+		print_message "${unattended_locales_default}"' not exists in unattended_locales list' "${COLOR_FAILED}"
+	fi
+fi

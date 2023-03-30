@@ -1,0 +1,15 @@
+# Configure timezone automatically
+[ ! "${unattended_tzdata}" = '' ] && [ -e '/usr/sbin/tzconfig' ] && if [ -e "/usr/share/zoneinfo/${unattended_tzdata}" ]; then
+	print_message 'configuring time zone automatically' "${COLOR_INFO}"
+
+	[ -e '/etc/localtime' ] && mv '/etc/localtime' '/etc/localtime.old'
+	ln -s "/usr/share/zoneinfo/${unattended_tzdata}" "/usr/local/etc/${installer_config_dir}localtime"
+	ln -s "/usr/local/etc/${installer_config_dir}localtime" '/etc/localtime'
+
+	[ -e '/etc/timezone' ] && mv '/etc/timezone' '/etc/timezone.old'
+	echo "${unattended_tzdata}" > "/usr/local/etc/${installer_config_dir}timezone"
+	chown 'root:root' "/usr/local/etc/${installer_config_dir}timezone"
+	ln -s "/usr/local/etc/${installer_config_dir}timezone" '/etc/timezone'
+else
+	print_message "${unattended_tzdata}"' time zone is invalid' "${COLOR_FAILED}"
+fi

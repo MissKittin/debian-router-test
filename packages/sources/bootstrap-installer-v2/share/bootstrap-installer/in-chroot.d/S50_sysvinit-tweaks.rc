@@ -1,0 +1,86 @@
+# tweak sysvinit
+if [ ! "${sysvinit_tweaks}" = '' ] && [ "${init_type}" = 'sysvinit' ] && [ -e '/etc/init.d' ]; then
+	print_message 'tweaking sysvinit' "${COLOR_INFO}"
+
+	# do not use startpar in sysvinit (run scripts sequentially) (18/21)
+	if [ ! -e "/usr/local/etc/${installer_config_dir}init.d" ]; then
+		mkdir -p "/usr/local/etc/${installer_config_dir}init.d"
+		chown 'root:root' "/usr/local/etc/${installer_config_dir}init.d"
+		chmod -s "/usr/local/etc/${installer_config_dir}init.d"
+	fi
+
+	echo -n '' > "/usr/local/etc/${installer_config_dir}init.d/.legacy-bootordering"
+	ln -s "/usr/local/etc/${installer_config_dir}init.d/.legacy-bootordering" '/etc/init.d/.legacy-bootordering'
+
+	# add noclear to getty
+	[ "$(sed 's/\..*//' /etc/debian_version)" -ge '7' ] && if ! cat '/etc/inittab' | grep 'tty1$' | grep '\--noclear' > /dev/null 2>&1; then
+		if [ ! -e '/etc/inittab.old' ]; then
+			cp -rfp '/etc/inittab' '/etc/inittab.old'
+			mv '/etc/inittab' "/usr/local/etc/${installer_config_dir}inittab"
+			ln -s "/usr/local/etc/${installer_config_dir}inittab" '/etc/inittab'
+		fi
+
+		sed -i 's\/sbin/getty 38400 tty1\/sbin/getty --noclear 38400 tty1\g' "/usr/local/etc/${installer_config_dir}inittab"
+	fi
+
+	# and disable bootclean scripts
+	SYSVINIT_PWD="$(pwd)"
+	cd '/etc/rcS.d'
+	for i in *-bootclean.sh; do
+		[ "${i}" = '*-bootclean.sh' ] && break
+		mv "${i}" "K${i#?}"
+	done
+	unset i
+	cd "${SYSVINIT_PWD}"
+	unset SYSVINIT_PWD
+fi
+
+# Configure sysvinit autologin (as non-privileged user) (14/21)
+if [ ! "${sysvinit_tweaks_tty_autologin}" = '' ] && [ "${init_type}" = 'sysvinit' ] && [ -e '/etc/inittab' ]; then
+	print_message 'configuring autologin (sysvinit)' "${COLOR_INFO}"
+
+	if [ ! -e '/etc/inittab.old' ]; then
+		cp -rfp '/etc/inittab' '/etc/inittab.old'
+		mv '/etc/inittab' "/usr/local/etc/${installer_config_dir}inittab"
+		ln -s "/usr/local/etc/${installer_config_dir}inittab" '/etc/inittab'
+	fi
+
+	if [ "$(sed 's/\..*//' /etc/debian_version)" -ge '7' ]; then
+		if [ ! "${sysvinit_tweaks_tty_autologin_quiet}" = '' ]; then
+			sed -i 's\/sbin/getty 38400 tty1\/sbin/agetty --skip-login --autologin '"${username}"' 38400 tty1\g' "/usr/local/etc/${installer_config_dir}inittab"
+			sed -i 's\/sbin/getty --noclear 38400 tty1\/sbin/agetty --skip-login --noclear --autologin '"${username}"' 38400 tty1\g' "/usr/local/etc/${installer_config_dir}inittab" # bullseye patch
+		else
+			sed -i 's\/sbin/getty 38400 tty1\/sbin/agetty --autologin '"${username}"' 38400 tty1\g' "/usr/local/etc/${installer_config_dir}inittab"
+			sed -i 's\/sbin/getty --noclear 38400 tty1\/sbin/agetty --noclear --autologin '"${username}"' 38400 tty1\g' "/usr/local/etc/${installer_config_dir}inittab" # bullseye patch
+		fi
+	else
+		sed -i 's/1:2345:respawn:.*/1:2345:respawn:\/bin\/login -f '"${username}"' tty1 < \/dev\/tty1 > \/dev\/tty1 2>\&1/g' "/usr/local/etc/${installer_config_dir}inittab"
+	fi
+fi
+
+# Configure virtual consoles (15/21)
+if [ ! "${sysvinit_tweaks_virual_consoles}" = '' ] && [ "${init_type}" = 'sysvinit' ] && [ -e '/etc/inittab' ]; then
+	print_message 'configuring virtual consoles (sysvinit)' "${COLOR_INFO}"
+
+	_seq()
+	{
+		local i="$((${1}+1))"
+		while [ "${i}" -le "${2}" ]; do
+			echo "${i}"
+			i="$((${i}+1))"
+		done
+	}
+
+	if [ ! -e '/etc/inittab.old' ]; then
+		cp -rfp '/etc/inittab' '/etc/inittab.old'
+		mv '/etc/inittab' "/usr/local/etc/${installer_config_dir}inittab"
+		ln -s "/usr/local/etc/${installer_config_dir}inittab" '/etc/inittab'
+	fi
+
+	for vt in $(_seq ${sysvinit_tweaks_virual_consoles} 6); do
+		sed -i 's\'"${vt}"':23:respawn:/sbin/getty\#'"${vt}"':23:respawn:/sbin/getty\g' "/usr/local/etc/${installer_config_dir}inittab"
+	done
+	unset vt
+
+	unset _seq
+fi

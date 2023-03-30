@@ -1,44 +1,9 @@
 ### Bootstrap installer configuration
 ### config for debian-router
 
-#####################################
-### Initialize settings
-unset check_internet_connection
-unset fstab_use_uuid
-unset do_not_remove_resolvconf
-unset hostname
-unset root_partition
-unset root_partition_fs
-unset tmp_as_tmpfs
-unset root_home_as_tmpfs
-unset apt_install_packages
-unset bootloader_type
-unset grub_hiddenmenu
-unset init_type
-unset username
-unset username_groups
-unset use_sudo
-unset no_sudoers_links
-unset sudo_no_password
-unset desktop_env
-unset apt_mark_auto_packages
-unset dpkg_reconfigure_packages
-unset apt_purge_packages
-unset virual_consoles
-unset gdm_auto_login
-unset tty_auto_login
-unset auto_startx
-unset sysvinit_enable_legacy_bootordering
-unset systemd_tweaks_nojournal
-unset grub_cmdline_systemd_tweak
-unset initramfs_tools_tweaks
-unset hwclock_tweaks
-unset apt_no_recommends
-unset apt_no_recommends_only_on_installation
-unset edit_etc_hosts
-unset resolvconv_to_run
-unset resolvconf_nameservers
-#####################################
+### Note:
+### if you want to set the value to false,
+### remove the line with the variable or comment it out
 
 #####################################
 ### Installer settings
@@ -59,29 +24,48 @@ hostname='router'
 # Force root partiton
 #root_partition=''
 
-# Root partition filesystem (required)
-root_partition_fs='ext4'
+# Root partition filesystem (auto == auto detection)
+root_partition_fs='auto'
 
-# Configure /tmp and /var/tmp as tmpfs
-tmp_as_tmpfs='true'
+# Force ESP partition (default is first partition on target disk)
+#esp_partition='/dev/sdb2'
 
-# Configure /root as tmpfs
-root_home_as_tmpfs='true'
+# Ask for ESP partition device
+#esp_partition='ask'
+#####################################
+
+#####################################
+### UEFI settings
+
+# Detect UEFI
+[ -e '/sys/firmware/efi' ] && firmware_efi='true'
+
+# Force UEFI boot (also force firmware_efi_size!)
+#firmware_efi='true'
+
+# Detect UEFI architecture
+[ ! "${firmware_efi}" = '' ] && firmware_efi_size="$(cat /sys/firmware/efi/fw_platform_size)"
+
+# Force 32bit UEFI
+#firmware_efi_size='32'
+
+# Force 64bit UEFI
+#firmware_efi_size='64'
 #####################################
 
 #####################################
 ### Boot packages
 
 # Install grub bootloader
-[ -e '/sys/firmware/efi' ] && apt_install_packages="${apt_install_packages} grub-efi" || apt_install_packages="${apt_install_packages} grub-pc"
+[ ! "${firmware_efi}" = '' ] && apt_install_packages="${apt_install_packages} grub-efi" || apt_install_packages="${apt_install_packages} grub-pc"
 bootloader_type='grub'
-grub_hiddenmenu='true' # press <ESC> to view menu
 
 # Install kernel
-apt_install_packages="${apt_install_packages} linux-image-amd64"
+apt_install_packages="${apt_install_packages} linux-image-$(dpkg --print-architecture)"
 
 # Install sysvinit instead of systemd
 apt_install_packages="${apt_install_packages} sysvinit-core"
+apt_mark_temporary_hold="${apt_mark_temporary_hold} sysvinit-core"
 init_type='sysvinit'
 #####################################
 
@@ -91,14 +75,36 @@ init_type='sysvinit'
 # Add non-privileged user (will ask if empty)
 username='user'
 
+# Predefine non-privileged user plain password (will ask if empty)
+#username_password='user'
+
+# Predefine non-privileged user password hash (has priority over $user_password)
+#username_password_hash='$y$j9T$.eypGO5laGSjJTUtnZp7g0$8phaQ1YFtlaOC1qDiZZ3/yVzPlEYodwdP9sB9EERX17' # here: user
+
 # Add non-privileged user to groups
 #username_groups="${username_groups} example-group"
 #####################################
 
 #####################################
+### root password
+
+# Predefine root plain password (use_sudo must not be set)
+#root_password='toor'
+
+# Predefine root password hash (use_sudo must not be set, has priority over $root_password)
+#root_password_hash='$y$j9T$yv6pu.VIIDIfCJ4o2I13L.$EjDb2nsVFbHgOAtGzgUTR.wcy4VFwdu3bZEtkFaj4K4' # here: toor
+#####################################
+
+#####################################
 ### Other packages
 
-# Install additional packages
+# Install MD RAID tools
+#apt_install_packages="${apt_install_packages} mdadm"
+
+# Install LVM tools
+#apt_install_packages="${apt_install_packages} lvm2"
+
+# Install busybox
 apt_install_packages="${apt_install_packages} busybox-static"
 
 # Install network packages
@@ -111,16 +117,51 @@ apt_purge_packages="${apt_purge_packages} tzdata"
 #####################################
 ### Tweaks
 
-# sysvinit tweaks
-sysvinit_enable_legacy_bootordering='true' # sequentially execute init scripts
+# Use uuid for root= kernel parameter - comment to enable this tweak (grub_tweaks must be set)
+grub_tweaks_use_uuid="${fstab_use_uuid}" # set automatically
 
-# Do not install recommended packages as default
-apt_no_recommends='true'
-apt_no_recommends_only_on_installation='true'
+# Tweak kernel cmdline (grub_tweaks must be set)
+## add rootfstype
+[ ! "${root_partition_fs}" = '' ] && [ ! "${root_partition_fs}" = 'auto' ] && bootloader_kernel_cmdline="${bootloader_kernel_cmdline} rootfstype=${root_partition_fs}"
+## add rootflags
+bootloader_kernel_cmdline="${bootloader_kernel_cmdline} rootflags=suid,nodev,exec,noatime,nodiratime,async"
+## very quiet
+bootloader_kernel_cmdline="${bootloader_kernel_cmdline} loglevel=0"
+## disable AppArmor
+bootloader_kernel_cmdline="${bootloader_kernel_cmdline} apparmor=0"
+## disable SELinux
+bootloader_kernel_cmdline="${bootloader_kernel_cmdline} selinux=0"
+## do not use Linux Security Module
+bootloader_kernel_cmdline="${bootloader_kernel_cmdline} security=none"
+## reboot automatically on kernel panic
+bootloader_kernel_cmdline="${bootloader_kernel_cmdline} panic=2"
+## disable NMI watchdog
+bootloader_kernel_cmdline="${bootloader_kernel_cmdline} nmi_watchdog=0"
+## disable AGP (newer PCs)
+#bootloader_kernel_cmdline="${bootloader_kernel_cmdline} agp=off"
+## disable NUMA (older PCs)
+#bootloader_kernel_cmdline="${bootloader_kernel_cmdline} numa=off"
+## disable EFI support (programs will not pollute in NVRAM)
+[ ! "${firmware_efi}" = '' ] && bootloader_kernel_cmdline="${bootloader_kernel_cmdline} noefi"
+
+# fstab tweaks: /root /home/root and /home/${username}/.cache as tmpfs
+fstab_tweaks='true'
+
+# Configure /tmp and /var/tmp as tmpfs (fstab_tweaks must be set)
+fstab_tweaks_tmp_as_tmpfs='true'
+
+# Sequentially execute init scripts and disable bootclean scripts
+sysvinit_tweaks='true'
+
+# grub tweaks
+[ "${bootloader_type}" = 'grub' ] && grub_tweaks='true'
 
 # Add hostname to /etc/hosts (if exists)
 #edit_etc_hosts='true'
 
 # Link /etc/resolv.conf to /run (minimize unnecessary disk writes)
-resolvconv_to_run='true'
+resolvconv_tweaks='true'
+
+# APT tweaks for the make-offline-preseed.sh script
+[ "${0##*/}" = 'make-offline-preseed.sh' ] && [ ! "${apt_tweaks}" = '' ] && apt_custom_options="${apt_custom_options} --no-install-recommends"
 #####################################

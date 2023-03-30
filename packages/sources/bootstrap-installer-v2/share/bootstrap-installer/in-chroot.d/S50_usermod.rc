@@ -1,7 +1,8 @@
 # Add non-privileged user to groups
 if [ ! "${username_groups}" = '' ] && [ ! "${username}" = '' ]; then
 	for group in ${username_groups}; do
-		print_message "adding ${username} to ${username_groups}" "${COLOR_INFO}"
+		print_message "adding ${username} to ${group}" "${COLOR_INFO}"
+		grep "^${group}:" '/etc/group' > /dev/null 2>&1 || groupadd "${group}"
 		usermod -a -G "${group}" "${username}"
 	done
 	unset group

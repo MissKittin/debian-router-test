@@ -11,7 +11,7 @@ cd './init'
 
 if [ "${1}" = '--rootfs-only' ]; then
 	QUEUE_S='
-		console_splash
+		umask-console-splash
 		init-functions
 		path_temps
 		init-log
@@ -40,7 +40,7 @@ if [ "${1}" = '--rootfs-only' ]; then
 	'
 else
 	QUEUE_S='
-		console_splash
+		umask-console-splash
 		init-functions
 		path_temps
 		init-log

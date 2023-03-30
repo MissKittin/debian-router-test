@@ -43,6 +43,7 @@ if $nodhcp; then
 	done
 	echo
 	echo " Network mask: ${netmask}"
+	echo ' IPv6 address: fe80::1'
 else
 	echo ' PC will receive address from DHCP'
 fi

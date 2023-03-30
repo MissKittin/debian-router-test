@@ -1,0 +1,5 @@
+# Configure xserver legacy
+if [ -e '/usr/lib/xorg/Xorg.wrap' ] && [ -e '/etc/X11/Xwrapper.config' ]; then
+	print_message 'configuring xserver legacy wrapper' "${COLOR_INFO}"
+	echo 'needs_root_rights=yes' >> '/etc/X11/Xwrapper.config'
+fi

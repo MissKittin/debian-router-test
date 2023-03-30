@@ -1,0 +1,28 @@
+if [ ! "${desktop_gtk3_nocsd}" = '' ] && [ ! "${username}" = '' ] && [ -f "/home/${username}/.xinitrc" ] && [ -e '/usr/bin/gtk3-nocsd' ]; then
+	print_message 'enabling gtk3-nocsd workaround' "${COLOR_INFO}"
+
+	sed -i 's/exec /exec gtk3-nocsd /g' "/home/${username}/.xinitrc"
+
+	if [ ! -e "/home/${username}/.config/gtk-3.0/gtk.css" ]; then
+		mkdir -p "/home/${username}/.config/gtk-3.0"
+		echo -n '' > "/home/${username}/.config/gtk-3.0/gtk.css"
+	else
+		echo '' >> "/home/${username}/.config/gtk-3.0/gtk.css"
+	fi
+
+	# Remove duplicated title
+	# https://github.com/PCMan/gtk3-nocsd/issues/19#issuecomment-588994061
+	echo 'headerbar {' >> "/home/${username}/.config/gtk-3.0/gtk.css"
+	echo	'margin-top: -100px;' >> "/home/${username}/.config/gtk-3.0/gtk.css"
+	echo	'border-bottom-width: 0;' >> "/home/${username}/.config/gtk-3.0/gtk.css"
+	echo '}' >> "/home/${username}/.config/gtk-3.0/gtk.css"
+	echo 'headerbar button,' >> "/home/${username}/.config/gtk-3.0/gtk.css"
+	echo 'headerbar spinbutton,' >> "/home/${username}/.config/gtk-3.0/gtk.css"
+	echo 'headerbar entry,' >> "/home/${username}/.config/gtk-3.0/gtk.css"
+	echo 'headerbar separator {' >> "/home/${username}/.config/gtk-3.0/gtk.css"
+	echo	'margin-top: 103px;' >> "/home/${username}/.config/gtk-3.0/gtk.css"
+	echo	'margin-bottom: 3px;' >> "/home/${username}/.config/gtk-3.0/gtk.css"
+	echo '}' >> "/home/${username}/.config/gtk-3.0/gtk.css"
+
+	chown -R "${username}:${username}" "/home/${username}/.config"
+fi

@@ -1,0 +1,150 @@
+# Install packages
+
+_apt_if_apt_mark_temporary_hold()
+{
+	[ "${apt_mark_temporary_hold}" = '' ] && return 1
+
+	local i
+	for i in ${apt_mark_temporary_hold}; do
+		[ "${i}" = "${1}" ] && return 0
+	done
+
+	return 1
+}
+
+mkdir '/.bootstrap-installer-fake-bin'
+for i_tool in 'initctl' 'invoke-rc.d' 'restart' 'start' 'stop' 'start-stop-daemon' 'service' 'deb-systemd-helper'; do
+	ln -s '/bin/true' "/.bootstrap-installer-fake-bin/${i_tool}"
+done
+unset i_tool
+
+if grep '^[a-z]*/[a-z]*$' '/etc/debian_version' > /dev/null 2>&1; then
+	_apt_force_yes='--allow-unauthenticated --allow-downgrades --allow-remove-essential'
+else
+	if [ "$(sed 's/\..*//' /etc/debian_version)" -ge '11' ]; then
+		_apt_force_yes='--allow-unauthenticated --allow-downgrades --allow-remove-essential'
+	else
+		print_message 'using old apt --force-yes argument' "${COLOR_INFO}"
+		_apt_force_yes='--force-yes'
+	fi
+fi
+
+if [ -e '/bootstrap-installer-preseed.tar.gz' ]; then
+	print_message 'unpacking apt preseed' "${COLOR_INFO}"
+	tar xf '/bootstrap-installer-preseed.tar.gz' -C /
+	rm '/bootstrap-installer-preseed.tar.gz'
+else
+	print_message 'downloading apt lists' "${COLOR_INFO}"
+	failed='0'
+	while ! apt-get update; do
+		if [ "${failed}" = '3' ]; then
+			print_message 'failed, not retrying' "${COLOR_FAILED}"
+			break
+		else
+			failed="$((failed+1))"
+			print_message 'failed, retrying' "${COLOR_FAILED}"
+			sleep 1
+		fi
+	done
+fi
+
+print_message 'upgrading system' "${COLOR_INFO}"
+failed='0'
+while ! PATH="/.bootstrap-installer-fake-bin:${PATH}" DEBIAN_FRONTEND='noninteractive' apt-get dist-upgrade -y ${_apt_force_yes}; do
+	if [ "${failed}" = '3' ]; then
+		print_message 'failed, not retrying' "${COLOR_FAILED}"
+		break
+	else
+		failed="$((failed+1))"
+		print_message 'failed, retrying' "${COLOR_FAILED}"
+		sleep 1
+	fi
+done
+
+if [ ! "${apt_install_packages}" = '' ]; then
+	print_message 'installing packages' "${COLOR_INFO}"
+	for package in ${apt_install_packages}; do
+		if ! dpkg-query -s "${package}" > /dev/null 2>&1; then
+			failed='0'
+			while ! PATH="/.bootstrap-installer-fake-bin:${PATH}" DEBIAN_FRONTEND='noninteractive' apt-get install -y ${_apt_force_yes} ${apt_custom_options} "${package}"; do
+				if [ "${failed}" = '3' ]; then
+					print_message 'failed, not retrying' "${COLOR_FAILED}"
+					break
+				else
+					failed="$((failed+1))"
+					print_message 'failed, retrying' "${COLOR_FAILED}"
+					sleep 1
+				fi
+			done
+
+			if _apt_if_apt_mark_temporary_hold "${package}"; then
+				print_message "temporary holding ${package} package" "${COLOR_INFO}"
+				apt-mark hold "${package}"
+			fi
+		else
+			print_message "package ${package} is already installed" "${COLOR_INFO}"
+
+			if _apt_if_apt_mark_temporary_hold "${package}"; then
+				print_message "temporary holding ${package} package" "${COLOR_INFO}"
+				apt-mark hold "${package}"
+			fi
+		fi
+	done
+	unset package
+fi
+
+if [ ! "${apt_mark_auto_packages}" = '' ]; then
+	print_message 'marking packages as auto installed' "${COLOR_INFO}"
+	for package in ${apt_mark_auto_packages}; do
+		apt-mark auto "${package}"
+	done
+	unset package
+fi
+
+if [ ! "${apt_purge_packages}" = '' ]; then
+	print_message 'purging packages' "${COLOR_INFO}"
+	for package in ${apt_purge_packages}; do
+		failed='0'
+		while ! PATH="/.bootstrap-installer-fake-bin:${PATH}" DEBIAN_FRONTEND='noninteractive' apt-get purge -y ${package}; do
+			if [ "${failed}" = '3' ]; then
+				print_message 'failed, not retrying' "${COLOR_FAILED}"
+				break
+			else
+				failed="$((failed+1))"
+				print_message 'failed, retrying' "${COLOR_FAILED}"
+				sleep 1
+			fi
+		done
+	done
+	unset package
+fi
+
+print_message 'cleaning system' "${COLOR_INFO}"
+failed='0'
+while ! PATH="/.bootstrap-installer-fake-bin:${PATH}" DEBIAN_FRONTEND='noninteractive' apt-get autoremove --purge -y; do
+	if [ "${failed}" = '3' ]; then
+		print_message 'failed, not retrying' "${COLOR_FAILED}"
+		break
+	else
+		failed="$((failed+1))"
+		print_message 'failed, retrying' "${COLOR_FAILED}"
+		sleep 1
+	fi
+done
+
+# Create apt dump
+if [ -e '/bootstrap-installer-preseed-dump' ]; then
+	print_message 'creating apt preseed' "${COLOR_INFO}"
+	tar cf '/bootstrap-installer-preseed.tar' '/var/cache/apt/archives' '/var/lib/apt/lists' '/var/lib/apt/mirrors' > /dev/null 2>&1
+	gzip -9 '/bootstrap-installer-preseed.tar'
+	rm '/bootstrap-installer-preseed-dump'
+fi
+
+# Remove downloaded packages
+print_message 'cleaning apt cache' "${COLOR_INFO}"
+apt-get clean
+
+rm -r '/.bootstrap-installer-fake-bin'
+
+unset _apt_force_yes
+unset _apt_if_apt_mark_temporary_hold

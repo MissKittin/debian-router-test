@@ -1,7 +1,26 @@
 # Do not install recommended packages (6/21)
-if [ ! "${apt_no_recommends}" = '' ]; then
+if [ ! "${apt_tweaks}" = '' ]; then
 	print_message 'tweaking apt' "${COLOR_INFO}"
-	mkdir -p /usr/local/etc/${installer_config_dir}apt/apt.conf.d
-	echo 'apt::install-recommends "false";' > /usr/local/etc/${installer_config_dir}apt/apt.conf.d/99-no-recommends
-	ln -s /usr/local/etc/${installer_config_dir}apt/apt.conf.d/99-no-recommends /etc/apt/apt.conf.d/99-no-recommends
+
+	if [ ! -e "/usr/local/etc/${installer_config_dir}apt/apt.conf.d" ]; then
+		mkdir -p "/usr/local/etc/${installer_config_dir}apt/apt.conf.d"
+		chown -R 'root:root' "/usr/local/etc/${installer_config_dir}apt"
+		chmod -s "/usr/local/etc/${installer_config_dir}apt/apt.conf.d"
+		chmod -s "/usr/local/etc/${installer_config_dir}apt"
+	fi
+
+	echo 'Apt::Install-Recommends "false";' > "/usr/local/etc/${installer_config_dir}apt/apt.conf.d/99-no-install-recommends"
+	echo 'Apt::AutoRemove::RecommendsImportant "false";' >> "/usr/local/etc/${installer_config_dir}apt/apt.conf.d/99-no-install-recommends"
+	ln -s "/usr/local/etc/${installer_config_dir}apt/apt.conf.d/99-no-install-recommends" '/etc/apt/apt.conf.d/99-no-install-recommends'
+
+	echo 'Apt::Install-Suggests "false";' > "/usr/local/etc/${installer_config_dir}apt/apt.conf.d/99-no-install-suggests"
+	echo 'Apt::AutoRemove::SuggestsImportant "false";' >> "/usr/local/etc/${installer_config_dir}apt/apt.conf.d/99-no-install-suggests"
+	ln -s "/usr/local/etc/${installer_config_dir}apt/apt.conf.d/99-no-install-suggests" '/etc/apt/apt.conf.d/99-no-install-suggests'
+
+	echo 'Acquire::Languages "none";' > "/usr/local/etc/${installer_config_dir}apt/apt.conf.d/99-no-apt-translations"
+	ln -s "/usr/local/etc/${installer_config_dir}apt/apt.conf.d/99-no-apt-translations" '/etc/apt/apt.conf.d/99-no-apt-translations'
+
+	echo 'Acquire::GzipIndexes "true";' > "/usr/local/etc/${installer_config_dir}apt/apt.conf.d/02-compress-indexes"
+	echo 'Acquire::CompressionTypes::Order:: "gz";' >> "/usr/local/etc/${installer_config_dir}apt/apt.conf.d/02-compress-indexes"
+	ln -s "/usr/local/etc/${installer_config_dir}apt/apt.conf.d/02-compress-indexes" '/etc/apt/apt.conf.d/02-compress-indexes'
 fi

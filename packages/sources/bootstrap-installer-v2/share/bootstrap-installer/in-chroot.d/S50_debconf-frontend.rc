@@ -1,0 +1,12 @@
+# Configure debconf frontend
+if [ ! "${debconf_frontend}" = '' ] && [ -e '/usr/bin/debconf-set-selections' ]; then
+	case "${debconf_frontend}" in
+		'Dialog'|'Readline'|'Gnome'|'Kde'|'Noninteractive')
+			print_message "setting up ${debconf_frontend} as debconf frontend" "${COLOR_SUCCESS}"
+			echo 'debconf debconf/frontend select '"${debconf_frontend}" | debconf-set-selections
+		;;
+		*)
+			print_message "debconf frontend ${debconf_frontend} is invalid" "${COLOR_FAILED}"
+		;;
+	esac
+fi

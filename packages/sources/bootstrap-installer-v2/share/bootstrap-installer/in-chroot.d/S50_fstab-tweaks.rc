@@ -1,0 +1,26 @@
+# Tweak fstab
+if [ ! "${fstab_tweaks}" = '' ] && [ -e "/usr/local/etc/${installer_config_dir}fstab" ]; then
+	print_message 'tweaking fstab' "${COLOR_INFO}"
+
+	[ ! -L '/var/run' ] && \
+		echo 'tmp /var/run tmpfs auto,rw,nosuid,nodev,noexec,noatime,nodiratime,mode=711 0 0' >> "/usr/local/etc/${installer_config_dir}fstab"
+
+	if [ ! "${fstab_tweaks_tmp_as_tmpfs}" = '' ]; then
+		[ -d '/tmp' ] && \
+			echo 'tmp /tmp tmpfs auto,rw,nosuid,nodev,noexec,noatime,nodiratime,mode=1777 0 0' >> "/usr/local/etc/${installer_config_dir}fstab"
+
+		[ -d '/var/tmp' ] && \
+			echo 'tmp /var/tmp tmpfs auto,rw,nosuid,nodev,noexec,noatime,nodiratime 0 0' >> "/usr/local/etc/${installer_config_dir}fstab"
+	fi
+
+	[ -d '/root' ] && \
+		echo 'tmp /root tmpfs auto,rw,nosuid,nodev,noexec,noatime,nodiratime,mode=700 0 0' >> "/usr/local/etc/${installer_config_dir}fstab"
+	[ -d '/home/root' ] && \
+		echo 'tmp /home/root tmpfs auto,rw,nosuid,nodev,noexec,noatime,nodiratime,mode=700 0 0' >> "/usr/local/etc/${installer_config_dir}fstab"
+
+	if [ ! "${username}" = '' ]; then
+		mkdir "/home/${username}/.cache" > /dev/null 2>&1
+		chown "${username}:${username}" "/home/${username}/.cache"
+		echo 'tmp /home/'"${username}"'/.cache tmpfs auto,rw,nosuid,nodev,noexec,noatime,nodiratime,mode=755,uid='"${username}"',gid='"${username}"' 0 0' >> "/usr/local/etc/${installer_config_dir}fstab"
+	fi
+fi

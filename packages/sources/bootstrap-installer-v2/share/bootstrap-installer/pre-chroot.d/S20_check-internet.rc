@@ -1,6 +1,6 @@
 # Check internet connection
 
-if [ -e '/bootstrap-installer-preseed.tar.gz' ]; then
+if [ -e './bootstrap-installer-preseed.tar.gz' ]; then
 	print_message 'preseed exists, not checking internet connection' "${COLOR_INFO}"
 elif [ ! "${check_internet_connection}" = '' ]; then
 	if ! command -v ping > /dev/null 2>&1; then

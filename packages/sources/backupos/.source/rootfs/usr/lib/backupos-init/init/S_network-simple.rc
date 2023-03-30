@@ -14,13 +14,35 @@ if [ ! "${nodhcp}" = 'yes' ]; then
 	[ ! "${wait_for_dhcp}" = '' ] && sleep "${wait_for_dhcp}"
 elif [ ! "${aip}" = '' ] && [ ! "${bip}" = '' ] && [ ! "${netmask}" = '' ]; then
 	log_task 'Starting network'
-	for i in /sys/class/net/*; do
-		i="${i##*/}"
-		if [ ! "${i}" = 'lo' ]; then
-			init_log "network-simple: configuring ${i} ${aip}.${bip}"
-			ifconfig "${i}" "${aip}.${bip}" netmask "${netmask}" up > '/dev/null' 2>&1 && bip="$(expr "${bip}" + 1)"
+	if modprobe 'bridge' > /dev/null 2>&1 && brctl addbr br0 > '/dev/null' 2>&1; then
+		init_log "network-simple: using bridge"
+		for i in /sys/class/net/*; do
+			i="${i##*/}"
+			if [ ! "${i}" = 'lo' ] && [ ! "${i}" = 'br0' ]; then
+				ifconfig "${i}" '0.0.0.0' up > '/dev/null' 2>&1
+				if brctl addif br0 "${i}" > '/dev/null' 2>&1; then
+					init_log "network-simple: ${i} added to the bridge"
+				else
+					init_log "network-simple: cannot add ${i} to the bridge"
+					ifconfig "${i}" down
+				fi
+			fi
+		done
+		if [ ! "${bridge_mac}" = ''  ]; then
+			init_log "network-simple: using mac ${bridge_mac} for the bridge"
+			ip 'link' 'set' 'dev' 'br0' 'address' "${bridge_mac}" > '/dev/null' 2>&1
 		fi
-	done
+		ip -6 'address' 'add' 'fe80::1/64' 'dev' 'br0' > '/dev/null' 2>&1
+		ifconfig br0 "${aip}.${bip}" netmask "${netmask}" up > '/dev/null' 2>&1
+	else
+		for i in /sys/class/net/*; do
+			i="${i##*/}"
+			if [ ! "${i}" = 'lo' ]; then
+				init_log "network-simple: configuring ${i} ${aip}.${bip}"
+				ifconfig "${i}" "${aip}.${bip}" netmask "${netmask}" up > '/dev/null' 2>&1 && bip="$(expr "${bip}" + 1)"
+			fi
+		done
+	fi
 fi
 
 unset wait_for_dhcp

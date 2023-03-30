@@ -1,0 +1,11 @@
+# Quiet login for non-privileged user
+if [ ! "${username}" = '' ] && [ ! "${user_hushlogin}" = '' ]; then
+	print_message "setting hushlogin for ${username}" "${COLOR_INFO}"
+
+	echo -n '' > "/home/${username}/.hushlogin"
+
+	chown "${username}:${username}" "/home/${username}/.hushlogin"
+	#chown 'root:root' "/home/${username}/.hushlogin"
+
+	chmod 000 "/home/${username}/.hushlogin"
+fi

@@ -1,5 +1,5 @@
 # Copy resolv.conf
-if [ -e '/etc/resolv.conf' ]; then
+[ ! "${check_internet_connection}" = '' ] && if [ -e '/etc/resolv.conf' ]; then
 	print_message 'copying resolv.conf' "${COLOR_INFO}"
 	[ -e './etc/resolv.conf' ] && rm ./etc/resolv.conf
 	cp /etc/resolv.conf ./etc/resolv.conf

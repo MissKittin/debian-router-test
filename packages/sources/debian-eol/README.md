@@ -4,6 +4,9 @@ This script can also check your OS version EOL/LTS EOL:
 `debian-eol.php --check $(cat /etc/debian_version)`  
 and returns 0 if supported, 1 - LTS supported, 2 - not supported, 3 - wrong input data.
 
+# Warning
+This package is deprecated and will no longer be updated.
+
 ### Extras
 * notify-daemon - EOL notification
 

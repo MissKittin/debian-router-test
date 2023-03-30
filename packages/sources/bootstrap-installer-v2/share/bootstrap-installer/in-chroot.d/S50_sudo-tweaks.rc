@@ -1,0 +1,25 @@
+# Tweak sudo
+if [ ! "${use_sudo}" = '' ] && [ ! "${sudo_tweaks}" = '' ] && [ -e '/etc/sudoers.d' ]; then
+	print_message 'tweaking sudo' "${COLOR_INFO}"
+
+	echo 'Defaults !fqdn' > '/etc/sudoers.d/nodns'
+	chmod 440 '/etc/sudoers.d/nodns'
+	echo 'Defaults lecture=never' > '/etc/sudoers.d/nolecture'
+	chmod 440 '/etc/sudoers.d/nolecture'
+
+	[ -e "/usr/local/etc/${installer_config_dir}fstab" ] && [ -e '/var/lib/sudo' ] && \
+		echo 'tmp /var/lib/sudo tmpfs auto,rw,nosuid,nodev,noexec,mode=755 0 0' >> "/usr/local/etc/${installer_config_dir}fstab"
+
+	if [ "${sudo_no_sudoers_links}" = '' ]; then
+		if [ ! -e "/usr/local/etc/${installer_config_dir}sudoers.d" ]; then
+			mkdir -p "/usr/local/etc/${installer_config_dir}sudoers.d"
+			chown 'root:root' "/usr/local/etc/${installer_config_dir}sudoers.d"
+			chmod -s "/usr/local/etc/${installer_config_dir}sudoers.d"
+		fi
+
+		mv '/etc/sudoers.d/nodns' "/usr/local/etc/${installer_config_dir}sudoers.d/nodns"
+		ln -s "/usr/local/etc/${installer_config_dir}sudoers.d/nodns" '/etc/sudoers.d/nodns'
+		mv '/etc/sudoers.d/nolecture' "/usr/local/etc/${installer_config_dir}sudoers.d/nolecture"
+		ln -s "/usr/local/etc/${installer_config_dir}sudoers.d/nolecture" '/etc/sudoers.d/nolecture'
+	fi
+fi

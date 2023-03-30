@@ -1,0 +1,10 @@
+# Configure ubuntu-desktop
+if [ -e '/etc/os-release' ] && [ "$(cat '/etc/os-release' | grep '^ID=')" = 'ID=ubuntu' ] && [ -d '/etc/NetworkManager/conf.d' ]; then
+	print_message 'tweaking NetworkManager for Ubuntu' "${COLOR_INFO}"
+	mkdir -p "/usr/local/etc/${installer_config_dir}NetworkManager/conf.d"
+	echo '' > "/usr/local/etc/${installer_config_dir}NetworkManager/conf.d/10-globally-managed-devices.conf"
+	ln -s "/usr/local/etc/${installer_config_dir}NetworkManager/conf.d/10-globally-managed-devices.conf" '/etc/NetworkManager/conf.d/10-globally-managed-devices.conf'
+
+	print_message 'enabling systemd dns resolver...' "${COLOR_INFO}"
+	systemctl enable systemd-resolved.service
+fi

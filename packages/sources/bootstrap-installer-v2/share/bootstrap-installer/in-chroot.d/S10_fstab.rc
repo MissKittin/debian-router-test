@@ -4,33 +4,94 @@ print_message 'generating fstab' "${COLOR_INFO}"
 for arg in ${@}; do
 	case ${arg} in
 		root=*)
-			part=${arg#root=}
+			# from ../pre-chroot.d/S*_root-partition.rc
+			root_partition="${arg#root=}"
+			break
 		;;
 	esac
 done
 unset arg
 
-if echo -n "${part}" | grep '/dev/mmcblk' > /dev/null 2>&1; then
-	# emmc
-	disk="${part::-2}"
-else
-	# scsi/sata/ata/usb
-	disk="${part::-1}"
-fi
-if [ ! "${fstab_use_uuid}" = '' ]; then # check if lsblk failed
-	part_uuid="$(lsblk -no UUID ${part})" && part="UUID=${part_uuid}" || print_message 'UUID reading failed' "${COLOR_FAILED}"
-	if [ -e '/sys/firmware/efi' ]; then
-		esp_part="${disk}1"
-		esp_part_uuid="$(lsblk -no UUID ${esp_part})" && esp_part="UUID=${esp_part_uuid}" || print_message 'ESP UUID reading failed' "${COLOR_FAILED}"
+if \
+	echo -n "${root_partition}" | grep '/dev/mmcblk' > /dev/null 2>&1 || \
+	echo -n "${root_partition}" | grep '/dev/nvme' > /dev/null 2>&1 || \
+	echo -n "${root_partition}" | grep '/dev/loop' > /dev/null 2>&1
+then
+	# (e)mmc-sd/nvme/loopback
+	if grep '^[a-z]*/[a-z]*$' '/etc/debian_version' > /dev/null 2>&1; then
+		root_device="$(echo -n ${root_partition} | sed 's/..$//')"
+	else
+		[ "$(sed 's/\..*//' /etc/debian_version)" -ge '7' ] && \
+			root_device="${root_partition::-2}" || \
+			root_device="$(echo -n ${root_partition} | sed 's/..$//')"
 	fi
-	unset part_uuid
+else
+	# ata/(e)sata/scsi/usb/virtio-blk/xen
+	if grep '^[a-z]*/[a-z]*$' '/etc/debian_version' > /dev/null 2>&1; then
+		root_device="$(echo -n ${root_partition} | sed 's/.$//')"
+	else
+		[ "$(sed 's/\..*//' /etc/debian_version)" -ge '7' ] && \
+			root_device="${root_partition::-1}" || \
+			root_device="$(echo -n ${root_partition} | sed 's/.$//')"
+	fi
 fi
 
-echo "${part} / ${root_partition_fs} auto,suid,nodev,exec,noatime,nodiratime,async 0 1" > /usr/local/etc/${installer_config_dir}fstab
-[ -e '/sys/firmware/efi' ] && echo "${esp_part} /boot/efi vfat noauto,nosuid,nodev,noexec,noatime,nodiratime,async,uid=0,gid=0,umask=137,dmask=027 0 2" >> /usr/local/etc/${installer_config_dir}fstab
-[ ! "${tmp_as_tmpfs}" = '' ] && [ -d '/tmp' ] && echo 'tmp /tmp tmpfs auto,nosuid,nodev,noexec,noatime,nodiratime,mode=1777 0 0' >> /usr/local/etc/${installer_config_dir}fstab
-[ ! "${tmp_as_tmpfs}" = '' ] && [ -d '/var/tmp' ] && echo 'tmp /var/tmp tmpfs auto,nosuid,nodev,noexec,noatime,nodiratime 0 0' >> /usr/local/etc/${installer_config_dir}fstab
-[ ! "${root_home_as_tmpfs}" = '' ] && [ -d '/root' ] && echo 'tmp /root tmpfs auto,nosuid,nodev,noexec,noatime,nodiratime,mode=700 0 0' >> /usr/local/etc/${installer_config_dir}fstab
+if [ "${root_partition_fs}" = 'auto' ]; then
+	root_partition_fs=$(blkid "${root_partition}" | sed -n 's/.*TYPE=\"\([^\"]*\)\".*/\1/p')
 
-rm /etc/fstab
-ln -s /usr/local/etc/${installer_config_dir}fstab /etc/fstab
+	if [ "${root_partition_fs}" = '' ]; then
+		print_message 'root fs type not detected' "${COLOR_FAILED}"
+
+		echo -n 'Give me root partition fs type and press enter: '
+		read root_partition_fs
+	else
+		print_message "detected root fs type ${root_partition_fs}" "${COLOR_SUCCESS}"
+	fi
+else
+	print_message "using root fs type ${root_partition_fs}" "${COLOR_INFO}"
+fi
+
+if [ ! "${fstab_use_uuid}" = '' ]; then # check if lsblk failed
+	#root_partition_uuid="$(lsblk -no UUID ${root_partition})" && \
+	#	root_partition="UUID=${root_partition_uuid}" || \
+	#	print_message 'UUID reading failed' "${COLOR_FAILED}"
+
+	root_partition_uuid="$(blkid ${root_partition} | sed -n 's/.* UUID=\"\([^\"]*\)\".*/\1/p')" && \
+		root_partition="UUID=${root_partition_uuid}" || \
+		print_message 'UUID reading failed' "${COLOR_FAILED}"
+
+	if [ ! "${firmware_efi}" = '' ]; then
+		if [ "${esp_partition}" = 'ask' ]; then
+			echo -n 'Give me ESP partition device and press enter: '
+			read esp_partition
+		elif [ "${esp_partition}" = '' ]; then
+			esp_partition="${root_device}1"
+		fi
+
+		if [ -b "${esp_partition}" ]; then
+			#esp_partition_uuid="$(lsblk -no UUID ${esp_partition})" && \
+			#	esp_partition="UUID=${esp_partition_uuid}" || \
+			#	print_message 'ESP UUID reading failed' "${COLOR_FAILED}"
+
+			esp_partition_uuid="$(blkid ${esp_partition} | sed -n 's/.* UUID=\"\([^\"]*\)\".*/\1/p')" && \
+				esp_partition="UUID=${esp_partition_uuid}" || \
+				print_message 'ESP UUID reading failed' "${COLOR_FAILED}"
+
+			unset esp_partition_uuid
+		else
+			print_message "ESP partition ${esp_partition} is not a valid block device" "${COLOR_FAILED}"
+			unset esp_partition
+		fi
+	fi
+
+	unset root_partition_uuid
+fi
+
+echo "${root_partition} / ${root_partition_fs} auto,rw,suid,nodev,exec,noatime,nodiratime,async 0 1" > "/usr/local/etc/${installer_config_dir}fstab"
+[ ! "${firmware_efi}" = '' ] && [ ! "${esp_partition}" = '' ] && \
+	echo "${esp_partition} /boot/efi vfat noauto,rw,nosuid,nodev,noexec,noatime,nodiratime,async,uid=0,gid=0,umask=137,dmask=027 0 2" >> "/usr/local/etc/${installer_config_dir}fstab"
+echo '#/.swap.img none swap defaults 0 0' >> "/usr/local/etc/${installer_config_dir}fstab"
+
+rm '/etc/fstab'
+chown 'root:root' "/usr/local/etc/${installer_config_dir}fstab"
+ln -s "/usr/local/etc/${installer_config_dir}fstab" '/etc/fstab'

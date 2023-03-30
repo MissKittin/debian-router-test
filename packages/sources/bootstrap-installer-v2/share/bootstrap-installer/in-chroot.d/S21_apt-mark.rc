@@ -1,6 +1,98 @@
 # Mark all packages installed by debootstrap as auto-installed (5/21)
-print_message 'all manual packages to auto packages' "${COLOR_INFO}"
+print_message 'marking all manual packages to auto packages' "${COLOR_INFO}"
+
+grep '^[a-z]*/[a-z]*$' '/etc/debian_version' > /dev/null 2>&1 || \
+if [ "$(sed 's/\..*//' /etc/debian_version)" -le '5' ]; then
+	echo 'apt-mark: lenny or older is not supported'
+
+	_apt_mark()
+	{
+		[ "${1}" = 'showauto' ] && return 0
+		[ "${1}" = 'showmanual' ] && return 0
+
+		echo -n 'apt-mark: lenny or older is not supported'
+		[ ! "${2}" = '' ] && echo -n ", cannot ${@}"
+		echo ''
+		return 0
+	}
+	alias apt-mark='_apt_mark'
+	shopt -s expand_aliases
+elif [ "$(sed 's/\..*//' /etc/debian_version)" -le '6' ]; then
+	print_message 'using apt-mark wrapper for squeeze' "${COLOR_INFO}"
+
+	_apt_mark_shift()
+	{
+		local shift='true'
+		local i
+		for i in ${@}; do
+			if "${shift}"; then
+				shift='false'
+			else
+				echo "${i}"
+			fi
+		done
+	}
+
+	_apt_mark()
+	{
+		local exit_code='0'
+
+		case "${1}" in
+			'auto')
+				# ignore python-apt package
+				[ "${2}" = 'python-apt' ] && return 0
+
+				/usr/bin/apt-mark markauto $(_apt_mark_shift ${@})
+				echo "$(_apt_mark_shift ${@}) set to automatically installed."
+				exit_code="${?}"
+			;;
+			'manual')
+				/usr/bin/apt-mark unmarkauto $(_apt_mark_shift ${@})
+				echo "$(_apt_mark_shift ${@}) set to manually installed."
+				exit_code="${?}"
+			;;
+			'showauto')
+				/usr/bin/apt-mark ${@}
+				exit_code="${?}"
+			;;
+			'showmanual')
+				local auto_installed=$(mktemp)
+				local all_packages=$(mktemp)
+
+				apt-mark showauto > "${auto_installed}"
+				dpkg-query --showformat '${Package}\n' -W > "${all_packages}"
+				diff "${all_packages}" "${auto_installed}" | grep '^< ' | sed 's/^< //g'
+
+				rm "${auto_installed}"
+				rm "${all_packages}"
+
+				exit_code="${?}"
+			;;
+			*)
+				echo "apt-mark: squeeze cannot ${@}"
+			;;
+		esac
+
+		return "${exit_code}"
+	}
+
+	if ! dpkg-query -s 'python-apt' > /dev/null 2>&1; then
+		echo 'apt-mark: python-apt package is not installed'
+		_apt_mark()
+		{
+			[ "${1}" = 'showauto' ] && return 0
+			[ "${1}" = 'showmanual' ] && return 0
+
+			echo 'apt-mark: python-apt package is not installed'
+			return 0
+		}
+	fi
+
+	alias apt-mark='_apt_mark'
+	shopt -s expand_aliases
+fi
+
 apt-mark showmanual | while read line; do
-	apt-mark auto ${line}
+	apt-mark auto "${line}"
 done
 unset line

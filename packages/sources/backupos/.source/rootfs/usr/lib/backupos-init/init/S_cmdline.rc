@@ -1,3 +1,11 @@
+HOSTNAME=''
+nodhcp=''
+wait_for_dhcp=''
+network_ip=''
+start_ip=''
+netmask=''
+bridge_mac=''
+
 for x in $(cat /proc/cmdline); do
 	case "${x}" in
 		'emergency'|'single'|'S') echo -n '' > '/var/run/.debug.emergency'; ;;
@@ -13,6 +21,7 @@ for x in $(cat /proc/cmdline); do
 		network_ip=*) aip="${x#network_ip=}"; ;;
 		start_ip=*) bip="${x#start_ip=}"; ;;
 		netmask=*) netmask="${x#netmask=}"; ;;
+		bridge_mac=*) bridge_mac="${x#bridge_mac=}"; ;;
 	esac
 done
 unset x

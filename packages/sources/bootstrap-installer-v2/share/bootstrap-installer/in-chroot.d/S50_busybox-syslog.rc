@@ -1,0 +1,23 @@
+# Configure busybox-syslogd package
+if [ ! "${busybox_syslog}" = '' ] && [ -e '/etc/default/busybox-syslogd' ]; then
+	print_message 'configuring busybox-syslog' "${COLOR_INFO}"
+
+	if [ ! -e "/usr/local/etc/${installer_config_dir}default" ]; then
+		mkdir -p "/usr/local/etc/${installer_config_dir}default"
+		chown 'root:root' "/usr/local/etc/${installer_config_dir}default"
+		chmod -s "/usr/local/etc/${installer_config_dir}default"
+	fi
+
+	cp -rfp '/etc/default/busybox-syslogd' '/etc/default/busybox-syslogd.old'
+	mv '/etc/default/busybox-syslogd' "/usr/local/etc/${installer_config_dir}default/busybox-syslogd"
+	ln -s "/usr/local/etc/${installer_config_dir}default/busybox-syslogd" '/etc/default/busybox-syslogd'
+
+	echo 'SYSLOG_OPTS="-O /var/run/.busybox-syslogd.log"' >> "/usr/local/etc/${installer_config_dir}default/busybox-syslogd"
+
+	echo '' >> "/usr/local/etc/${installer_config_dir}default/busybox-syslogd"
+	echo 'if [ ! -e "/var/run/.busybox-syslogd.log" ]; then' >> "/usr/local/etc/${installer_config_dir}default/busybox-syslogd"
+		echo -e "\t"'echo -n "" > "/var/run/.busybox-syslogd.log"' >> "/usr/local/etc/${installer_config_dir}default/busybox-syslogd"
+		echo -e "\t"'chown root:adm "/var/run/.busybox-syslogd.log"' >> "/usr/local/etc/${installer_config_dir}default/busybox-syslogd"
+		echo -e "\t"'chmod 640 "/var/run/.busybox-syslogd.log"' >> "/usr/local/etc/${installer_config_dir}default/busybox-syslogd"
+	echo 'fi' >> "/usr/local/etc/${installer_config_dir}default/busybox-syslogd"
+fi

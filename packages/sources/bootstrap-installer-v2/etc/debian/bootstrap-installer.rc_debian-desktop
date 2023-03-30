@@ -1,46 +1,9 @@
 ### Bootstrap installer configuration
-### default configuration
-### for debian 8 jessie and newer
-### partially supports debian 7
+### default desktop configuration
 
-#####################################
-### Initialize settings
-unset check_internet_connection
-unset fstab_use_uuid
-unset do_not_remove_resolvconf
-unset hostname
-unset root_partition
-unset root_partition_fs
-unset tmp_as_tmpfs
-unset root_home_as_tmpfs
-unset apt_install_packages
-unset bootloader_type
-unset grub_hiddenmenu
-unset init_type
-unset username
-unset username_groups
-unset use_sudo
-unset no_sudoers_links
-unset sudo_no_password
-unset desktop_env
-unset apt_mark_auto_packages
-unset dpkg_reconfigure_packages
-unset apt_purge_packages
-unset virual_consoles
-unset gdm_auto_login
-unset tty_auto_login
-unset auto_startx
-unset sysvinit_enable_legacy_bootordering
-unset systemd_tweaks_nojournal
-unset grub_cmdline_systemd_tweak
-unset initramfs_tools_tweaks
-unset hwclock_tweaks
-unset apt_no_recommends
-unset apt_no_recommends_only_on_installation
-unset edit_etc_hosts
-unset resolvconv_to_run
-unset resolvconf_nameservers
-#####################################
+### Note:
+### if you want to set the value to false,
+### remove the line with the variable or comment it out
 
 #####################################
 ### Installer settings
@@ -53,6 +16,15 @@ fstab_use_uuid='true'
 
 # Do not remove /etc/resolv.conf or /run/.resolv.conf after install
 #do_not_remove_resolvconf='true'
+
+# Install recommended packages only in bootstrap-installer
+#apt_custom_options="${apt_custom_options} -o Apt::Install-Recommends=1"
+
+# Install suggested packages only in bootstrap-installer
+#apt_custom_options="${apt_custom_options} --install-suggests"
+
+# Move modified config files to subdirectory or/and add prefix (eg. dirname/ => subdirectory, dirname => prefix, dirname/dirn => subdirectory+prefix)
+#installer_config_dir='bootstrap-installer/'
 #####################################
 
 #####################################
@@ -64,37 +36,71 @@ fstab_use_uuid='true'
 # Force root partiton
 #root_partition=''
 
-# Root partition filesystem (required)
-root_partition_fs='ext4'
+# Root partition filesystem (auto == auto detection)
+root_partition_fs='auto'
 
-# Configure /tmp and /var/tmp as tmpfs
-tmp_as_tmpfs='true'
+# Force ESP partition (default is first partition on target disk)
+#esp_partition='/dev/sdb2'
 
-# Configure /root as tmpfs
-root_home_as_tmpfs='true'
+# Ask for ESP partition device
+#esp_partition='ask'
+#####################################
+
+#####################################
+### UEFI settings
+
+# Detect UEFI
+[ -e '/sys/firmware/efi' ] && firmware_efi='true'
+
+# Force UEFI boot (also force firmware_efi_size!)
+#firmware_efi='true'
+
+# Detect UEFI architecture
+[ ! "${firmware_efi}" = '' ] && firmware_efi_size="$(cat /sys/firmware/efi/fw_platform_size)"
+
+# Force 32bit UEFI
+#firmware_efi_size='32'
+
+# Force 64bit UEFI
+#firmware_efi_size='64'
 #####################################
 
 #####################################
 ### Boot packages
 
 # Install grub bootloader (automatically choose between efi and bios)
-[ -e '/sys/firmware/efi' ] && apt_install_packages="${apt_install_packages} grub-efi" || apt_install_packages="${apt_install_packages} grub-pc"
+[ ! "${firmware_efi}" = '' ] && apt_install_packages="${apt_install_packages} grub-efi" || apt_install_packages="${apt_install_packages} grub-pc"
 bootloader_type='grub'
-grub_hiddenmenu='true' # press <ESC> to view menu
 
-# Install kernel
-apt_install_packages="${apt_install_packages} linux-image-amd64"
+# Install kernel for squeeze and newer
+[ "$(sed 's/\..*//' /etc/debian_version)" -ge '6' ] && apt_install_packages="${apt_install_packages} linux-image-$(dpkg --print-architecture)"
 
-# Fallback to default init first
+# Force init: systemd or sysvinit or none
+#init_type='systemd'
+
+# Automatically choose init
+if [ "${init_type}" = '' ]; then
+	[ "$(sed 's/\..*//' /etc/debian_version)" -le '7' ] && init_type='sysvinit' || init_type='systemd'
+fi
+
+# Install init
+case "${init_type}" in
+	'systemd')
+		# Install systemd
+		apt_install_packages="${apt_install_packages} systemd-sysv"
+		apt_mark_temporary_hold="${apt_mark_temporary_hold} systemd-sysv"
+		init_type='systemd'
+	;;
+	'sysvinit')
+		# Install sysvinit
+		apt_install_packages="${apt_install_packages} sysvinit-core"
+		apt_mark_temporary_hold="${apt_mark_temporary_hold} sysvinit-core"
+		init_type='sysvinit'
+	;;
+esac
+
+# Fallback to default init
 apt_install_packages="${apt_install_packages} init"
-
-# Install systemd
-apt_install_packages="${apt_install_packages} systemd-sysv"
-init_type='systemd'
-
-# Install sysvinit
-#apt_install_packages="${apt_install_packages} sysvinit-core"
-#init_type='sysvinit'
 #####################################
 
 #####################################
@@ -103,8 +109,17 @@ init_type='systemd'
 # Add non-privileged user (will ask if empty)
 #username='user'
 
+# Predefine non-privileged user plain password (will ask if empty)
+#username_password='user'
+
+# Predefine non-privileged user password hash (has priority over $user_password)
+#username_password_hash='$y$j9T$.eypGO5laGSjJTUtnZp7g0$8phaQ1YFtlaOC1qDiZZ3/yVzPlEYodwdP9sB9EERX17' # here: user
+
 # Add non-privileged user to groups
 #username_groups="${username_groups} example-group"
+
+# Do not print last login info
+user_hushlogin='true'
 #####################################
 
 #####################################
@@ -113,67 +128,244 @@ init_type='systemd'
 # Install sudo or set root password
 apt_install_packages="${apt_install_packages} sudo"
 use_sudo='true'
-#no_sudoers_links='true'
+[ "$(sed 's/\..*//' /etc/debian_version)" -le '7' ] && sudo_no_sudoers_links='true'
 
-# Use sudo without password (possible security hole if true)
+# Use sudo without password (possible security hole if set)
 #sudo_no_password='true'
+
+# Predefine root plain password (use_sudo must not be set)
+#root_password='toor'
+
+# Predefine root password hash (use_sudo must not be set, has priority over $root_password)
+#root_password_hash='$y$j9T$yv6pu.VIIDIfCJ4o2I13L.$EjDb2nsVFbHgOAtGzgUTR.wcy4VFwdu3bZEtkFaj4K4' # here: toor
 #####################################
 
 #####################################
 ### Desktop environments
 
 # Install XFCE4
-apt_install_packages="${apt_install_packages} xorg xfce4 xfce4-terminal policykit-1 tango-icon-theme"
+apt_install_packages="${apt_install_packages} xorg xfce4 xfce4-xkb-plugin xfce4-terminal dbus-x11 policykit-1 tango-icon-theme xfce4-notifyd libnotify-bin"
+[ "$(sed 's/\..*//' /etc/debian_version)" -le '6' ] && apt_install_packages="${apt_install_packages} notification-daemon-xfce"
+[ "$(sed 's/\..*//' /etc/debian_version)" -le '5' ] && apt_install_packages="${apt_install_packages} policykit"
+apt_purge_packages="${apt_purge_packages} xterm"
 desktop_env='xfce'
 
+# Configure keyboard model in XFCE4
+#desktop_xfce_keyboard_model='yahoo'
+
+# Configure keyboard layout in XFCE4 (both must be set)
+#desktop_xfce_keyboard_layouts='us,pl'
+#desktop_xfce_keyboard_layouts_variants=','
+
 # Install IceWM/ROX
-#apt_install_packages="${apt_install_packages} xorg icewm rox-filer xterm"
+#apt_install_packages="${apt_install_packages} xorg icewm rox-filer rxvt gtk-theme-switch notification-daemon dbus-x11 libnotify-bin arandr"
+#apt_purge_packages="${apt_purge_packages} xterm"
 #desktop_env='icewm'
+
+# Configure keyboard models and layouts in IceWM
+#desktop_icewm_keyboard_layouts='"de","fr","jp"'
+
+# Install desktop with xterm only
+#apt_install_packages="${apt_install_packages} xorg xterm"
+#desktop_env='xterm'
+
+# Disable Gtk3 client side decorations
+apt_install_packages="${apt_install_packages} gtk3-nocsd"
+desktop_gtk3_nocsd='true'
+
+# Install elogind and xserver suid wrapper for sysvinit on buster
+[ ! "${desktop_env}" = '' ] && [ "${init_type}" = 'sysvinit' ] && [ "$(sed 's/\..*//' /etc/debian_version)" = '10' ] && apt_install_packages="${apt_install_packages} elogind xserver-xorg-legacy" && apt_mark_temporary_hold="${apt_mark_temporary_hold} elogind"
+
+# Install and configure global X11 keyboard settings (in most cases you don't need it)
+#apt_install_packages="${apt_install_packages} keyboard-configuration"
+#dpkg_reconfigure_packages="${dpkg_reconfigure_packages} keyboard-configuration"
 #####################################
 
 #####################################
 ### Other packages
 
-# Install dialog package
+# Configure tty terminals font and encoding
+#apt_install_packages="${apt_install_packages} console-setup"
+#dpkg_reconfigure_packages="${dpkg_reconfigure_packages} console-setup"
+
+# Install debconf ncurses frontend
+debconf_frontend='Dialog'
 apt_install_packages="${apt_install_packages} dialog"
 
-# Install additional packages
+# Install debconf GTK frontend
+debconf_frontend='Gnome'
+[ ! "${desktop_env}" = '' ] && apt_install_packages="${apt_install_packages} libgtk2-perl libgtk3-perl libtext-iconv-perl libgnome2-perl" # libgtk2-perl and libgnome2-perl is for older distros
+
+# Install debconf QT frontend
+#debconf_frontend='Kde'
+#[ ! "${desktop_env}" = '' ] && apt_install_packages="${apt_install_packages} debconf-kde-helper"
+
+# Enable shutdown by power button in sysvinit
+[ "${init_type}" = 'sysvinit' ] && apt_install_packages="${apt_install_packages} acpi-support-base"
+
+# Install MD RAID tools
+#apt_install_packages="${apt_install_packages} mdadm"
+
+# Install LVM tools
+#apt_install_packages="${apt_install_packages} lvm2"
+
+# Install busybox
 apt_install_packages="${apt_install_packages} busybox-static"
 
-# Install network packages
-apt_install_packages="${apt_install_packages} udhcpc wicd-gtk"
-apt_mark_auto_packages="${apt_mark_auto_packages} udhcpc"
+# Install busybox syslog
+[ "${init_type}" = 'sysvinit' ] && busybox_syslog='true' && apt_install_packages="${apt_install_packages} busybox-syslogd"
 
-# Install and configure language support
+# Install cron
+#[ "${init_type}" = 'sysvinit' ] && apt_install_packages="${apt_install_packages} cron"
+
+# Install network packages
+if [ "$(sed 's/\..*//' /etc/debian_version)" -ge '11' ] || [ "$(sed 's/\..*//' /etc/debian_version)" -le '5' ]; then
+	# wicd is not available in bullseye
+	# lenny has wicd in backports
+
+	apt_install_packages="${apt_install_packages} network-manager-gnome"
+	[ "${init_type}" = 'sysvinit' ] && apt_install_packages="${apt_install_packages} orphan-sysvinit-scripts"
+	username_groups="${username_groups} netdev" # fail-safe
+else
+	apt_install_packages="${apt_install_packages} udhcpc wicd-gtk"
+	apt_mark_auto_packages="${apt_mark_auto_packages} udhcpc"
+	username_groups="${username_groups} netdev" # fail-safe, for sysvinit
+fi
+
+# Install only dhcp client (note: also enable rclocal_tweaks_auto_isc_dhcp)
+#apt_install_packages="${apt_install_packages} isc-dhcp-client"
+
+# Install localization support
 apt_install_packages="${apt_install_packages} locales"
+
+# Configure localization
 dpkg_reconfigure_packages="${dpkg_reconfigure_packages} locales"
+
+# Configure localization automatically
+#unattended_locales='de_DE.UTF-8 UTF-8|de_DE ISO-8859-1|de_DE@euro ISO-8859-15' # locale1|locale2|localeN
+#unattended_locales_default='de_DE.UTF-8'
 
 # Purge tzdata to save disk space
 #apt_purge_packages="${apt_purge_packages} tzdata"
 
-# Configure timezone
+# Install time zone support
+apt_install_packages="${apt_install_packages} tzdata"
+
+# Configure time zone
 dpkg_reconfigure_packages="${dpkg_reconfigure_packages} tzdata"
+
+# Configure time zone automatically
+#unattended_tzdata='America/Monterrey' # /usr/share/zoneinfo/${unattended_tzdata}
+
+# Install ALSA tools
+#apt_install_packages="${apt_install_packages} alsa-utils"
+
+# Install PulseAudio
+#apt_install_packages="${apt_install_packages} pulseaudio"
+#[ ! "${desktop_env}" = '' ] && apt_install_packages="${apt_install_packages} pavucontrol"
+
+# Install QT3 configuration tool
+[ ! "${desktop_env}" = '' ] && apt_install_packages="${apt_install_packages} qt3-qtconfig"
+
+# Install QT4 configuration tool
+[ ! "${desktop_env}" = '' ] && apt_install_packages="${apt_install_packages} qt4-qtconfig"
+
+# Install QT5 configuration tool
+[ ! "${desktop_env}" = '' ] && apt_install_packages="${apt_install_packages} qt5ct qt5-style-plugins"
 #####################################
 
 #####################################
 ### Tweaks
 
-# How many virtual consoles will be active (int, not changed if empty, systemd or sysvinit)
-virual_consoles='3'
+# Use uuid for root= kernel parameter - comment to enable this tweak (grub_tweaks must be set)
+grub_tweaks_use_uuid="${fstab_use_uuid}" # set automatically
 
-# Enable autologin as non-privileged user (systemd or sysvinit)
-tty_auto_login='true'
+# Tweak kernel cmdline (grub_tweaks must be set)
+## add rootfstype
+[ ! "${root_partition_fs}" = '' ] && [ ! "${root_partition_fs}" = 'auto' ] && bootloader_kernel_cmdline="${bootloader_kernel_cmdline} rootfstype=${root_partition_fs}"
+## add rootflags
+bootloader_kernel_cmdline="${bootloader_kernel_cmdline} rootflags=suid,nodev,exec,noatime,nodiratime,async"
+## very quiet
+bootloader_kernel_cmdline="${bootloader_kernel_cmdline} quiet loglevel=0"
+## enable splash
+bootloader_kernel_cmdline="${bootloader_kernel_cmdline} splash"
+## disable AppArmor
+bootloader_kernel_cmdline="${bootloader_kernel_cmdline} apparmor=0"
+## disable SELinux
+bootloader_kernel_cmdline="${bootloader_kernel_cmdline} selinux=0"
+## do not use Linux Security Module
+bootloader_kernel_cmdline="${bootloader_kernel_cmdline} security=none"
+## reboot automatically on kernel panic
+bootloader_kernel_cmdline="${bootloader_kernel_cmdline} panic=2"
+## disable NMI watchdog
+bootloader_kernel_cmdline="${bootloader_kernel_cmdline} nmi_watchdog=0"
+## disable AGP (newer PCs)
+#bootloader_kernel_cmdline="${bootloader_kernel_cmdline} agp=off"
+## disable NUMA (older PCs)
+#bootloader_kernel_cmdline="${bootloader_kernel_cmdline} numa=off"
+## disable EFI support (programs will not pollute in NVRAM)
+[ ! "${firmware_efi}" = '' ] && bootloader_kernel_cmdline="${bootloader_kernel_cmdline} noefi"
 
-# Enable automatic startx (via .bash_login for non-privileged user)
-auto_startx='true'
+# How many virtual consoles will be active (int, not changed if empty)
+systemd_tweaks_virual_consoles='3' # systemd_tweaks does not need to be set
+sysvinit_tweaks_virual_consoles='3' # max 6, sysvinit_tweaks does not need to be set
 
-# sysvinit tweaks
-#sysvinit_enable_legacy_bootordering='true' # sequentially execute init scripts
+# Enable autologin as non-privileged user
+systemd_tweaks_tty_autologin='true' # systemd_tweaks does not need to be set
+sysvinit_tweaks_tty_autologin='true' # sysvinit_tweaks does not need to be set
+[ "$(sed 's/\..*//' /etc/debian_version)" -ge '8' ] && systemd_tweaks_tty_autologin_quiet='true'
+[ "$(sed 's/\..*//' /etc/debian_version)" -ge '8' ] && sysvinit_tweaks_tty_autologin_quiet='true'
+
+# /home tweaks: protect .config, user's directory, downloads directory and bash history in /tmp
+user_home_tweaks='true'
+
+# Tweak xserver (desktop_env must be set)
+desktop_xserver_tweaks='true'
+
+# Enable automatic startx (via .bash_login for non-privileged user, desktop_env must be set)
+desktop_auto_startx='true'
+# Redirect all output to /tmp/.X-tty1-${username}.log
+desktop_auto_startx_quiet='true'
+
+# Autologin in GDM for non-privileged user
+#desktop_gdm_auto_login='true'
+
+# Autologin in lightdm for non-privileged user
+#desktop_lightdm_auto_login='true'
+
+# fstab tweaks: /root /home/root and /home/${username}/.cache as tmpfs
+fstab_tweaks='true'
+
+# Configure /tmp and /var/tmp as tmpfs (fstab_tweaks must be set)
+fstab_tweaks_tmp_as_tmpfs='true'
+
+# Sequentially execute init scripts and disable bootclean scripts
+sysvinit_tweaks='true'
 
 # systemd tweaks
 systemd_tweaks='true'
-systemd_tweaks_nojournal='true' # disables journal (trim for SSDs will not be executed [does not apply to VMs])
-grub_cmdline_systemd_tweak='true' # show boot messages
+systemd_tweaks_notimesync='true' # disables timesyncd
+systemd_tweaks_nonetworkd='true' # disables networkd
+systemd_tweaks_notimers='true' # disables systemd cron jobs (trim for SSDs will not be executed [does not apply to VMs])
+#systemd_tweaks_nojournal='true' # disables journal
+systemd_tweaks_no_persistent_journal='true' # by /etc/systemd/journald.conf.d
+systemd_tweaks_proc_hidepid='true' # enable if you using rclocal_tweaks, systemd_tweaks does not need to be set
+[ "$(sed 's/\..*//' /etc/debian_version)" -le '8' ] && bootloader_kernel_cmdline="${bootloader_kernel_cmdline} systemd.show_status=1"
+
+# systemd logind key event tweaks
+# available options: ignore poweroff reboot halt kexec suspend hibernate hybrid-sleep suspend-then-hibernate lock factory-reset
+#systemd_tweaks_handle='true' # master switch
+#systemd_tweaks_handle_powerkey='poweroff'
+#systemd_tweaks_handle_powerkeylongpress='ignore'
+#systemd_tweaks_handle_rebootkey='reboot'
+#systemd_tweaks_handle_rebootkeylongpress='poweroff'
+#systemd_tweaks_handle_suspendkey='suspend'
+#systemd_tweaks_handle_suspendkeylongpress='hibernate'
+#systemd_tweaks_handle_hibernatekey='hibernate'
+#systemd_tweaks_handle_hibernatekeylongpress='ignore'
+#systemd_tweaks_handle_lidswitch='suspend'
+#systemd_tweaks_handle_lidswitchexternalpower='ignore'
+#systemd_tweaks_handle_lidswitchdocked='ignore'
 
 # Initramfs tweaks (better compression for initrd)
 apt_install_packages="${apt_install_packages} xz-utils"
@@ -182,16 +374,75 @@ initramfs_tools_tweaks='true'
 # Enable 'noadjtime' option in hwclock configuration
 hwclock_tweaks='true'
 
-# Do not install recommended packages as default
-apt_no_recommends='true'
-#apt_no_recommends_only_on_installation='true'
+# APT tweaks: no recommends, no suggests, no acquire languages, gzip indexes, gzip compression
+apt_tweaks='true'
 
-# Add hostname to /etc/hosts (if exists)
+# Sudo tweaks: do not use DNS, never lecture and mount /var/lib/sudo as tmpfs (use_sudo must be set)
+sudo_tweaks='true'
+
+# Policykit tweak: allow reboot and shutdown
+policykit_tweaks='true'
+
+# Udev tweaks: SATA Active Link Power Management, PCI Runtime Power Management
+#udev_tweaks='true'
+
+# Sysctl tweaks
+sysctl_tweaks='true'
+
+# rc.local tweaks
+rclocal_tweaks='true' # systemd-logind does not support /proc hidepid, please enable systemd_tweaks_proc_hidepid
+# Enable trim on boot
+rclocal_tweaks_fstrim='true'
+# Add ram compression (commented by default, use 'force' to enable by default)
+[ "$(sed 's/\..*//' /etc/debian_version)" -ge '7' ] && rclocal_tweaks_zram='true'
+# Disable efivars on boot (if noefi kernel parameter fails)
+rclocal_tweaks_noefi='true'
+# Dump dmesg boot messages to a file
+rclocal_tweaks_dmesg_dump='true'
+# Configure all interfaces on boot
+#rclocal_tweaks_auto_isc_dhcp='true'
+# Add simple mountpoint generator script
+rclocal_tweaks_fstab_generator='true'
+
+# grub tweaks
+[ "${bootloader_type}" = 'grub' ] && grub_tweaks='true'
+grub_tweaks_timeout='1' # seconds
+grub_tweaks_timeout_style='countdown' # countdown or hidden
+grub_tweaks_nogfx='true'
+grub_tweaks_linux_quiet_boot='true' # disable Loading linux message
+
+# Add hostname to /etc/hosts
+apt_install_packages="${apt_install_packages} netbase"
 edit_etc_hosts='true'
 
 # Link /etc/resolv.conf to /run (minimize unnecessary disk writes)
-resolvconv_to_run='true'
+if [ "$(sed 's/\..*//' /etc/debian_version)" -ge '11' ] || [ "$(sed 's/\..*//' /etc/debian_version)" -le '9' ]; then
+	# Network manager (installed in bullseye) doesn't like this
+	unset resolvconv_tweaks
+else
+	resolvconv_tweaks='true'
+fi
 
 # Set static DNS adresses
 #resolvconf_nameservers='1.1.1.1 8.8.8.8'
+
+# Clear /etc/issue
+etc_tweaks_no_issue='true'
+# Clear /etc/motd
+etc_tweaks_no_motd='true'
+# Sync new /home/$username to /etc/skel
+etc_tweaks_update_skel='true'
+
+# Disable btmp faillog lastlog utmp and wtmp in /var/log
+var_log_tweaks='true'
+
+# Dummy root fs - do not install bootloader nand fstab entry
+#root_partition='#/dev/null'
+#root_partition_fs='nofs'
+#unset fstab_use_uuid
+#unset firmware_efi
+#unset bootloader_type
+
+# APT tweaks for the make-offline-preseed.sh script
+[ "${0##*/}" = 'make-offline-preseed.sh' ] && [ ! "${apt_tweaks}" = '' ] && apt_custom_options="${apt_custom_options} --no-install-recommends"
 #####################################

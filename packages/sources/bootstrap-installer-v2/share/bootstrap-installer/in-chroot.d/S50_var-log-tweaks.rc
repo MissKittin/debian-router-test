@@ -1,0 +1,10 @@
+if [ ! "${var_log_tweaks}" = '' ]; then
+	print_message 'tweaking /var/log' "${COLOR_INFO}"
+
+	for i in btmp faillog lastlog utmp wtmp; do
+		[ ! -e "/var/log/${i}" ] && continue
+		mv "/var/log/${i}" "/var/log/${i}.old"
+		ln -s '/dev/null' "/var/log/${i}"
+	done
+	unset i
+fi

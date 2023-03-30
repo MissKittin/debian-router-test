@@ -2,6 +2,7 @@
 # DDNS by hosts for isc-dhcp-server -> dnsmasq - IPv6 version
 # 24.02.2021
 # readfile ${localdns_hosts_file} | grep "\b${hostname}${lan_domain}\b" bug patched and read_file "${ddns_hosts_file}" | grep > /dev/null added 30.04.2022
+# Use MAC if hostname not defined 11.09.2022
 
 # Get localdns hosts file
 [ -e '/usr/local/sbin/localdns.sh' ] && localdns_hosts_file="$(/usr/local/sbin/localdns.sh print-hostsfile-location)"
@@ -52,8 +53,14 @@ case "${action}" in
 		# Check settings, ignore none or empty hostname
 		[ "${ddns_hosts_file}" = '' ] && abort_push 'no ddns_hosts_file specified' 1
 		[ "${mac}" = '' ] && abort_push '${mac} is empty, aborted' 0
-		[ "${hostname}" = 'none' ] && abort_push '${hostname} == "none" '"(${mac})"', aborted' 0
-		[ "${hostname}" = '' ] && abort_push '${hostname} is empty '"(${mac})"', aborted' 0
+		#[ "${hostname}" = 'none' ] && abort_push '${hostname} == "none" '"(${mac})"', aborted' 0
+		#[ "${hostname}" = '' ] && abort_push '${hostname} is empty '"(${mac})"', aborted' 0
+
+		# If no hostname defined, use MAC
+		if [ "${hostname}" = 'none' ] || [ "${hostname}" = '' ]; then
+			hostname="mac-$(echo -n "${mac}" | tr -d ':')"
+			log '${hostname} == "none" or empty, using MAC ('"${hostname}"')'
+		fi
 
 		# Check if exists in localdns hosts files
 		if [ -e "${localdns_hosts_file}" ]; then # localdns package may not be installed

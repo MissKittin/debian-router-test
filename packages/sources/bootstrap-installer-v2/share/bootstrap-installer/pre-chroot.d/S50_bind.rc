@@ -2,6 +2,11 @@
 print_message 'binding system mountpoints' "${COLOR_INFO}"
 
 for i in dev dev/pts proc sys; do
-	mount --bind /${i} ./${i}
+	[ -e "/${i}" ] && mount --bind "/${i}" "./${i}"
 done
-mount -t tmpfs run ./run
+
+[ -e './run' ] && [ ! -L './run' ] && \
+	mount -t tmpfs run './run'
+
+[ -e './var/run' ] && [ ! -L './var/run' ] && \
+	mount -t tmpfs run './var/run'

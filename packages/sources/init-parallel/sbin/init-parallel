@@ -4,6 +4,26 @@
 # 27.02.2020 compress logs
 # 07.07.2020 /proc/uptime in log
 # 09.12.2020 removed awk, ls and removed [ -e ] from for loop, mkdir -p $log_dir, config file, log dir(?) and tarball rotating, logging exit time
+# 12.09.2022 wait 0.5s but rcS, log wrapper, removed basename and cat
+
+PATH='/sbin:/bin:/usr/sbin:/usr/bin'
+
+# Functions
+print_S1() { echo -n "${1}"; }
+base_name() { echo -n "${1##*/}"; }
+read_file() { while IFS= read -r line || [ -n "${line}" ]; do echo "${line}"; done < "${1}"; }
+
+# Log wrapper
+if [ "${1}" = 'logwrapper' ]; then
+	[ "${2}" = '' ] && exit 1 # $LOG
+	[ "${3}" = '' ] && exit 1 # $daemon
+
+	"${3}" 'start' 2>&1 | while read output; do
+		echo "[$(print_S1 $(read_file '/proc/uptime'))] ${output}" >> "${2}"
+	done
+
+	exit 0
+fi
 
 # Settings
 config_dir='/usr/local/etc/init-parallel'
@@ -13,22 +33,22 @@ log_dir='/var/run/.init-parallel'
 . ${config_dir}/config.rc
 
 # Compress logs
-if [ "$1" = 'compress' ] && [ -e "${log_dir}" ]; then
+if [ "$1" = 'compress' ]; then
+	[ -e "${log_dir}" ] || exit 1
+
 	sleep 600 # Long wait for end
+
 	[ -e "${log_dir}.tar.gz" ] && mv "${log_dir}.tar.gz" "${log_dir}.$(date '+%d_%m_%Y-%H_%M_%S').tar.gz"
 	tar cf - -C "${log_dir}" . | gzip > "${log_dir}.tar.gz"
 	chown root:adm "${log_dir}.tar.gz"
 	chmod 640 "${log_dir}.tar.gz"
 	rm -r -f "${log_dir}"
+
 	exit 0
 fi
 
 # Confirm
 [ "${runlevel}" = '' ] && exit 1
-PATH='/sbin:/bin:/usr/sbin:/usr/bin'
-
-# Helper
-print_S1() { echo -n "${1}"; }
 
 # Logs
 if [ -e "${log_dir}" ]; then
@@ -42,15 +62,21 @@ else
 fi
 mkdir "${log_dir}/rc${runlevel}.d"
 
+# Wait 0.5s but rcS
+[ "${runlevel}" = 'S' ] || sleep 0.5
+
 # Do!
-echo "[$(print_S1 $(cat /proc/uptime))] Script started for rc${runlevel}.d" >> "${log_dir}/init-parallel.log"
+echo "[$(print_S1 $(read_file '/proc/uptime'))] Script started for rc${runlevel}.d" >> "${log_dir}/init-parallel.log"
 for daemon in ${config_dir}/rc${runlevel}.d/S*; do
 	[ "${daemon}" = "${config_dir}/rc${runlevel}.d/S*" ] && break
 
-	echo "[$(print_S1 $(cat /proc/uptime))] Starting rc${runlevel}.d $(basename ${daemon})" >> "${log_dir}/init-parallel.log"
-	LOG="${log_dir}/rc${runlevel}.d/$(basename ${daemon}).log"
-	${daemon} start > "${LOG}" 2>&1 &
+	echo "[$(print_S1 $(read_file '/proc/uptime'))] Starting rc${runlevel}.d $(base_name ${daemon})" >> "${log_dir}/init-parallel.log"
+	LOG="${log_dir}/rc${runlevel}.d/$(base_name ${daemon}).log"
+
+	#"${daemon}" 'start' > "${LOG}" 2>&1 &
+	"${0}" 'logwrapper' "${LOG}" "${daemon}" > '/dev/null' 2>&1 &
 done
 
-echo "[$(print_S1 $(cat /proc/uptime))] Script finished for rc${runlevel}.d" >> "${log_dir}/init-parallel.log"
+echo "[$(print_S1 $(read_file '/proc/uptime'))] Script finished for rc${runlevel}.d" >> "${log_dir}/init-parallel.log"
+
 exit 0

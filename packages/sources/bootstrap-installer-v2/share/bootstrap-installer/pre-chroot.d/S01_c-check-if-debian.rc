@@ -1,0 +1,7 @@
+# Check if it is debian
+
+if [ ! -e "${PATH_TO_ROOT}/etc/debian_version" ]; then
+	print_message '/etc/debian_version not found' "${COLOR_FAILED}"
+	print_message 'or older than lenny' "${COLOR_FAILED}"
+	exit 1
+fi

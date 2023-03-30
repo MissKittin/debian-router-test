@@ -2,34 +2,39 @@
 if [ ! "${use_sudo}" = '' ] && [ ! "${username}" = '' ]; then
 	print_message 'configuring sudo' "${COLOR_SUCCESS}"
 
-	# allow user
-	[ ! "${sudo_no_password}" = '' ] && echo "${username} ALL=NOPASSWD: ALL" > /etc/sudoers.d/${username} || echo "${username} ALL=PASSWD: ALL" > /etc/sudoers.d/${username}
-	chmod 440 /etc/sudoers.d/${username}
+	if [ -e '/etc/sudoers.d' ]; then
+		[ ! "${sudo_no_password}" = '' ] && \
+			echo "${username} ALL=NOPASSWD: ALL" > "/etc/sudoers.d/${username}" || \
+			echo "${username} ALL=PASSWD: ALL" > "/etc/sudoers.d/${username}"
+		chmod 440 "/etc/sudoers.d/${username}"
 
-	# tweak sudo
-	echo 'Defaults !fqdn' > /etc/sudoers.d/nodns
-	chmod 440 /etc/sudoers.d/nodns
-	echo 'Defaults lecture=never' > /etc/sudoers.d/nolecture
-	chmod 440 /etc/sudoers.d/nolecture
+		if [ "${sudo_no_sudoers_links}" = '' ]; then
+			if [ ! -e "/usr/local/etc/${installer_config_dir}sudoers.d" ]; then
+				mkdir -p "/usr/local/etc/${installer_config_dir}sudoers.d"
+				chown 'root:root' "/usr/local/etc/${installer_config_dir}sudoers.d"
+				chmod -s "/usr/local/etc/${installer_config_dir}sudoers.d"
+			fi
 
-	# mount /var/lib/sudo as tmpfs
-	[ -e "/usr/local/etc/${installer_config_dir}fstab" ] && echo 'sudo /var/lib/sudo tmpfs auto,nosuid,nodev,noexec,mode=755 0 0' >> /usr/local/etc/${installer_config_dir}fstab
+			mv "/etc/sudoers.d/${username}" "/usr/local/etc/${installer_config_dir}sudoers.d/${username}"
+			ln -s "/usr/local/etc/${installer_config_dir}sudoers.d/${username}" "/etc/sudoers.d/${username}"
+		fi
+	else
+		print_message 'injecting configuration directly to the /etc/sudoers' "${COLOR_FAILED}"
+		echo '' >> '/etc/sudoers'
 
-	if [ ! "${no_sudoers_links}" = '' ]; then
-		# create dir in /usr/local/etc
-		mkdir /usr/local/etc/${installer_config_dir}sudoers.d
-
-		# allow user
-		mv /etc/sudoers.d/${username} /usr/local/etc/${installer_config_dir}sudoers.d/${username}
-		ln -s /usr/local/etc/${installer_config_dir}sudoers.d/${username} /etc/sudoers.d/${username}
-
-		# tweak sudo
-		mv /etc/sudoers.d/nodns /usr/local/etc/${installer_config_dir}sudoers.d/nodns
-		ln -s /usr/local/etc/${installer_config_dir}sudoers.d/nodns /etc/sudoers.d/nodns
-		mv /etc/sudoers.d/nolecture /usr/local/etc/${installer_config_dir}sudoers.d/nolecture
-		ln -s /usr/local/etc/${installer_config_dir}sudoers.d/nolecture /etc/sudoers.d/nolecture
+		[ ! "${sudo_no_password}" = '' ] && \
+			echo "${username} ALL=NOPASSWD: ALL" >> '/etc/sudoers' || \
+			echo "${username} ALL=PASSWD: ALL" >> '/etc/sudoers'
 	fi
 else
-	print_message 'set root password' "${COLOR_FAILED}"
-	passwd root
+	if [ ! "${root_password_hash}" = '' ]; then
+		print_message 'using predefined root password hash' "${COLOR_SUCCESS}"
+		echo "root:${root_password_hash}" | chpasswd -e
+	elif [ ! "${root_password}" = '' ]; then
+		print_message 'using predefined plain root password' "${COLOR_SUCCESS}"
+		echo -e "${root_password}\n${root_password}" | passwd root
+	else
+		print_message 'set root password' "${COLOR_FAILED}"
+		passwd root
+	fi
 fi

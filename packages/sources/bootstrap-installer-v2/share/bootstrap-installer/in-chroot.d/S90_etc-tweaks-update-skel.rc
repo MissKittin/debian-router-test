@@ -1,0 +1,8 @@
+# Update /etc/skel
+if [ ! "${etc_tweaks_update_skel}" = '' ] && [ ! "${username}" = ''  ]; then
+	print_message 'updating /etc/skel' "${COLOR_INFO}"
+
+	mv '/etc/skel' '/etc/skel.old'
+	cp -rfp "/home/${username}" '/etc/skel'
+	chown -R 'root:root' '/etc/skel'
+fi

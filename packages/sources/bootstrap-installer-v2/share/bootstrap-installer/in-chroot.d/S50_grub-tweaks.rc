@@ -1,0 +1,55 @@
+# Tweak grub
+if [ ! "${grub_tweaks}" = '' ] && [ -e '/etc/default/grub' ]; then
+	print_message 'tweaking grub' "${COLOR_INFO}"
+
+	if [ ! -e "/usr/local/etc/${installer_config_dir}default" ]; then
+		mkdir -p "/usr/local/etc/${installer_config_dir}default"
+		chown 'root:root' "/usr/local/etc/${installer_config_dir}default"
+		chmod -s "/usr/local/etc/${installer_config_dir}default"
+	fi
+
+	cp -rfp '/etc/default/grub' '/etc/default/grub.old'
+	mv '/etc/default/grub' "/usr/local/etc/${installer_config_dir}default/grub"
+	ln -s "/usr/local/etc/${installer_config_dir}default/grub" '/etc/default/grub'
+
+	# enable hiddenmenu
+	[ ! "${grub_tweaks_timeout}" = '' ] && \
+		sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT='"${grub_tweaks_timeout}"'/g' "/usr/local/etc/${installer_config_dir}default/grub"
+	if [ ! "${grub_tweaks_timeout_style}" = '' ]; then
+		echo 'GRUB_HIDDEN_TIMEOUT_QUIET=false' >> "/usr/local/etc/${installer_config_dir}default/grub"
+		echo "GRUB_TIMEOUT_STYLE=${grub_tweaks_timeout_style}" >> "/usr/local/etc/${installer_config_dir}default/grub"
+	fi
+
+	# switch to 80x25 console
+	[ ! "${grub_tweaks_nogfx}" = '' ] && \
+		sed -i 's/#GRUB_TERMINAL=console/GRUB_TERMINAL=console/g' "/usr/local/etc/${installer_config_dir}default/grub"
+
+	# append custom kernel parameters
+	if [ ! "${bootloader_kernel_cmdline}" = '' ]; then
+		sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT=""/g' "/usr/local/etc/${installer_config_dir}default/grub"
+		sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="'"$(echo -n ${bootloader_kernel_cmdline} | xargs)"'/g' "/usr/local/etc/${installer_config_dir}default/grub"
+	fi
+
+	# Use uuid for root= kernel parameter
+	if [ "${grub_tweaks_use_uuid}" = '' ]; then
+		echo 'GRUB_DISABLE_UUID=true' >> "/usr/local/etc/${installer_config_dir}default/grub"
+	fi
+
+	# quiet linux loading
+	if [ ! "${grub_tweaks_linux_quiet_boot}" = '' ] && grep '^quiet_boot="0"' '/etc/grub.d/10_linux' > /dev/null 2>&1; then
+		if [ ! -e "/usr/local/etc/${installer_config_dir}grub.d" ]; then
+			mkdir -p "/usr/local/etc/${installer_config_dir}grub.d"
+			chown 'root:root' "/usr/local/etc/${installer_config_dir}grub.d"
+			chmod -s "/usr/local/etc/${installer_config_dir}grub.d"
+		fi
+
+		cp -rfp '/etc/grub.d/10_linux' '/etc/grub.d/10_linux.old'
+		chmod 644 '/etc/grub.d/10_linux.old'
+		mv '/etc/grub.d/10_linux' "/usr/local/etc/${installer_config_dir}grub.d/10_linux"
+		ln -s "/usr/local/etc/${installer_config_dir}grub.d/10_linux" '/etc/grub.d/10_linux'
+
+		sed -i 's/^quiet_boot="0"/quiet_boot="1"/g' "/usr/local/etc/${installer_config_dir}grub.d/10_linux"
+	fi
+
+	[ "${bootloader_type}" = 'grub' ] && update-grub
+fi

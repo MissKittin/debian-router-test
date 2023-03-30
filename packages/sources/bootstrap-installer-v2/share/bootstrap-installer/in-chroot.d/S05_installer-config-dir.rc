@@ -1,0 +1,11 @@
+# Create installer config directory
+if echo -n "${installer_config_dir}" | grep '/' > /dev/null 2>&1; then
+	print_message "creating directory /usr/local/etc/${installer_config_dir%/*}" "${COLOR_INFO}"
+
+	mkdir -p "/usr/local/etc/${installer_config_dir%/*}"
+	chown 'root:root' "/usr/local/etc/${installer_config_dir%/*}"
+	chmod -s "/usr/local/etc/${installer_config_dir%/*}"
+else
+	print_message 'creating directory /usr/local/etc' "${COLOR_INFO}"
+	mkdir -p '/usr/local/etc'
+fi

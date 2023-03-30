@@ -1,0 +1,42 @@
+# Miscellaneous /home tweaks
+if [ ! "${user_home_tweaks}" = '' ] && [ ! "${username}" = '' ]; then
+	print_message 'applying tweaks in '"${username}"' home' "${COLOR_INFO}"
+
+	if [ ! -e "/home/${username}/.bash_login" ]; then
+		echo -n '' > "/home/${username}/.bash_login"
+		chown "${username}:${username}" "/home/${username}/.bash_login"
+	fi
+
+	if [ ! -e "/home/${username}/.bash_login.firstrun" ]; then
+		echo -n '' > "/home/${username}/.bash_login.firstrun"
+		chown "${username}:${username}" "/home/${username}/.bash_login.firstrun"
+
+		echo 'if [ -e "${HOME}/.bash_login.firstrun" ]; then' >> "/home/${username}/.bash_login"
+			echo '. "${HOME}/.bash_login.firstrun"' >> "/home/${username}/.bash_login"
+			echo 'rm "${HOME}/.bash_login.firstrun"' >> "/home/${username}/.bash_login"
+		echo 'fi' >> "/home/${username}/.bash_login"
+	fi
+
+	# Protect .config
+	if [ ! -e "/home/${username}/.config" ]; then
+		mkdir -p "/home/${username}/.config"
+		chown "${username}:${username}" "/home/${username}/.config"
+	fi
+	chmod 711 "/home/${username}/.config"
+
+	# User directory in tmpfs
+	echo '[ ! -e "/tmp/.temp-${USER}" ] && mkdir "/tmp/.temp-${USER}"' >> "/home/${username}/.bash_login"
+	echo 'ln -s "/tmp/.temp-${USER}" "${HOME}/Temporary files"' >> "/home/${username}/.bash_login.firstrun"
+
+	# Downloads in tmpfs
+	echo '[ ! -e "/tmp/.temp-${USER}/.downloads" ] && mkdir "/tmp/.temp-${USER}/.downloads"' >> "/home/${username}/.bash_login"
+	echo 'ln -s "/tmp/.temp-${USER}/.downloads" "${HOME}/Downloads"' >> "/home/${username}/.bash_login.firstrun"
+
+	# For file sharing
+	echo '[ ! -e "/tmp/.temp-${USER}/.public" ] && mkdir "/tmp/.temp-${USER}/.public"' >> "/home/${username}/.bash_login"
+	echo 'ln -s "/tmp/.temp-${USER}/.public" "${HOME}/Public"' >> "/home/${username}/.bash_login.firstrun"
+
+	# Bash history in tmpfs
+	echo '[ -e "${HOME}/.bash_history" ] && rm "${HOME}/.bash_history"' >> "/home/${username}/.bash_login.firstrun"
+	echo 'ln -s "/tmp/.temp-${USER}/.bash_history" "${HOME}/.bash_history"' >> "/home/${username}/.bash_login.firstrun"
+fi

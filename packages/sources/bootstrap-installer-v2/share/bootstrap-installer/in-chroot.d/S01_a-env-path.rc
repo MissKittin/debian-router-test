@@ -1,0 +1,12 @@
+# Setup PATH
+#print_message 'setting up PATH' "${COLOR_INFO}"
+PATH=''
+
+for i in '/usr/local/sbin' '/usr/local/bin' '/usr/sbin' '/usr/bin' '/sbin' '/bin'; do
+	if [ -d "${i}" ]; then
+		[ "${PATH}" = '' ] && PATH="${i}" || PATH="${PATH}:${i}"
+	fi
+done
+unset i
+
+export PATH

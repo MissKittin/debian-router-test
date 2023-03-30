@@ -1,4 +1,15 @@
-while :; do
-	'/bin/getty' -H "${HOSTNAME}" '38400' 'tty1' 'linux' &
-	wait "${!}"
-done
+if sed -e 's/^.*console=//' -e 's/ .*$//' '/proc/cmdline' | grep '^tty' > '/dev/null' 2>&1; then
+	init_log "init-console: using console $(sed -e 's/^.*console=//' -e 's/ .*$//' '/proc/cmdline')"
+
+	while :; do
+		'/bin/getty' -H "${HOSTNAME}" '38400' "$(sed -e 's/^.*console=//' -e 's/ .*$//' '/proc/cmdline')" 'linux' &
+		wait "${!}"
+	done
+else
+	init_log 'init-console: using console tty1'
+
+	while :; do
+		'/bin/getty' -H "${HOSTNAME}" '38400' 'tty1' 'linux' &
+		wait "${!}"
+	done
+fi

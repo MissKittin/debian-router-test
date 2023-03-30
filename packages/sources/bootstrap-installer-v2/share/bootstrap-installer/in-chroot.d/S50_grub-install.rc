@@ -1,0 +1,38 @@
+# Configure and install grub bootloader (19/21)
+if [ "${bootloader_type}" = 'grub' ]; then
+	if [ ! "${firmware_efi}" = '' ]; then
+		if cat '/etc/fstab' | grep ' /boot/efi vfat' > /dev/null 2>&1; then
+			print_message 'installing grub (EFI)' "${COLOR_INFO}"
+
+			grub_target='x86_64-efi' # default target
+			if [ "${firmware_efi_size}" = '32' ]; then
+				grub_target='i386-efi'
+			fi
+
+			mkdir -p '/boot/efi'
+			mount '/boot/efi' # defined in S*_fstab.rc
+			[ -e /boot/efi/EFI/BOOT/BOOT*.EFI ] && \
+				mv /boot/efi/EFI/BOOT/BOOT*.EFI "/boot/efi/EFI/BOOT/BOOT.EFI.$(date '+%Y%m%d%H%M%S')"
+
+			grub-install --no-nvram --removable --target=${grub_target} --efi-directory=/boot/efi
+			update-grub
+
+			unset grub_target
+
+			umount '/boot/efi'
+			rmdir '/boot/efi'
+
+			if [ -e "/usr/local/etc/${installer_config_dir}fstab" ]; then
+				sed -i '/ \/boot\/efi vfat/ s/./#&/' "/usr/local/etc/${installer_config_dir}fstab"
+			elif [ -e '/etc/fstab' ]; then
+				sed -i '/ \/boot\/efi vfat/ s/./#&/' '/etc/fstab'
+			fi
+		else
+			print_message 'installing grub (EFI) failed - no /boot/efi found in fstab' "${COLOR_FAILED}"
+		fi
+	else
+		print_message 'installing grub (BIOS)' "${COLOR_INFO}"
+		grub-install "${root_device}" # defined in S*_fstab.rc
+		update-grub
+	fi
+fi

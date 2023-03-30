@@ -15,16 +15,30 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin
 case "${1}" in
 	'start')
 		log_action_msg_pre; echo 'Applying firewall rules'
-		/usr/local/sbin/firewall.sh > /dev/null 2>&1
-		/usr/local/sbin/firewall6.sh > /dev/null 2>&1
+		if [ "${runlevel}" = '' ]; then
+			/usr/local/sbin/firewall.sh
+			/usr/local/sbin/firewall6.sh
+		else
+			/usr/local/sbin/firewall.sh > /dev/null 2>&1
+			/usr/local/sbin/firewall6.sh > /dev/null 2>&1
+		fi
 	;;
 	'stop')
 		log_action_msg_pre; echo 'Flushing firewall rules'
-		/usr/local/sbin/firewall.sh stop > /dev/null 2>&1
-		/usr/local/sbin/firewall6.sh stop > /dev/null 2>&1
+		if [ "${runlevel}" = '' ]; then
+			/usr/local/sbin/firewall.sh stop
+			/usr/local/sbin/firewall6.sh stop
+		else
+			/usr/local/sbin/firewall.sh stop > /dev/null 2>&1
+			/usr/local/sbin/firewall6.sh stop > /dev/null 2>&1
+		fi
+	;;
+	'restart')
+		"${0}" stop
+		"${0}" start
 	;;
 	*)
-		echo 'firewall start|stop'
+		echo 'firewall start|stop|restart'
 	;;
 esac
 

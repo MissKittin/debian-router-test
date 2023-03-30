@@ -1,0 +1,20 @@
+# Configure lightdm autologin for non-privileged user
+if [ ! "${username}" = '' ] && [ ! "${desktop_lightdm_auto_login}" = '' ] && [ -e '/etc/lightdm/lightdm.conf.d' ]; then
+	print_message 'configuring lightdm autologin for '"${username}" "${COLOR_INFO}"
+
+	if [ ! -e "/usr/local/etc/${installer_config_dir}lightdm/lightdm.conf.d" ]; then
+		mkdir -p "/usr/local/etc/${installer_config_dir}lightdm/lightdm.conf.d"
+		chown -R 'root:root' "/usr/local/etc/${installer_config_dir}lightdm"
+		chmod -s "/usr/local/etc/${installer_config_dir}lightdm/lightdm.conf.d"
+		chmod -s "/usr/local/etc/${installer_config_dir}lightdm"
+	fi
+
+	#cp -p '/etc/lightdm/lightdm.conf' '/etc/lightdm/lightdm.conf.old'
+	#mv '/etc/lightdm/lightdm.conf' "/usr/local/etc/${installer_config_dir}lightdm/lightdm.conf"
+	#ln -s "/usr/local/etc/${installer_config_dir}lightdm/lightdm.conf" '/etc/lightdm/lightdm.conf'
+	#sed -i -e "s/^\(#\|\)autologin-user=.*/autologin-user=${username}/" "/usr/local/etc/${installer_config_dir}lightdm/lightdm.conf"
+
+	echo '[SeatDefaults]' > "/usr/local/etc/${installer_config_dir}lightdm/lightdm.conf.d/12-autologin.conf"
+	echo "autologin-user=${username}" >> "/usr/local/etc/${installer_config_dir}lightdm/lightdm.conf.d/12-autologin.conf"
+	ln -s "/usr/local/etc/${installer_config_dir}lightdm/lightdm.conf.d/12-autologin.conf" '/etc/lightdm/lightdm.conf.d/12-autologin.conf'
+fi

@@ -6,6 +6,12 @@
 SHARE_DIR='/usr/local/share/bootstrap-installer'
 PATH_TO_ROOT='.'
 
+# Check if I am root
+if [ ! "$(whoami)" = 'root' ]; then
+	echo 'I am not root'
+	exit 1
+fi
+
 # Execute tasks in chroot
 if [ "${1}" = 'in-chroot' ]; then
 	for inChroot in ${SHARE_DIR}/in-chroot.d/S*.rc; do
@@ -20,6 +26,10 @@ fi
 
 # Check if I am in the new root directory
 if [ "$(pwd)" = '/' ]; then
+	echo 'execute bootstrap-installer.sh in new OS mountpoint'
+	exit 1
+fi
+if [ ! -e ".${SHARE_DIR}" ]; then
 	echo 'execute bootstrap-installer.sh in new OS mountpoint'
 	exit 1
 fi

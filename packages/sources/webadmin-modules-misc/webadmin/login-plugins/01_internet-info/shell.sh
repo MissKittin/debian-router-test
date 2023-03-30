@@ -1,4 +1,5 @@
-#!/bin/dash
+#!/usr/local/share/router/webadmin/share/webadmin/lib/shell/superuser.sh /bin/dash
+#?php has_superuser_shebang
 # Command stack: dash, dirname
 
 # if $PATH is not defined, this script not works

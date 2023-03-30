@@ -1,0 +1,153 @@
+# Configure XFCE4 (12/21)
+if [ "${desktop_env}" = 'xfce' ] && [ ! "${username}" = '' ]; then
+	print_message 'configuring XFCE4' "${COLOR_INFO}"
+
+	if [ ! -e "/home/${username}/.xinitrc" ]; then
+		echo -n '' > "/home/${username}/.xinitrc"
+		chown "${username}:${username}" "/home/${username}/.xinitrc"
+	fi
+	echo 'exec xfce4-session' >> "/home/${username}/.xinitrc"
+
+	# disable trash
+	if [ ! -e "/home/${username}/.local/share/Trash" ]; then
+		mkdir -p "/home/${username}/.local/share"
+		chown -R "${username}:${username}" "/home/${username}/.local"
+		ln -s /dev/null "/home/${username}/.local/share/Trash"
+	fi
+
+	mkdir -p "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml"
+
+	# setup panel
+	echo '<?xml version="1.0" encoding="UTF-8"?>' > "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '<channel name="xfce4-panel" version="1.0">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '  <property name="configver" type="int" value="2"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '  <property name="panels" type="array">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '    <value type="int" value="1"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '    <property name="dark-mode" type="bool" value="true"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '    <property name="panel-1" type="empty">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '      <property name="position" type="string" value="p=8;x=512;y=750"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '      <property name="size" type="uint" value="34"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '      <property name="position-locked" type="bool" value="true"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '      <property name="length-adjust" type="bool" value="true"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '      <property name="length" type="uint" value="100"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '      <property name="plugin-ids" type="array">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '        <value type="int" value="1"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '        <value type="int" value="2"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '        <value type="int" value="3"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '        <value type="int" value="4"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '        <value type="int" value="5"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '        <value type="int" value="6"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '        <value type="int" value="7"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '        <value type="int" value="8"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '        <value type="int" value="9"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '      </property>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '    </property>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '  </property>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '  <property name="plugins" type="empty">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '    <property name="plugin-1" type="string" value="applicationsmenu">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '      <property name="show-button-title" type="bool" value="false"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '    </property>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '    <property name="plugin-2" type="string" value="separator">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '      <property name="style" type="uint" value="3"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '    </property>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '    <property name="plugin-3" type="string" value="pager">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '      <property name="rows" type="uint" value="1"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '    </property>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '    <property name="plugin-4" type="string" value="separator">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '      <property name="style" type="uint" value="3"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '    </property>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '    <property name="plugin-5" type="string" value="tasklist">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '      <property name="grouping" type="uint" value="0"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '      <property name="show-handle" type="bool" value="false"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '      <property name="flat-buttons" type="bool" value="true"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '    </property>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '    <property name="plugin-6" type="string" value="separator">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '      <property name="expand" type="bool" value="true"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '      <property name="style" type="uint" value="0"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '    </property>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '    <property name="plugin-7" type="string" value="separator">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '      <property name="style" type="uint" value="3"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '    </property>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '    <property name="plugin-8" type="string" value="systray">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '      <property name="square-icons" type="bool" value="true"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '      <property name="icon-size" type="int" value="0"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '    </property>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	if [ "$(sed 's/\..*//' /etc/debian_version)" -ge '10' ]; then
+		echo '    <property name="plugin-9" type="string" value="xkb">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+		echo '      <property name="display-name" type="uint" value="1"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+		echo '    </property>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	else
+		echo '    <property name="plugin-9" type="string" value="xkb-plugin"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	fi
+	echo '  </property>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+	echo '</channel>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+
+	# setup desktop icons
+	echo '<?xml version="1.0" encoding="UTF-8"?>' > "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
+	echo '' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
+	echo '<channel name="xfce4-desktop" version="1.0">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
+	echo '  <property name="desktop-icons" type="empty">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
+	echo '    <property name="file-icons" type="empty">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
+	echo '      <property name="show-filesystem" type="bool" value="false"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
+	echo '      <property name="show-trash" type="bool" value="false"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
+	echo '      <property name="show-removable" type="bool" value="false"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
+	echo '    </property>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
+	echo '  </property>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
+	echo '</channel>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
+
+	# setup workspaces
+	echo '<?xml version="1.0" encoding="UTF-8"?>' > "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml"
+	echo '' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml"
+	echo '<channel name="xfwm4" version="1.0">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml"
+	echo '  <property name="general" type="empty">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml"
+	echo '    <property name="workspace_count" type="int" value="3"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml"
+	echo '  </property>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml"
+	echo '</channel>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml"
+
+	# do not save session
+	echo '<?xml version="1.0" encoding="UTF-8"?>' > "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml"
+	echo '' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml"
+	echo '<channel name="xfce4-session" version="1.0">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml"
+	echo '  <property name="general" type="empty">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml"
+	echo '    <property name="SaveOnExit" type="bool" value="false"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml"
+	echo '  </property>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml"
+	echo '</channel>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml"
+
+	# setup thunar
+	echo '<?xml version="1.0" encoding="UTF-8"?>' > "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml"
+	echo '' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml"
+	echo '<channel name="thunar" version="1.0">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml"
+	echo '  <property name="hidden-bookmarks" type="array">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml"
+	echo '    <value type="string" value="network://"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml"
+	echo '  </property>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml"
+	echo '  <property name="hidden-devices" type="array">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml"
+	echo '    <value type="string" value=".cache"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml"
+	echo '    <value type="string" value="root"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml"
+	echo '    <value type="string" value="sudo"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml"
+	echo '    <value type="string" value="tmp"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml"
+	echo '  </property>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml"
+	echo '  <property name="last-location-bar" type="string" value="ThunarLocationButtons"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml"
+	echo '</channel>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml"
+
+	# setup keyboard
+	if [ ! "${desktop_xfce_keyboard_layouts}" = '' ] || [ ! "${desktop_xfce_keyboard_model}" = '' ]; then
+		echo '<?xml version="1.0" encoding="UTF-8"?>' > "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/keyboard-layout.xml"
+		echo '' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/keyboard-layout.xml"
+		echo '<channel name="keyboard-layout" version="1.0">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/keyboard-layout.xml"
+		echo '  <property name="Default" type="empty">' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/keyboard-layout.xml"
+		if [ ! "${desktop_xfce_keyboard_layouts}" = '' ]; then
+			echo '    <property name="XkbLayout" type="string" value="'"${desktop_xfce_keyboard_layouts}"'"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/keyboard-layout.xml"
+			echo '    <property name="XkbVariant" type="string" value="'"${desktop_xfce_keyboard_layouts_variants}"'"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/keyboard-layout.xml"
+		fi
+		[ ! "${desktop_xfce_keyboard_model}" = '' ] && echo '    <property name="XkbModel" type="string" value="'"${desktop_xfce_keyboard_model}"'"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/keyboard-layout.xml"
+		echo '    <property name="XkbDisable" type="bool" value="false"/>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/keyboard-layout.xml"
+		echo '  </property>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/keyboard-layout.xml"
+		echo '</channel>' >> "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/keyboard-layout.xml"
+	fi
+
+	# if wheezy or older, do not configure panel
+	[ "$(sed 's/\..*//' /etc/debian_version)" -le '7' ] && rm "/home/${username}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml" > /dev/null 2>&1
+
+	chown -R "${username}:${username}" "/home/${username}/.config"
+fi

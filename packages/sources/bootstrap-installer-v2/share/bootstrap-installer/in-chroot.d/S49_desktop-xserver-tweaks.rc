@@ -1,0 +1,84 @@
+# Tweak some details
+if [ ! "${desktop_env}" = '' ] && [ ! "${username}" = '' ] && [ ! "${desktop_xserver_tweaks}" = '' ]; then
+	print_message 'tweaking xserver' "${COLOR_INFO}"
+
+	if [ ! -e "/home/${username}/.cache" ]; then
+		mkdir -p "/home/${username}/.cache"
+		chown "${username}:${username}" "/home/${username}/.cache"
+	fi
+
+	# Move Xorg.*.log to the tmpfs
+	if [ ! -e "/home/${username}/.local/share/xorg" ]; then
+		mkdir -p "/home/${username}/.local/share/xorg"
+		chown "${username}:${username}" "/home/${username}/.local/share/xorg"
+		chown "${username}:${username}" "/home/${username}/.local/share"
+		chown "${username}:${username}" "/home/${username}/.local"
+	fi
+	[ -e "/usr/local/etc/${installer_config_dir}fstab" ] && \
+		echo 'tmp /home/'"${username}"'/.local/share/xorg tmpfs auto,rw,nosuid,nodev,noexec,noatime,nodiratime,mode=755,uid='"${username}"',gid='"${username}"' 0 0' >> "/usr/local/etc/${installer_config_dir}fstab"
+
+	# Move .Xauthority and .ICEauthority to the tmpfs
+	if [ ! -e "/home/${username}/.bash_login" ]; then
+		echo -n '' > "/home/${username}/.bash_login"
+		chown "${username}:${username}" "/home/${username}/.bash_login"
+	fi
+	echo 'if [[ "$(tty 2>/dev/null)" == /dev/tty[1-9] ]]; then' >> "/home/${username}/.bash_login"
+		echo 'export XAUTHORITY="${HOME}/.cache/.Xauthority"' >> "/home/${username}/.bash_login"
+		echo 'export ICEAUTHORITY="${HOME}/.cache/.ICEauthority"' >> "/home/${username}/.bash_login"
+	echo 'fi' >> "/home/${username}/.bash_login"
+	#ln -s './.cache/.Xauthority' "/home/${username}/.Xauthority"
+
+	# disable /home/${username}/.local/recently-used.xbel in GTK 2
+	echo 'gtk-recent-files-max-age=0' >> "/home/${username}/.gtkrc-2.0"
+	chown "${username}:${username}" "/home/${username}/.gtkrc-2.0"
+
+	# disable /home/${username}/.local/recently-used.xbel in GTK 3
+	if [ ! -e "/home/${username}/.config/gtk-3.0/settings.ini" ]; then
+		mkdir -p "/home/${username}/.config/gtk-3.0"
+		echo '[Settings]' > "/home/${username}/.config/gtk-3.0/settings.ini"
+		chown "${username}:${username}" "/home/${username}/.config"
+		chown "${username}:${username}" "/home/${username}/.config/gtk-3.0"
+		chown "${username}:${username}" "/home/${username}/.config/gtk-3.0/settings.ini"
+	fi
+	echo 'gtk-recent-files-max-age=0' >> "/home/${username}/.config/gtk-3.0/settings.ini"
+	echo 'gtk-recent-files-limit=0' >> "/home/${username}/.config/gtk-3.0/settings.ini"
+
+	# Disable GTK 3 overlay scrollbars
+	echo 'gtk-overlay-scrolling=false' >> "/home/${username}/.config/gtk-3.0/settings.ini"
+
+	# Set QT4/QT3 theme to GTK
+	if [ ! -e "/home/${username}/.config/Trolltech.conf" ]; then
+		mkdir -p "/home/${username}/.config"
+		echo '[Qt]' > "/home/${username}/.config/Trolltech.conf"
+		chown "${username}:${username}" "/home/${username}/.config"
+		chown "${username}:${username}" "/home/${username}/.config/Trolltech.conf"
+	fi
+	echo 'style=GTK+' >> "/home/${username}/.config/Trolltech.conf"
+
+	# enable /home/${username}/.Xresources and .xprofile
+	if [ ! -e "/home/${username}/.xinitrc" ]; then
+		echo -n '' > "/home/${username}/.xinitrc"
+		chown "${username}:${username}" "/home/${username}/.xinitrc"
+	fi
+	echo '[ -e "${HOME}/.Xresources" ] && xrdb "-I${HOME}" "${HOME}/.Xresources"' >> "/home/${username}/.xinitrc"
+	echo '[ -f "${HOME}/.xprofile" ] && . "${HOME}/.xprofile"' >> "/home/${username}/.xinitrc"
+
+	# source /etc/X11/Xsession.d
+	echo 'if [ -d "/etc/X11/Xsession.d" ]; then' >> "/home/${username}/.xinitrc"
+	echo	'for f in /etc/X11/Xsession.d/*; do' >> "/home/${username}/.xinitrc"
+	echo		'[ "${f}" = "/etc/X11/Xsession.d/*" ] && break' >> "/home/${username}/.xinitrc"
+	echo		'. "${f}"' >> "/home/${username}/.xinitrc"
+	echo	'done' >> "/home/${username}/.xinitrc"
+	echo	'unset f' >> "/home/${username}/.xinitrc"
+	echo 'fi' >> "/home/${username}/.xinitrc"
+
+	# prevent X server from listening on the abstract socket
+	if [ -e '/etc/X11/xinit/xserverrc' ]; then
+		if [ ! -e "/home/${username}/.xserverrc" ]; then
+			cp -p '/etc/X11/xinit/xserverrc' "/home/${username}/.xserverrc"
+			chown "${username}:${username}" "/home/${username}/.xserverrc"
+		fi
+
+		sed -i 's/-nolisten tcp/-nolisten tcp -nolisten local/g' "/home/${username}/.xserverrc"
+	fi
+fi

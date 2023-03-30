@@ -1,0 +1,406 @@
+# rc.local tweaks
+if [ ! "${rclocal_tweaks}" = '' ]; then
+	print_message 'tweaking rc.local' "${COLOR_INFO}"
+
+	# rc.local
+		echo '#!/bin/sh' > '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+		chown 'root:root' '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+
+		if [ ! "${rclocal_tweaks_fstrim}" = '' ]; then
+			print_message 'enabling fstrim on boot' "${COLOR_INFO}"
+			echo 'fstrim -v -a > /dev/kmsg 2>&1 &' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+		fi
+	
+		if [ "${rclocal_tweaks_zram}" = 'force' ]; then
+			print_message 'enabling zram by default' "${COLOR_SUCCESS}"
+			echo '/usr/local/sbin/set-zram.sh enable > /dev/kmsg 2>&1 &' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+		elif [ ! "${rclocal_tweaks_zram}" = '' ]; then
+			echo '#/usr/local/sbin/set-zram.sh enable > /dev/kmsg 2>&1 &' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+		fi
+	
+		[ ! "${username}" = '' ] && if [ -e '/home/root' ]; then
+			echo "#ln -s /home/${username}/.Xauthority /home/root/.Xauthority > /dev/null 2>&1" >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+		else
+			echo "#ln -s /home/${username}/.Xauthority /root/.Xauthority > /dev/null 2>&1" >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+		fi
+	
+		# https://blog.frehi.be/2019/01/30/linux-security-hardening-recommendations/
+		if [ ! "${systemd_tweaks_proc_hidepid}" = '' ]  && [ "${init_type}" = 'systemd' ] && [ -d '/etc/systemd' ]; then
+			echo 'mount -o "remount,hidepid=2,gid=systemd-proc" "/proc"' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+		else
+			echo 'mount -o "remount,hidepid=2" "/proc"' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+		fi
+		echo 'chmod 400 "/proc/kallsyms"' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+		echo '[ -e "/run" ] && chmod 751 "/run"' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+		echo 'chmod 400 "/sys/class/dmi/id/product_uuid" > /dev/null 2>&1' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+	
+		if [ ! "${rclocal_tweaks_noefi}" = '' ]; then
+			print_message 'rc.local noefi tweak enabled' "${COLOR_INFO}"
+	
+			echo 'if mountpoint -q /sys/firmware/efi/efivars > /dev/null 2>&1; then' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+				echo 'umount "/sys/firmware/efi/efivars"' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+				echo 'rmmod "efi_pstore"' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+				echo 'rmmod "efivars"' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+				echo 'rmmod "efivarfs"' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+				echo 'echo '"'"'rc.local: efivars support removed'"'"' > /dev/kmsg' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+			echo 'fi' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+		fi
+	
+		# dirty hack for lenny xfce
+		# note: in squeeze and wheezy loopback is also not configured and xfce is not affected
+		grep '^[a-z]*/[a-z]*$' '/etc/debian_version' > /dev/null 2>&1 || \
+		if [ "$(sed 's/\..*//' /etc/debian_version)" -le '5' ] && [ "${desktop_env}" = 'xfce' ]; then
+			print_message 'rc.local lenny XFCE4 ifconfig lo hack enabled' "${COLOR_FAILED}"
+			echo 'ifconfig lo 127.0.0.1 netmask 255.0.0.0 up' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+		fi
+	
+		[ ! "${rclocal_tweaks_auto_isc_dhcp}" = '' ] && [ -e '/sbin/dhclient' ] && \
+			echo '/usr/local/sbin/isc-dhcp-client-auto.sh > /dev/null 2>&1 &' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+	
+		[ ! "${rclocal_tweaks_fstab_generator}" = '' ] && \
+			echo '/usr/local/sbin/fstab-generator.sh > /dev/null 2>&1 &' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+	
+		if [ ! "${rclocal_tweaks_dmesg_dump}" = '' ]; then
+			print_message 'rc.local dmesg dump tweak enabled' "${COLOR_INFO}"
+	
+			echo 'dmesg -c | gzip -9 > /var/run/.dmesg.gz' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+			echo 'chown root:adm /var/run/.dmesg.gz' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+			echo 'chmod 640 /var/run/.dmesg.gz' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+			echo 'echo '"'"'rc.local: boot messages saved to /var/run/.dmesg.gz'"'"' > /dev/kmsg' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+		fi
+	
+		echo 'echo '"'"'rc.local: OS has been loaded'"'"' > /dev/kmsg' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+		echo 'exit 0' >> '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+	
+		chmod 755 '/usr/local/etc/'"${installer_config_dir}"'rc.local'
+		[ -e '/etc/rc.local' ] && mv '/etc/rc.local' '/etc/rc.local.bak'
+		ln -s '/usr/local/etc/'"${installer_config_dir}"'rc.local' '/etc/rc.local'
+
+	# scripts
+		if [ ! "${rclocal_tweaks_zram}" = '' ]; then
+			print_message 'creating set-zram.sh' "${COLOR_INFO}"
+			[ ! -e '/usr/local/sbin' ] && mkdir -p '/usr/local/sbin'
+	
+			echo '#!/bin/bash' > '/usr/local/sbin/set-zram.sh'
+	
+			echo 'export LANG=C' >> '/usr/local/sbin/set-zram.sh'
+			echo 'export LANGUAGE=C' >> '/usr/local/sbin/set-zram.sh'
+			echo 'export LC_ALL=C' >> '/usr/local/sbin/set-zram.sh'
+	
+			echo 'enable_zram()' >> '/usr/local/sbin/set-zram.sh'
+			echo '{' >> '/usr/local/sbin/set-zram.sh'
+			echo	'local cores=$(nproc --all)' >> '/usr/local/sbin/set-zram.sh'
+			echo	'modprobe zram num_devices=${cores} || modprobe zram zram_num_devices=${cores} || exit 0' >> '/usr/local/sbin/set-zram.sh'
+			####
+			echo	'local totalmem=$(free | grep -e "^Mem:" | awk "{print \$2}")' >> '/usr/local/sbin/set-zram.sh'
+			echo	'local mem=$(((${totalmem}/${cores})*1024 ))' >> '/usr/local/sbin/set-zram.sh'
+			####
+			echo	'local core="0"' >> '/usr/local/sbin/set-zram.sh'
+			echo	'while [ "${core}" -lt "${cores}" ]; do' >> '/usr/local/sbin/set-zram.sh'
+			echo		'echo "${mem}" > "/sys/block/zram${core}/disksize"' >> '/usr/local/sbin/set-zram.sh'
+			echo		'mkswap "/dev/zram${core}"' >> '/usr/local/sbin/set-zram.sh'
+			echo		'swapon -p 5 "/dev/zram${core}"' >> '/usr/local/sbin/set-zram.sh'
+			echo		'core=$((${core}+1))' >> '/usr/local/sbin/set-zram.sh'
+			echo	'done' >> '/usr/local/sbin/set-zram.sh'
+			echo '}' >> '/usr/local/sbin/set-zram.sh'
+			echo 'disable_zram()' >> '/usr/local/sbin/set-zram.sh'
+			echo '{' >> '/usr/local/sbin/set-zram.sh'
+			echo	'local cores=$(nproc --all)' >> '/usr/local/sbin/set-zram.sh'
+			echo	'local core="0"' >> '/usr/local/sbin/set-zram.sh'
+			echo	'while [ "${core}" -lt "${cores}" ]; do' >> '/usr/local/sbin/set-zram.sh'
+			echo		'swapoff "/dev/zram${core}"' >> '/usr/local/sbin/set-zram.sh'
+			echo		'core=$((${core}+1))' >> '/usr/local/sbin/set-zram.sh'
+			echo	'done' >> '/usr/local/sbin/set-zram.sh'
+			echo '}' >> '/usr/local/sbin/set-zram.sh'
+	
+			echo 'case "${1}" in' >> '/usr/local/sbin/set-zram.sh'
+			echo	'"enable")' >> '/usr/local/sbin/set-zram.sh'
+			echo		'enable_zram' >> '/usr/local/sbin/set-zram.sh'
+			echo	';;' >> '/usr/local/sbin/set-zram.sh'
+			echo	'"disable")' >> '/usr/local/sbin/set-zram.sh'
+			echo		'disable_zram' >> '/usr/local/sbin/set-zram.sh'
+			echo	';;' >> '/usr/local/sbin/set-zram.sh'
+			echo	'*)' >> '/usr/local/sbin/set-zram.sh'
+			echo		'echo "${0##*/} enable|disable"' >> '/usr/local/sbin/set-zram.sh'
+			echo	';;' >> '/usr/local/sbin/set-zram.sh'
+			echo 'esac' >> '/usr/local/sbin/set-zram.sh'
+	
+			echo 'exit 0' >> '/usr/local/sbin/set-zram.sh'
+	
+			chown 'root:root' '/usr/local/sbin/set-zram.sh'
+			chmod 750 '/usr/local/sbin/set-zram.sh'
+		fi
+	
+		if [ ! "${rclocal_tweaks_auto_isc_dhcp}" = '' ] && [ -e '/sbin/dhclient' ]; then
+			print_message 'creating isc-dhcp-client-auto.sh' "${COLOR_INFO}"
+			[ ! -e '/usr/local/sbin' ] && mkdir -p '/usr/local/sbin'
+	
+			echo '#!/bin/sh' > '/usr/local/sbin/isc-dhcp-client-auto.sh'
+			####
+			echo 'command -v "ifconfig" > /dev/null 2>&1 || if command -v "busybox" > /dev/null 2>&1 && busybox | grep "ifconfig" > /dev/null 2>&1; then' >> '/usr/local/sbin/isc-dhcp-client-auto.sh'
+			echo	'ifconfig() { busybox ifconfig ${@}; }' >> '/usr/local/sbin/isc-dhcp-client-auto.sh'
+			echo 'else' >> '/usr/local/sbin/isc-dhcp-client-auto.sh'
+			echo	'echo "ifconfig not found"' >> '/usr/local/sbin/isc-dhcp-client-auto.sh'
+			echo	'exit 1' >> '/usr/local/sbin/isc-dhcp-client-auto.sh'
+			echo 'fi' >> '/usr/local/sbin/isc-dhcp-client-auto.sh'
+			####
+			echo 'ifconfig "lo" "127.0.0.1" "netmask" "255.0.0.0" "up"' >> '/usr/local/sbin/isc-dhcp-client-auto.sh'
+			echo 'sleep 5' >> '/usr/local/sbin/isc-dhcp-client-auto.sh' # systemd :(
+			echo 'for i in /sys/class/net/*; do' >> '/usr/local/sbin/isc-dhcp-client-auto.sh'
+			echo	'i="${i##*/}"' >> '/usr/local/sbin/isc-dhcp-client-auto.sh'
+			echo	'[ "${i}" = "lo" ] && continue' >> '/usr/local/sbin/isc-dhcp-client-auto.sh'
+			echo	'ifconfig "${i}" up > "/dev/null" 2>&1' >> '/usr/local/sbin/isc-dhcp-client-auto.sh'
+			echo	'dhclient -4 -v -i -pf "/var/run/dhclient.${i}.pid" -lf "/var/run/.dhclient.${i}.leases" -I -df "/var/run/.dhclient6.${i}.leases" "${i}"' >> '/usr/local/sbin/isc-dhcp-client-auto.sh'
+			echo 'done' >> '/usr/local/sbin/isc-dhcp-client-auto.sh'
+			####
+			echo 'exit 0' >> '/usr/local/sbin/isc-dhcp-client-auto.sh'
+	
+			chown 'root:root' '/usr/local/sbin/isc-dhcp-client-auto.sh'
+			chmod 755 '/usr/local/sbin/isc-dhcp-client-auto.sh'
+		fi
+	
+		if [ ! "${rclocal_tweaks_fstab_generator}" = '' ]; then
+			print_message 'creating fstab-generator.sh' "${COLOR_INFO}"
+			[ ! -e '/usr/local/sbin' ] && mkdir -p '/usr/local/sbin'
+	
+			echo '#!/bin/sh' > '/usr/local/sbin/fstab-generator.sh'
+			echo '# part of bootstrap-installer-v2' >> '/usr/local/sbin/fstab-generator.sh'
+			echo '# fstab-generator.sh [--only-hide-tmpfs|--only-generator]' >> '/usr/local/sbin/fstab-generator.sh'
+	
+			echo 'is_device_not_virtual()' >> '/usr/local/sbin/fstab-generator.sh'
+			echo '{' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'if readlink "/sys/class/block/${1}" 2>/dev/null | grep "/devices/virtual/" > /dev/null 2>&1; then' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'echo "/dev/${1} is a virtual block device"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'return 1' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'fi' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo	'return 0' >> '/usr/local/sbin/fstab-generator.sh'
+			echo '}' >> '/usr/local/sbin/fstab-generator.sh'
+	
+			echo 'is_device_not_commented()' >> '/usr/local/sbin/fstab-generator.sh'
+			echo '{' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'if cat "/etc/fstab" | grep "/dev/${1}" | grep "^#" > /dev/null 2>&1; then' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'echo "/dev/${1} commented out in /etc/fstab"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'return 1' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'fi' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo	'return 0' >> '/usr/local/sbin/fstab-generator.sh'
+			echo '}' >> '/usr/local/sbin/fstab-generator.sh'
+	
+			echo 'is_uuid_not_commented()' >> '/usr/local/sbin/fstab-generator.sh'
+			echo '{' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'local i' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'local i_device' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'local i_uuid' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo	'for i in /dev/disk/by-uuid/*; do' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'[ "${i}" = "/dev/disk/by-uuid/*" ] && break' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo		'i_device="$(readlink ${i})"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'i_device="${i_device##*/}"' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo		'if [ "${i_device}" = "${1}" ]; then' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'i_uuid="${i##*/}"' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo			'if cat "/etc/fstab" | grep "UUID=${i_uuid}" | grep "^#" > /dev/null 2>&1; then' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'echo "/dev/${i_device} (${i_uuid}) commented out in /etc/fstab"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'return 1' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'fi' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'if cat "/etc/fstab" | grep "/dev/disk/by-uuid/${i_uuid}" | grep "^#" > /dev/null 2>&1; then' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'echo "/dev/${i_device} (${i_uuid}) commented out in /etc/fstab"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'return 1' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'fi' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'fi' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'done' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo	'return 0' >> '/usr/local/sbin/fstab-generator.sh'
+			echo '}' >> '/usr/local/sbin/fstab-generator.sh'
+	
+			echo 'is_partuuid_not_commented()' >> '/usr/local/sbin/fstab-generator.sh'
+			echo '{' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'local i' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'local i_device' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'local i_uuid' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo	'for i in /dev/disk/by-partuuid/*; do' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'[ "${i}" = "/dev/disk/by-partuuid/*" ] && break' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo		'i_device="$(readlink ${i})"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'i_device="${i_device##*/}"' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo		'if [ "${i_device}" = "${1}" ]; then' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'i_uuid="${i##*/}"' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo			'if cat "/etc/fstab" | grep "PARTUUID=${i_uuid}" | grep "^#" > /dev/null 2>&1; then' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'echo "/dev/${i_device} (${i_uuid}) commented out in /etc/fstab"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'return 1' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'fi' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'if cat "/etc/fstab" | grep "/dev/disk/by-partuuid/${i_uuid}" | grep "^#" > /dev/null 2>&1; then' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'echo "/dev/${i_device} (${i_uuid}) commented out in /etc/fstab"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'return 1' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'fi' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'fi' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'done' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo	'return 0' >> '/usr/local/sbin/fstab-generator.sh'
+			echo '}' >> '/usr/local/sbin/fstab-generator.sh'
+	
+			echo 'is_label_not_commented()' >> '/usr/local/sbin/fstab-generator.sh'
+			echo '{' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'local i' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'local i_device' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'local i_label' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo	'for i in /dev/disk/by-label/*; do' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'[ "${i}" = "/dev/disk/by-label/*" ] && break' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo		'i_device="$(readlink ${i})"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'i_device="${i_device##*/}"' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo		'if [ "${i_device}" = "${1}" ]; then' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'i_label="${i##*/}"' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo			'if cat "/etc/fstab" | grep "LABEL=${i_label}" | grep "^#" > /dev/null 2>&1; then' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'echo "/dev/${i_device} (${i_label}) commented out in /etc/fstab"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'return 1' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'fi' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'if cat "/etc/fstab" | grep "/dev/disk/by-label/${i_label}" | grep "^#" > /dev/null 2>&1; then' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'echo "/dev/${i_device} (${i_label}) commented out in /etc/fstab"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'return 1' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'fi' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'fi' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'done' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo	'return 0' >> '/usr/local/sbin/fstab-generator.sh'
+			echo '}' >> '/usr/local/sbin/fstab-generator.sh'
+	
+			echo 'is_partlabel_not_commented()' >> '/usr/local/sbin/fstab-generator.sh'
+			echo '{' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'local i' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'local i_device' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'local i_label' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo	'for i in /dev/disk/by-partlabel/*; do' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'[ "${i}" = "/dev/disk/by-partlabel/*" ] && break' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo		'i_device="$(readlink ${i})"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'i_device="${i_device##*/}"' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo		'if [ "${i_device}" = "${1}" ]; then' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'i_label="${i##*/}"' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo			'if cat "/etc/fstab" | grep "PARTLABEL=${i_label}" | grep "^#" > /dev/null 2>&1; then' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'echo "/dev/${i_device} (${i_label}) commented out in /etc/fstab"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'return 1' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'fi' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'if cat "/etc/fstab" | grep "/dev/disk/by-partlabel/${i_label}" | grep "^#" > /dev/null 2>&1; then' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'echo "/dev/${i_device} (${i_label}) commented out in /etc/fstab"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'return 1' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'fi' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'fi' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'done' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo	'return 0' >> '/usr/local/sbin/fstab-generator.sh'
+			echo '}' >> '/usr/local/sbin/fstab-generator.sh'
+	
+			echo 'is_id_not_commented()' >> '/usr/local/sbin/fstab-generator.sh'
+			echo '{' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'local i' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'local i_device' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'local i_id' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo	'for i in /dev/disk/by-id/*; do' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'[ "${i}" = "/dev/disk/by-id/*" ] && break' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo		'i_device="$(readlink ${i})"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'i_device="${i_device##*/}"' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo		'if [ "${i_device}" = "${1}" ]; then' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'i_id="${i##*/}"' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo			'if cat "/etc/fstab" | grep "/dev/disk/by-id/${i_id}" | grep "^#" > /dev/null 2>&1; then' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'echo "/dev/${i_device} (${i_id}) commented out in /etc/fstab"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'return 1' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'fi' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'fi' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'done' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo	'return 0' >> '/usr/local/sbin/fstab-generator.sh'
+			echo '}' >> '/usr/local/sbin/fstab-generator.sh'
+	
+			echo 'is_path_not_commented()' >> '/usr/local/sbin/fstab-generator.sh'
+			echo '{' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'local i' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'local i_device' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'local i_path' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo	'for i in /dev/disk/by-path/*; do' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'[ "${i}" = "/dev/disk/by-path/*" ] && break' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo		'i_device="$(readlink ${i})"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'i_device="${i_device##*/}"' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo		'if [ "${i_device}" = "${1}" ]; then' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'i_path="${i##*/}"' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo			'if cat "/etc/fstab" | grep "/dev/disk/by-path/${i_path}" | grep "^#" > /dev/null 2>&1; then' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'echo "/dev/${i_device} (${i_path}) commented out in /etc/fstab"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'return 1' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'fi' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'fi' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'done' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo	'return 0' >> '/usr/local/sbin/fstab-generator.sh'
+			echo '}' >> '/usr/local/sbin/fstab-generator.sh'
+	
+			echo 'root_partition=$(cat /proc/mounts | grep " / " | awk "{print \$1}")' >> '/usr/local/sbin/fstab-generator.sh'
+	
+			echo 'mountpoint -q "/etc/fstab" && umount "/etc/fstab"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo 'mountpoint -q "/media" && rmdir /media/* > /dev/null 2>&1' >> '/usr/local/sbin/fstab-generator.sh'
+			echo '[ -e "/var/run/.fstab" ] && rm "/var/run/.fstab"' >> '/usr/local/sbin/fstab-generator.sh'
+	
+			echo 'cp -p "/etc/fstab" "/var/run/.fstab"' >> '/usr/local/sbin/fstab-generator.sh'
+	
+			echo '[ ! "${1}" = "--only-generator" ] && sed -i "/\stmpfs\s/ s/./#&/" "/var/run/.fstab"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo '[ ! "${1}" = "--only-generator" ] && sed -i "/\s\/\s/ s/./#&/" "/var/run/.fstab"' >> '/usr/local/sbin/fstab-generator.sh'
+	
+			echo 'mount --bind "/var/run/.fstab" "/etc/fstab"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo 'mountpoint -q "/media" || mount -t tmpfs -o rw,nosuid,nodev,noexec,noatime,nodiratime,mode=0755 tmp "/media"' >> '/usr/local/sbin/fstab-generator.sh'
+	
+			echo '[ "${1}" = "--only-hide-tmpfs" ] && exit 0' >> '/usr/local/sbin/fstab-generator.sh'
+	
+			echo 'echo "" >> "/var/run/.fstab"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo 'for i in /sys/block/*; do' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'[ "${i}" = "/sys/block/*" ] && break' >> '/usr/local/sbin/fstab-generator.sh'
+	
+			echo	'i="${i##*/}"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'[ "/dev/${i}" = "${root_partition}" ] && echo "${root_partition} is a root partition" && continue' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'echo -n "${i}" | grep "^ram[0-9]" > /dev/null 2>&1 && echo "/dev/${i} is ram, ignoring" && continue' >> '/usr/local/sbin/fstab-generator.sh'
+	
+			echo	'for j in /sys/block/${i}/${i}*; do' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'if [ "${j}" = "/sys/block/${i}/${i}*" ]; then' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'if [ -b "/dev/${i}" ] && is_device_not_virtual "${i}" && is_device_not_commented "${i}" && is_uuid_not_commented "${i}" && is_partuuid_not_commented "${i}" && is_label_not_commented "${i}" && is_partlabel_not_commented "${i}" && is_id_not_commented "${i}" && is_path_not_commented "${i}"; then' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'echo "/dev/${i} => /media/${i}"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'[ ! -e "/media/${i}" ] && mkdir "/media/${i}"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo				'echo "/dev/${i} /media/${i} auto noauto,user,rw,nosuid,nodev,noexec,noatime,nodiratime,async 0 0" >> "/var/run/.fstab"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'fi' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'break' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'fi' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo		'j="${j##*/}"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'[ "/dev/${j}" = "${root_partition}" ] && echo "${root_partition} is a root partition" && continue' >> '/usr/local/sbin/fstab-generator.sh'
+			####
+			echo		'if [ -b "/dev/${j}" ] && is_device_not_virtual "${i}" && is_device_not_commented "${j}" && is_uuid_not_commented "${j}" && is_partuuid_not_commented "${j}" && is_label_not_commented "${j}" && is_partlabel_not_commented "${j}" && is_id_not_commented "${j}" && is_path_not_commented "${j}"; then' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'echo "/dev/${j} => /media/${j}"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'[ ! -e "/media/${j}" ] && mkdir "/media/${j}"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo			'echo "/dev/${j} /media/${j} auto noauto,user,rw,nosuid,nodev,noexec,noatime,nodiratime,async 0 0" >> "/var/run/.fstab"' >> '/usr/local/sbin/fstab-generator.sh'
+			echo		'fi' >> '/usr/local/sbin/fstab-generator.sh'
+			echo	'done' >> '/usr/local/sbin/fstab-generator.sh'
+			echo 'done' >> '/usr/local/sbin/fstab-generator.sh'
+	
+			echo 'exit 0' >> '/usr/local/sbin/fstab-generator.sh'
+	
+			chown 'root:root' '/usr/local/sbin/fstab-generator.sh'
+			chmod 750 '/usr/local/sbin/fstab-generator.sh'
+		fi
+fi

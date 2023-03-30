@@ -3,13 +3,24 @@ Utility to install debian from debootstrap rootfs
 mainly designed for the rapid creation of virtual machines.
 
 ### Warning
-**DO NOT INSTALL THIS PACKAGE ON A RUNNING OS**
+**DO NOT INSTALL THIS PACKAGE ON A RUNNING OS**  
+Bootloader installation on LVM and MD RAID is not supported
 
 ### Requirements
 * **UEFI** EFI System Partition must be first on partition table and must be FAT32
 
 ### Required packages on host OS
+* **bash** (also in the new system)
 * **ping** with IPv6 support (can be disabled in settings)
+
+### Supported disk interfaces
+* ATA (hd[a-z][0-9])
+* ATA (e)SATA SCSI USB (sd[a-z][0-9])
+* virtio-blk (vd[a-z][0-9])
+* Xen Virtual block (xvd[a-z][0-9])
+* (e)MMC/SD (mmcblk[0-9]p[0-9])
+* NVMe (nvme[0-9]n[0-9]p[0-9])
+* Loopback (loop[0-9]p[0-9])
 
 ### Supported firmwares
 * x86 BIOS
@@ -18,16 +29,30 @@ mainly designed for the rapid creation of virtual machines.
 
 ### Supported distros
 Tested on
-* Debian 7 Wheezy (partially supported with default configuration)
+* Debian 5 Lenny  
+	kernel is not installed by default  
+	use `lenny-install-kernel.sh` script
+* Debian 6 Squeeze  
+	if the system does not boot,  
+	define the rootfstype kernel parameter (e.g. `rootfstype=ext4`)  
+	and run `update-initramfs -u`
+* Debian 7 Wheezy
 * Debian 8 Jessie
 * Debian 9 Stretch
-* Debian 10 Buster
+* Debian 10 Buster  
+	XFCE4 desktop only with systemd
+* Debian 11 Bullseye
+* Ubuntu 15.04 Vivid Vervet  
+	and its not working:  
+	`E: Command line option --allow-downgrades is not understood`
+* Ubuntu 18.04 Bionic Beaver
 * Ubuntu 20.04 Focal Fossa
+* Ubuntu 22.04 Jammy Jellyfish
 
 ### Supported desktop environments
 * XFCE4
 * IceWM/ROX-filer
-* ubuntu-desktop (exclusively for ubuntu)
+* Ubuntu desktop (exclusively for ubuntu)
 
 ### How to make bootstrap
 1) install debootstrap utility  
@@ -73,7 +98,7 @@ You can create scripts in `/usr/local/etc`:
 4) now move `bootstrap-installer` directory to the `./usr/local/share/packages`  
 	(`packages` directory can be named as you like)
 5) run installer  
-	`./usr/local/share/packages/bootstrap-installer/install.sh --force`
+	`./usr/local/share/packages/bootstrap-installer-v2/install.sh --force`
 6) create tarball  
 	`tar cvf ../installer.tar *`  
 	`gzip -9 ../installer.tar`
@@ -97,8 +122,10 @@ You can create scripts in `/usr/local/etc`:
 10) unpack installer  
 	`tar xvf /path/to/installer.tar`
 11) run installer  
+	`./usr/local/sbin/bootstrap-installer.sh`  
+	or with specified root partition (if cannot detect automatically):  
 	`./usr/local/sbin/bootstrap-installer.sh /dev/root-partition`  
-	bootstrap-installer will be uninstalled automatically)
+	(bootstrap-installer will be uninstalled automatically)
 12) you can now chroot and install packages from debian-router repo
 13) if you have completed step 8, umount that partitions
 14) umount root partition  
@@ -106,14 +133,37 @@ You can create scripts in `/usr/local/etc`:
 	`umount /debian`
 15) reboot from hdd
 16) if debian booted successfully, you can remove bootstrap installer (run as root)  
-	`rm -r -f /usr/local/share/packages/bootstrap-installer`  
+	`rm -r -f /usr/local/share/packages/bootstrap-installer-v2`  
 	or if you haven't installed other packages from the debian-router repository  
 	`rm -r -f /usr/local/share/packages`  
 	(see `How to install` step `4`)
 
 ### Package preseeding
+(You can use `make-offline-preseed.sh` tool)
 1) create `bootstrap-installer-preseed-dump` file on new root fs and install OS
 2) prepare other machines
 3) after installation move `bootstrap-installer-preseed.tar.gz` from new rootfs to the other machines
-4) install OS on the next machine
-5) repeat step 4
+4) you can disable ping here (but you don't have to)  
+	`echo 'unset check_internet_connection' >> ./usr/local/etc/bootstrap-installer.rc`
+5) install OS on the next machine
+6) repeat step 4
+
+# quick-format.sh
+A simple script that automatically wipes the disk and creates MBR or GPT partitions:
+* `EFI system partition` FAT32 100MiB (only GPT)
+* EXT4 from 0% to 100% (MBR) or from 100MiB to 100% (GPT)
+
+Required programs:
+* `dd`
+* `blockdev` (only GPT)
+* `cat`
+* MBR: `parted` or `fdisk` or `busybox` with fdisk
+* GPT: `parted` or `gdisk`
+* `mkfs.vfat` (only GPT)
+* `mkfs.ext4`
+
+**Warning!** The script doesn't ask for anything!
+
+# make-offline-preseed.sh
+Offline `bootstrap-installer-preseed.tar.gz` creation tool.  
+Use this to skip the first install from the package predeeding section.

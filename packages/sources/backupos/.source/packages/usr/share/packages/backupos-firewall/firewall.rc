@@ -7,3 +7,5 @@ $ip6tables -P FORWARD DROP
 $ip6tables -P OUTPUT ACCEPT
 $iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 $ip6tables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+$iptables -A INPUT -p icmp -j ACCEPT
+$ip6tables -A INPUT -p icmpv6 -j ACCEPT

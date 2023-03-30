@@ -1,2 +1,2 @@
+Apt::Install-Suggests "false";
 Apt::AutoRemove::SuggestsImportant "false";
-APT::AutoRemove::RecommendsImportant "false";

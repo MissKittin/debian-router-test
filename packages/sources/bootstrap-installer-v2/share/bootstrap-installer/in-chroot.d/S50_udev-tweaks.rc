@@ -1,0 +1,14 @@
+# Apply udev tweaks
+if [ ! "${udev_tweaks}" = '' ]; then
+	print_message 'tweaking udev' "${COLOR_INFO}"
+
+	[ ! -e '/usr/local/etc/'"${installer_config_dir}"'udev/rules.d' ] && mkdir -p '/usr/local/etc/'"${installer_config_dir}"'udev/rules.d'
+
+	# SATA Active Link Power Management
+	echo 'ACTION=="add", SUBSYSTEM=="scsi_host", KERNEL=="host*", ATTR{link_power_management_policy}="med_power_with_dipm"' > '/usr/local/etc/'"${installer_config_dir}"'udev/rules.d/hd_power_save.rules'
+	ln -s '/usr/local/etc/'"${installer_config_dir}"'udev/rules.d/hd_power_save.rules' '/etc/udev/rules.d/hd_power_save.rules'
+
+	# PCI Runtime Power Management
+	echo 'SUBSYSTEM=="pci", ATTR{power/control}="auto"' > '/usr/local/etc/'"${installer_config_dir}"'udev/rules.d/pci_pm.rules'
+	ln -s '/usr/local/etc/'"${installer_config_dir}"'udev/rules.d/pci_pm.rules' '/etc/udev/rules.d/pci_pm.rules'
+fi

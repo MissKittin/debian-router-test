@@ -35,7 +35,7 @@ else
 			'ata-hdd') options="${options} 1"; ;;
 			'ata-cdrom') options="${options} 2"; ;;
 			'usb-storage') options="${options} 3"; ;;
-			'all') options="${options} 0"; ;;
+			'all') options="${options} 1 2 3"; ;;
 			'init-modprobe') options='init-modprobe'; ;;
 			*) options="${options} null"; ;;
 		esac

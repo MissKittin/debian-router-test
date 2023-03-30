@@ -2,3 +2,4 @@
 dmesg '-c' | gzip '-9' > '/var/run/.dmesg.gz'
 chown 'root:adm' '/var/run/.dmesg.gz'
 chmod '640' '/var/run/.dmesg.gz'
+echo 'rc.local.d: boot messages saved to /var/run/.dmesg.gz' > /dev/kmsg

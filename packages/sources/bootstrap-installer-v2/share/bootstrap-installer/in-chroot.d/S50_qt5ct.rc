@@ -1,0 +1,10 @@
+# configure qt5ct
+if [ -e '/usr/bin/qt5ct' ] && [ ! "${username}" = '' ]; then
+	print_message 'configuring qt5ct' "${COLOR_INFO}"
+
+	if [ ! -e "/home/${username}/.bash_login" ]; then
+		echo -n '' > "/home/${username}/.bash_login"
+		chown "${username}:${username}" "/home/${username}/.bash_login"
+	fi
+	echo 'export QT_QPA_PLATFORMTHEME="qt5ct"' >> "/home/${username}/.bash_login"
+fi

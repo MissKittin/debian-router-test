@@ -1,2 +1,5 @@
 # Define forwarded ports/protocols here,
 # but no NAT - no port forwarding
+
+# Default policy
+$iptables -P FORWARD DROP

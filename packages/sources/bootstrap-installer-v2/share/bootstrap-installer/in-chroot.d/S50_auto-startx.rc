@@ -1,9 +1,0 @@
-# Configure automatic startx (for non-privileged user) (11/21)
-if [ ! "${auto_startx}" = '' ] && [ ! "${username}" = '' ]; then
-	print_message 'adding autostartx for non-privileged user' "${COLOR_INFO}"
-	echo '[ "$(tty)" = "/dev/tty1" ] && startx' > /home/${username}/.bash_login
-
-	print_message 'setting hushlogin for non-privileged user' "${COLOR_INFO}"
-	echo -n '' > /home/${username}/.hushlogin
-	chown 0:0 /home/${username}/.bash_login
-fi

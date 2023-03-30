@@ -5,7 +5,7 @@ if [ "${hostname}" = '' ]; then
 else
 	print_message 'host name is predefined' "${COLOR_SUCCESS}"
 fi
-mv /etc/hostname /usr/local/etc/${installer_config_dir}hostname
-ln -s /usr/local/etc/${installer_config_dir}hostname /etc/hostname
+mv '/etc/hostname' "/usr/local/etc/${installer_config_dir}hostname"
+ln -s "/usr/local/etc/${installer_config_dir}hostname" '/etc/hostname'
 
-echo "${hostname}" > /usr/local/etc/${installer_config_dir}hostname
+echo "${hostname}" > "/usr/local/etc/${installer_config_dir}hostname"

@@ -1,0 +1,17 @@
+# Configure gdm autologin for non-privileged user
+if [ ! "${username}" = '' ] && [ ! "${desktop_gdm_auto_login}" = '' ] && [ -e '/etc/gdm3/custom.conf' ]; then
+	print_message 'configuring gdm3 autologin for '"${username}" "${COLOR_INFO}"
+
+	if [ ! -e "/usr/local/etc/${installer_config_dir}gdm3" ]; then
+		mkdir -p "/usr/local/etc/${installer_config_dir}gdm3"
+		chown 'root:root' "/usr/local/etc/${installer_config_dir}gdm3"
+		chmod -s "/usr/local/etc/${installer_config_dir}gdm3"
+	fi
+
+	cp -p '/etc/gdm3/custom.conf' '/etc/gdm3/custom.conf.old'
+	mv '/etc/gdm3/custom.conf' "/usr/local/etc/${installer_config_dir}gdm3/custom.conf"
+	ln -s "/usr/local/etc/${installer_config_dir}gdm3/custom.conf" '/etc/gdm3/custom.conf'
+
+	sed -i 's/#  AutomaticLoginEnable = true/AutomaticLoginEnable = true/g' "/usr/local/etc/${installer_config_dir}gdm3/custom.conf"
+	sed -i 's/#  AutomaticLogin = user1/AutomaticLogin = '"${username}"'/g' "/usr/local/etc/${installer_config_dir}gdm3/custom.conf"
+fi

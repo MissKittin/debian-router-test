@@ -1,10 +1,13 @@
 # IPv4
 . ${config_dir}/config.rc.d/ipvx.rc
-for i in $(arp | tail -n +2 | grep -v '(incomplete)' | grep "${LAN}" | awk '{print $1}'); do
+#for i in $(arp | tail -n +2 | grep -v '(incomplete)' | grep "${LAN}" | awk '{print $1}'); do
+for i in $(ip -4 neigh | grep "dev ${LAN} " | awk '{print $1}'); do
 	if ping -c 1 -W 1 "${i}" > /dev/null 2>&1; then
-		if ! echo -n "${IP_IGNORE_MACS}" | grep "$(arp | grep "${i}" | awk '{print $3}')" > /dev/null 2>&1; then
+		#if ! echo -n "${IP_IGNORE_MACS}" | grep "$(arp | grep "${i}" | awk '{print $3}')" > /dev/null 2>&1; then
+		if ! echo -n "${IP_IGNORE_MACS}" | grep "$(ip -4 neigh | grep '^'"${i} " | awk '{print $5}')" > /dev/null 2>&1; then
 			BREAK='true'
-			[ "${REASON}" = '' ] && REASON="IPv4 clients connected: ${i} $(arp | grep "${i}" | awk '{print $3}')"
+			#[ "${REASON}" = '' ] && REASON="IPv4 clients connected: ${i} $(arp | grep "${i}" | awk '{print $3}')"
+			[ "${REASON}" = '' ] && REASON="IPv4 clients connected: ${i} $(ip -4 neigh | grep '^'"${i} " | awk '{print $5}')"
 			break
 		fi
 	fi

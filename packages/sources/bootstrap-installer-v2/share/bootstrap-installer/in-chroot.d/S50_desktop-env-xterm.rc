@@ -1,0 +1,11 @@
+# Configure xterm desktop
+if [ "${desktop_env}" = 'xterm' ] && [ ! "${username}" = '' ]; then
+	print_message 'configuring xterm desktop' "${COLOR_INFO}"
+
+	if [ ! -e "/home/${username}/.xinitrc" ]; then
+		echo -n '' > "/home/${username}/.xinitrc"
+		chown "${username}:${username}" "/home/${username}/.xinitrc"
+	fi
+	
+	echo 'exec xterm' >> "/home/${username}/.xinitrc"
+fi

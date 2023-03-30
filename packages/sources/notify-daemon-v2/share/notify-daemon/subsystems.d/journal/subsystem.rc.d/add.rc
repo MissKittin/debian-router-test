@@ -13,7 +13,7 @@ journal__add()
 		new_id='0'
 		for notification_id in ${subsystem__journal__workspace}/*; do
 			[ "${notification_id}" = "${subsystem__journal__workspace}/*" ] && break 
-			[ "${notification_id##*/}" -gt "${new_id}" ] && id=${notification_id##*/}
+			[ "${notification_id##*/}" -gt "${new_id}" ] && new_id=${notification_id##*/}
 		done
 		new_id="$((new_id+1))"
 
@@ -22,6 +22,6 @@ journal__add()
 		echo "importance='${2}'" >> ${subsystem__journal__workspace}/${new_id}
 		echo "message='${3}'" >> ${subsystem__journal__workspace}/${new_id}
 
-		journal__log 'id="'"$id"'" from="'"$1"'" importance="'"$2"'" message="'"$3"'"'
+		journal__log 'id="'"$new_id"'" from="'"$1"'" importance="'"$2"'" message="'"$3"'"'
 	fi
 }

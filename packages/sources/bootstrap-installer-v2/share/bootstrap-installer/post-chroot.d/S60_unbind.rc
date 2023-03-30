@@ -1,6 +1,6 @@
 # Remove mountpoints
 print_message 'removing mountpoints' "${COLOR_INFO}"
 
-for i in dev/pts dev proc run sys; do
-	umount ./${i}
+for i in dev/pts dev proc run var/run sys; do
+	[ ! -L "./${i}" ] && umount "./${i}"
 done

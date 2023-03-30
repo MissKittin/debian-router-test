@@ -1,8 +1,17 @@
 # Configure packages
-if [ ! "${dpkg_reconfigure_packages}" = '' ]; then
+if [ ! "${dpkg_reconfigure_packages}" = '' ] && [ -e '/usr/sbin/dpkg-reconfigure' ]; then
 	print_message 'configuring packages' "${COLOR_INFO}"
+
+	mkdir '/.bootstrap-installer-fake-bin'
+	for i_tool in 'initctl' 'invoke-rc.d' 'restart' 'start' 'stop' 'start-stop-daemon' 'service' 'deb-systemd-helper'; do
+		ln -s '/bin/true' "/.bootstrap-installer-fake-bin/${i_tool}"
+	done
+	unset i_tool
+
 	for package in ${dpkg_reconfigure_packages}; do
-		dpkg-reconfigure ${package}
+		PATH="/.bootstrap-installer-fake-bin:${PATH}" dpkg-reconfigure "${package}"
 	done
 	unset package
+
+	rm -r '/.bootstrap-installer-fake-bin'
 fi

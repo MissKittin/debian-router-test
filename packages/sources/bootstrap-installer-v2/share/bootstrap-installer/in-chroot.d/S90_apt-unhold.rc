@@ -1,0 +1,9 @@
+# Revert temporary held packages
+if [ ! "${apt_mark_temporary_hold}" = '' ]; then
+	print_message 'unholding packages' "${COLOR_INFO}"
+
+	for i in ${apt_mark_temporary_hold}; do
+		apt-mark unhold "${i}"
+	done
+	unset i
+fi

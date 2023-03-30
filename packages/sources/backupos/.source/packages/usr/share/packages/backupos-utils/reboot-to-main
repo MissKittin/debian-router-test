@@ -1,5 +1,8 @@
 #!/bin/sh
 
+load-drivers 'all' > '/dev/null' 2>&1
+sleep 1
+
 if ! ls /dev/sd* > '/dev/null' 2>&1; then
 	echo 'No partitions found!'
 	exit 1
@@ -7,7 +10,12 @@ fi
 
 mkdir '/main'
 for i in /dev/sd[a-z][0-9]; do
-	if mount "${i}" '/main' > '/dev/null' 2>&1; then
+	root_fs="$(blkid ${i} | sed -n 's/.*TYPE=\"\([^\"]*\)\".*/\1/p')"
+	[ "${root_fs}" = '' ] && continue
+
+	grep "${root_fs}$" '/proc/filesystems' > '/dev/null' 2>&1 || modprobe "${root_fs}" > '/dev/null' 2>&1 || continue
+
+	if mount -o 'rw' -t "${root_fs}" "${i}" '/main' > '/dev/null' 2>&1; then
 		if [ -e '/main/.boot-to-backupos' ]; then
 			rm '/main/.boot-to-backupos'
 			sync

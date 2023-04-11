@@ -1,3 +1,4 @@
+# Disable some logs
 if [ ! "${var_log_tweaks}" = '' ]; then
 	print_message 'tweaking /var/log' "${COLOR_INFO}"
 

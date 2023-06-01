@@ -49,10 +49,125 @@ Tested on
 * Ubuntu 20.04 Focal Fossa
 * Ubuntu 22.04 Jammy Jellyfish
 
-### Supported desktop environments
-* XFCE4
-* IceWM/ROX-filer
-* Ubuntu desktop (exclusively for ubuntu)
+### Features
+* automatic hostname generation
+* all essential packages marked as automatically installed  
+	(more transparent package management, see `apt-mark showmanual`)
+* GRUB2 bootloader
+* systemd and sysvinit support
+* (unattended) adding user with password
+* sudo or (unattended) root password
+* XFCE4, IceWM/ROX or xterm for debian  
+	with customizations
+* ubuntu-desktop for ubuntu
+* X server suid wrapper for debian buster with sysvinit
+* unattended language, keyboard layout and time zone setting
+* GTK3 NOCSD tweak
+* QT3, QT4 and QT5 configuration tools
+* ncurses, GTK/Gnome and QT/KDE Debconf frontends
+* acpid, busybox-syslog and cron for sysvinit
+* Wicd, Network Manager or automated ISC DHCP client
+* kernel command line tweaks  
+	* force root fs type and mount options
+	* very quiet with splash
+	* disable AppArmor
+	* disable SELinux
+	* automatic reboot on kernel panic
+	* disable NMI watchdog
+	* disable AGP
+	* disable NUMA
+	* disable EFI services
+* newly added user's home tweaks  
+	* protected user's .config
+	* user's directory in /tmp
+	* Downloads and Public directories in tmpfs
+	* bash history in tmpfs
+	* hush login
+* X server tweaks  
+	* .local/share/xorg in tmpfs
+	* .Xautority and .ICEauthority in .cache
+	* disable recently-used.xbel in GTK
+	* disable GTK3 overlay scrollbars
+	* GTK theme enabled for QT3 and QT4
+	* enable .Xresources and .xprofile
+	* disable abstract socket listening in X server
+* automatic startx on tty1  
+	with log in /tmp
+* GDM3 and lightdm autologin
+* fstab tweaks  
+	* /var/run as tmpfs (for older debians)
+	* /tmp and /var/tmp as tmpfs
+	* /root and /home/root as tmpfs
+	* user's .cache as tmpfs
+* sysvinit tweaks  
+	* enable legacy bootordering
+	* getty with noclear
+	* disable bootclean scripts
+	* 3 consoles instead of 6
+	* autologin on tty1 
+* systemd tweaks  
+	* disable timesyncd
+	* disable networkd
+	* disable timers target
+	* disable journal (completely)
+	* disable persistent journal (debian bullseye and newer)
+	* logind /proc hidepid workaround
+	* enable boot messages
+	* acpi event tweaks
+	* 3 consoles instead of 6
+	* autologin on tty1 for debian
+* initramfs tweaks  
+	* busybox-static
+	* only required kernel modules
+	* better compression
+* hwclock noadjfile tweak
+* apt tweaks  
+	* no install recommends
+	* no install suggests
+	* no acquire languages
+	* gzip indexes
+* sudo tweaks  
+	* disable DNS lookups
+	* disable lecure
+	* /var/lib/sudo as tmpfs
+* policykit tweak: allow reboot and shutdown for user
+* udev tweaks  
+	* SATA active link power management
+	* PCI runtime power management
+* sysctl tweaks  
+	* DDOS protection
+	* disable NMI watchdog
+	* hardening options
+	* SACK panic workaround
+	* writeback time tweak
+* rc.local tweaks  
+	* trim rootfs on boot
+	* zram on boot for wheezy and newer
+	* /proc with hidepid=2 (and systemd gid tweak)
+	* protect /proc/kallsyms
+	* protect /run
+	* protect DMI product UUID
+	* no efivars tweak
+	* dump, compress and clear kernel message buffer
+	* automatic isc-dhcp-client script
+	* /media mount point generator
+* GRUB2 tweaks  
+	* 1 second timeout
+	* hidden menu
+	* disable gfx console
+	* custom kernel boot options
+	* disable Loading Linux message
+* /etc tweaks  
+	* /etc/hosts editing
+	* /etc/resolv.conf in /run
+	* empty /etc/issue and /etc/motd (quiet login)
+	* /etc/skel tweaks
+* /var/log tweaks  
+	* disable btmp
+	* disable faillog
+	* disable lastlog
+	* disable utmp
+	* disable wtmp
 
 ### How to make bootstrap
 1) install debootstrap utility  

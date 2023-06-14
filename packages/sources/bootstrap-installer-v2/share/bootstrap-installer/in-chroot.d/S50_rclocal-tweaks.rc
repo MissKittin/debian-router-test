@@ -93,7 +93,7 @@ if [ ! "${rclocal_tweaks}" = '' ]; then
 			echo	'modprobe zram num_devices=${cores} || modprobe zram zram_num_devices=${cores} || exit 0' >> '/usr/local/sbin/set-zram.sh'
 			####
 			echo	'local totalmem=$(free | grep -e "^Mem:" | awk "{print \$2}")' >> '/usr/local/sbin/set-zram.sh'
-			echo	'local mem=$(((${totalmem}/${cores})*1024 ))' >> '/usr/local/sbin/set-zram.sh'
+			echo	'local mem=$(((${totalmem}/${cores})*1024))' >> '/usr/local/sbin/set-zram.sh'
 			####
 			echo	'local core="0"' >> '/usr/local/sbin/set-zram.sh'
 			echo	'while [ "${core}" -lt "${cores}" ]; do' >> '/usr/local/sbin/set-zram.sh'

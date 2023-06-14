@@ -33,7 +33,9 @@ case "$1" in
 	'stop')
 		log_daemon_msg 'Stopping fancontrol automation' 'fancontrol-weather'
 		if [ -e $PIDFILE ]; then
-			start-stop-daemon --stop --quiet --pidfile $PIDFILE && rm $PIDFILE
+			daemon_pid=$(cat ${PIDFILE})
+			start-stop-daemon --stop --quiet --pidfile $PIDFILE && rm $PIDFILE && \
+			kill $(ps -o pid= --ppid ${daemon_pid}) > /dev/null 2>&1
 			log_end_msg $?
 		else
 			log_end_msg 1

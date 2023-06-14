@@ -1,0 +1,2 @@
+# Enable swap on video ram
+/usr/local/sbin/set-vram.sh > /dev/null 2>&1 &

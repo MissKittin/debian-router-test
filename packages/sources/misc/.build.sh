@@ -70,6 +70,8 @@ ${do_chown} && chown root:root ./extras/etc/rc.local.d/PK99_zz-fs-ssd-tweaks.rc
 chmod 644 ./extras/etc/rc.local.d/PK99_zz-fs-ssd-tweaks.rc
 ${do_chown} && chown root:root ./extras/etc/rc.local.d/PKx_ntpdate.rc
 chmod 644 ./extras/etc/rc.local.d/PKx_ntpdate.rc
+${do_chown} && chown root:root ./extras/etc/rc.local.d/PKx_vram.rc
+chmod 644 ./extras/etc/rc.local.d/PKx_vram.rc
 ${do_chown} && chown root:root ./extras/etc/rc.local.d/PKx_zram.rc
 chmod 644 ./extras/etc/rc.local.d/PKx_zram.rc
 ${do_chown} && chown root:root ./extras/etc/rc.local.d/PKx_autoupdate.rc
@@ -98,6 +100,8 @@ ${do_chown} && chown root:root ./README.md
 chmod 644 ./README.md
 ${do_chown} && chown root:root ./sbin
 chmod 751 ./sbin
+${do_chown} && chown root:root ./sbin/set-vram.sh
+chmod 750 ./sbin/set-vram.sh
 ${do_chown} && chown root:root ./sbin/set-zram.sh
 chmod 750 ./sbin/set-zram.sh
 ${do_chown} && chown root:root ./sbin/system-autoupdate.sh

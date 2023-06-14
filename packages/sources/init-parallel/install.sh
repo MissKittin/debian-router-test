@@ -37,7 +37,7 @@ fi
 #fi
 
 # Check if installed
-if [ -e /usr/local/etc/init-parallel ] || [ -e /usr/local/etc/init.d/ainit-parallel ] || [ -e /usr/local/etc/init.d/ainit-parallel-single ] || [ -e /etc/init.d/ainit-parallel ] || [ -e /etc/init.d/ainit-parallel-single ] || [ -e /usr/local/sbin/init-parallel ]; then
+if [ -e /usr/local/etc/init-parallel ] || [ -e /usr/local/etc/init.d/ainit-parallel ] || [ -e /usr/local/etc/init.d/ainit-parallel-single ] || [ -e /usr/local/etc/init.d/init-parallel-shutdown ] || [ -e /etc/init.d/ainit-parallel ] || [ -e /etc/init.d/ainit-parallel-single ] || [ -e /etc/init.d/init-parallel-shutdown ] || [ -e /usr/local/sbin/init-parallel ] || [ -e /usr/local/sbin/init-parallel-shutdown ]; then
 	echo 'Already installed'
 	exit 1
 fi
@@ -66,7 +66,7 @@ echo -n '[ln] etc/init-parallel /usr/local/etc'
 
 # Install - /usr/local/etc/init.d
 cd /usr/local/etc/init.d
-for i in ainit-parallel ainit-parallel-single; do
+for i in ainit-parallel ainit-parallel-single init-parallel-shutdown; do
 	echo -n "[ln] etc/init.d/${i} /usr/local/etc/init.d"
 		ln -s ${PACKAGE_DIR}/etc/init.d/${i} . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 done
@@ -75,6 +75,8 @@ done
 cd /usr/local/sbin
 echo -n '[ln] sbin/init-parallel /usr/local/sbin'
 	ln -s ${PACKAGE_DIR}/sbin/init-parallel . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+echo -n '[ln] sbin/init-parallel-shutdown /usr/local/sbin'
+	ln -s ${PACKAGE_DIR}/sbin/init-parallel-shutdown . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 
 # Install - /usr/local/share
 cd /usr/local/share
@@ -83,7 +85,7 @@ echo -n '[ln] share/init-parallel /usr/local/share'
 
 # Install - /etc/init.d
 cd /etc/init.d
-for i in ainit-parallel ainit-parallel-single; do
+for i in ainit-parallel ainit-parallel-single init-parallel-shutdown; do
 	echo -n "[ln] /usr/local/etc/init.d/${i} /etc/init.d"
 		ln -s /usr/local/etc/init.d/${i} . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 done
@@ -100,6 +102,13 @@ echo -n '[ln] /etc/init.d/ainit-parallel-single /etc/rcS.d'
 cd /etc/rc2.d
 echo -n '[ln] /etc/init.d/ainit-parallel /etc/rc2.d'
 	ln -s ../init.d/ainit-parallel ./S01ainit-parallel > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+cd /etc/rc0.d
+echo -n '[ln] /etc/init.d/init-parallel-shutdown /etc/rc0.d'
+	ln -s ../init.d/init-parallel-shutdown ./K01init-parallel-shutdown > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+cd /etc/rc6.d
+echo -n '[ln] /etc/init.d/init-parallel-shutdown /etc/rc6.d'
+	ln -s ../init.d/init-parallel-shutdown ./K01init-parallel-shutdown > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
+
 /etc/init.d/ainit-parallel check # rcS.d is partially configured after loop
 
 echo ''

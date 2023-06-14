@@ -77,6 +77,15 @@ stop_containers()
 		fi
 	done
 }
+stop_containers_parallel()
+{
+	local containers_path="$(readlink -f "$(dirname "$(readlink -f "${0}")")/..")"
+	local container
+	for container in ${containers_path}/*; do
+		[ -x "${container}/stop.sh" ] && "${container}/stop.sh" > /dev/null 2>&1 &
+	done
+	wait
+}
 
 PATH='/sbin:/bin:/usr/sbin:/usr/bin'
 . /lib/lsb/init-functions
@@ -95,8 +104,9 @@ case "${1}" in
 	;;
 	'stop')
 		log_daemon_msg 'Stopping containers' 'autoboot'
-		#start_stop_containers stop
-		stop_containers stop
+		##start_stop_containers stop
+		#stop_containers stop
+		stop_containers_parallel stop
 		log_end_msg 0
 	;;
 	'install')

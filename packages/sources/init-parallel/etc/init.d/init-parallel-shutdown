@@ -1,0 +1,45 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides: init-parallel-shutdown
+# Required-Start:       $all
+# Required-Stop:
+# Default-Start:        0 6
+# Default-Stop:
+# Short-Description:    Running shutdown scripts in parallel
+# Description:          Running shutdown scripts in parallel
+### END INIT INFO
+
+PATH='/sbin:/bin:/usr/sbin:/usr/bin'
+
+. /lib/lsb/init-functions
+
+case "$1" in
+	'stop')
+		log_action_msg_pre; echo 'Starting init parallel'
+		/usr/local/sbin/init-parallel-shutdown > /dev/null 2>&1
+	;;
+	'debug')
+		if [ ! -d '/init-parallel-shutdown.log' ]; then
+			echo 'Error: /init-parallel-shutdown.log is not a directory'
+			echo 'Remove it first'
+			exit 1
+		fi
+
+		if [ -e '/init-parallel-shutdown.log' ]; then
+			echo 'Debugging already enabled'
+			exit 0
+		fi
+
+		if mkdir '/init-parallel-shutdown.log'; then
+			echo 'Debugging enabled'
+		else
+			echo 'Cannot enable debugging mode'
+			exit 1
+		fi
+	;;
+	*)
+		echo "${0##*/} debug"
+		exit 1
+	;;
+esac
+exit 0

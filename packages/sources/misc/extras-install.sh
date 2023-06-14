@@ -55,7 +55,7 @@ fi
 
 # Install - /usr/local/etc/rc.local.d
 if cd /usr/local/etc/rc.local.d > /dev/null 2>&1; then
-	for i in cpufreq.rc set-sensors.rc zram.rc; do
+	for i in cpufreq.rc set-sensors.rc vram.rc zram.rc; do
 		echo -n "[ln] extras/etc/rc.local.d/${i} /usr/local/etc/rc.local.d"
 			ln -s ${PACKAGE_DIR}/extras/etc/rc.local.d/PKx_${i} . > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 	done

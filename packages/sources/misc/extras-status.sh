@@ -35,7 +35,7 @@ for i in cpu.rc; do
 done
 
 # /usr/local/share/rc.local.d
-for i in cpufreq.rc dmesg-dump.rc zz-fs-ssd-tweaks.rc set-sensors.rc zram.rc; do
+for i in cpufreq.rc dmesg-dump.rc zz-fs-ssd-tweaks.rc set-sensors.rc vram.rc zram.rc; do
 	echo -n "/usr/local/etc/rc.local.d/${i}"
 		if [ -L /usr/local/etc/rc.local.d/P*_${i} ] && [ -e /usr/local/etc/rc.local.d/P*_${i} ]; then
 			installed=true

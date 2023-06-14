@@ -1,5 +1,2 @@
 # Init parallel config - log directory ('/var/run/.init-parallel' if commented, cannot be empty)
 #log_dir=''
-
-# Init parallel shutdown - move logs to directory for debugging [not implemented]
-#debug_move_logs_to='/' # empty - disabled, must be ended with slash

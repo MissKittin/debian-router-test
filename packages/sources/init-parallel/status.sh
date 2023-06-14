@@ -33,7 +33,7 @@ echo -n "/usr/local/etc/init-parallel"
 	fi
 
 # /usr/local/etc/init.d
-for i in ainit-parallel ainit-parallel-single; do
+for i in ainit-parallel ainit-parallel-single init-parallel-shutdown; do
 	echo -n "/usr/local/etc/init.d/${i}"
 		if [ -L /usr/local/etc/init.d/${i} ] && [ -e /usr/local/etc/init.d/${i} ]; then
 			installed=true
@@ -53,6 +53,14 @@ echo -n "/usr/local/sbin/init-parallel"
 		broken=true
 		echo ' [Broken]'
 	fi
+echo -n "/usr/local/sbin/init-parallel-shutdown"
+	if [ -L /usr/local/sbin/init-parallel-shutdown ] && [ -e /usr/local/sbin/init-parallel-shutdown ]; then
+		installed=true
+		echo ' [ OK ]'
+	else
+		broken=true
+		echo ' [Broken]'
+	fi
 
 # /usr/local/share
 echo -n "/usr/local/share/init-parallel"
@@ -65,7 +73,7 @@ echo -n "/usr/local/share/init-parallel"
 	fi
 
 # /etc/init.d
-for i in ainit-parallel ainit-parallel-single; do
+for i in ainit-parallel ainit-parallel-single init-parallel-shutdown; do
 	echo -n "/etc/init.d/${i}"
 		if [ -L /etc/init.d/${i} ] && [ -e /etc/init.d/${i} ]; then
 			installed=true

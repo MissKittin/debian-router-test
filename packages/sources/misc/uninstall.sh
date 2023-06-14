@@ -27,7 +27,7 @@ if [ ! -e /etc/issue.old ] || [ ! -e /etc/motd.old ]; then
 fi
 
 # Check if installed
-if [ ! -e /usr/local/sbin/set-zram.sh ]; then
+if [ ! -e /usr/local/sbin/set-vram.sh ] || [ ! -e /usr/local/sbin/set-zram.sh ]; then
 	echo 'Not installed'
 	exit 1
 fi
@@ -50,7 +50,7 @@ for i in issue motd; do
 done
 
 # Uninstall - /usr/local/sbin
-for i in set-zram.sh; do
+for i in set-vram.sh set-zram.sh; do
 	echo -n '[rm] /usr/local/sbin/'"${i}"
 		rm /usr/local/sbin/${i} > /dev/null 2>&1 && echo ' [OK]' || echo ' [Fail]'
 done

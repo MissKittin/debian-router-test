@@ -5,7 +5,7 @@ CONTAINER_ROOT='.container'
 export PATH="${DESTINATION}/.bin:${PATH}"
 
 # Start
-REMOVE_SYSTEM_MOUNTPOINTS='proc sys'
+REMOVE_SYSTEM_MOUNTPOINTS='sys'
 CONFIG_TARBALLS='.config.tar.gz'
 OVERLAYFS_MOUNT_OPTIONS='nosuid,nodev,exec,noatime,nodiratime'
 

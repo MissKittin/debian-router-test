@@ -3,6 +3,7 @@ Install this package as last.
 
 ### Scripts
 * [DEPRECATED] `ntpdate-daemon.sh` -> first wait for internet connection and then synchronize
+* `set-vram.sh` -> enable swap on video card ram (useful when you have shared memory)
 * `set-zram.sh` -> enable or disable zram swap
 * [DEPRECATED] `system-autoupdate.sh` -> run `apt-get update` every `n` hours (default `n`==20)
 

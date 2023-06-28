@@ -21,5 +21,14 @@ find -type f -name '.autoboot.example' | while read script; do
 	chmod 755 ${script}
 done
 
+for i in *; do
+	[ ! "${i}" = 'qemu-system' ] && for x in start.sh stop.sh console.sh service.sh; do
+		ln -s ../.samples/plain-overlay/${x} ./${i}/${x}
+	done
+done
+for x in start.sh stop.sh; do
+	ln -s ../.samples/plain-squash/${x} ./qemu-system/${x}
+done
+
 chmod 644 .build.sh
 exit 0

@@ -1,3 +1,0 @@
-This container uses unmodified *.sh scripts.
-You can replace *.sh files with links to the
-"plain-squash" sample.

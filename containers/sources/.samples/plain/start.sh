@@ -39,14 +39,14 @@ fi
 
 if [ ! "${BIND_SYSTEM_MOUNTPOINTS}" = '' ]; then
 	for i_bind_mountpoint in ${BIND_SYSTEM_MOUNTPOINTS}; do
-		mount --bind "/${i_bind_mountpoint}" "${DESTINATION}/${CONTAINER_ROOT}/mnt/${i_bind_mountpoint}"
+		mount --bind --make-rslave "/${i_bind_mountpoint}" "${DESTINATION}/${CONTAINER_ROOT}/mnt/${i_bind_mountpoint}"
 	done
 	unset i_bind_mountpoint
 fi
 ############################################################
 
 #################### Pre-configure bind directories ########
-bindDirectory(){ [ "${2}" = '' ] && return 1; mount --bind "${1}" "${2}"; }
+bindDirectory(){ [ "${2}" = '' ] && return 1; mount --bind --make-rslave "${1}" "${2}"; }
 if [ -e "${DESTINATION}/.pre-configure-binds.rc" ]; then
 	echo 'Binding directories...'
 	cat "${DESTINATION}/.pre-configure-binds.rc" | while read bindSource; do
@@ -117,7 +117,7 @@ fi
 ############################################################
 
 #################### Bind directories ######################
-bindDirectory(){ [ "${2}" = '' ] && return 1; mount --bind "${1}" "${2}"; }
+bindDirectory(){ [ "${2}" = '' ] && return 1; mount --bind --make-rslave "${1}" "${2}"; }
 if [ -e "${DESTINATION}/.binds.rc" ]; then
 	echo 'Binding directories...'
 	cat "${DESTINATION}/.binds.rc" | while read bindSource; do

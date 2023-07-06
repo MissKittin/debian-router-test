@@ -5,7 +5,7 @@ CONTAINER_ROOT='.container'
 CONTAINER_ON_RAM='true'
 
 # Start
-#REMOVE_SYSTEM_MOUNTPOINTS='dev/pts dev sys proc'
+REMOVE_SYSTEM_MOUNTPOINTS='' # 'dev/pts dev sys proc'
 CONFIG_TARBALLS='.config.tar.gz'
 OVERLAYFS_MOUNT_OPTIONS='nosuid,nodev,exec,noatime,nodiratime'
 

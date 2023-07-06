@@ -27,6 +27,26 @@ output="$(
 )"
 [ "$output" = '' ] && echo '(none)' || echo "$output"
 
+# List started containers (ns)
+echo -n 'Started containers (ns): '
+output="$(
+	mount | grep "${containers_home}*" | grep '/.container-ns type' | while read line; do
+		[ -e "$(echo $line | awk '{print $3}')/container.stop" ] && echo $line | awk '{print $1}' | sed 's/-ns$//g'
+	done | xargs
+)"
+[ "$output" = '' ] && echo '(none)' || echo "$output"
+
+# List booting containers (ns)
+echo -n 'Booting containers (ns): '
+output="$(
+	mount | grep "${containers_home}*" | grep '/.container-ns type' | while read line; do
+		if [ -e "$(echo $line | awk '{print $3}')/container.pid" ] && [ ! -e "$(echo $line | awk '{print $3}')/container.stop" ]; then
+			echo $line | awk '{print $1}' | sed 's/-ns$//g'
+		fi
+	done | xargs
+)"
+[ "$output" = '' ] && echo '(none)' || echo "$output"
+
 # Print detailed memory usage
 output="$(
 	echo ''; echo 'Memory usage:'

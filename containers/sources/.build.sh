@@ -30,5 +30,11 @@ for x in start.sh stop.sh; do
 	ln -s ../.samples/plain-squash/${x} ./qemu-system/${x}
 done
 
+for i in miredo; do
+	for x in start.sh stop.sh console.sh service.sh; do
+		ln -s ../.samples/plain-overlay/ns-${x} ./${i}/ns-${x}
+	done
+done
+
 chmod 644 .build.sh
 exit 0

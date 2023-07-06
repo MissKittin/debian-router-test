@@ -7,11 +7,17 @@
 
 case "${1}" in
 	'start')
-		#exec "$(dirname ${0})/start.sh" strip
-		exec "$(dirname ${0})/start.sh"
+		script="${1}.sh"
+		[ -x "$(dirname ${0})/ns-${1}.sh" ] && script="ns-${1}.sh"
+
+		#exec "$(dirname ${0})/${script}" strip
+		exec "$(dirname ${0})/${script}" strip
 	;;
 	'stop')
-		exec "$(dirname ${0})/stop.sh"
+		script="${1}.sh"
+		[ -x "$(dirname ${0})/ns-${1}.sh" ] && script="ns-${1}.sh"
+
+		exec "$(dirname ${0})/${script}" strip
 	;;
 esac
 
